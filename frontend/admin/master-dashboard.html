@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master AI | Global Dashboard</title>
+
+    <script>
+        if (localStorage.getItem('userRole') !== 'admin') {
+            document.documentElement.style.display = 'none';
+            alert("SECURITY BREACH: Access Denied! Sirf Admin allowed hai.");
+            window.location.replace('admin-login.html');
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(56, 189, 248, 0.15);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-green: #4ade80;
+            --accent-danger: #ef4444;
+            --accent-warning: #facc15;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 10px; }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 280px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;
+            position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px); border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 100;
+        }
+        .sidebar .logo { 
+            font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-section { font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .sidebar a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+            display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem;
+            border-radius: 8px; transition: all 0.3s ease; border: 1px solid transparent;
+        }
+        .sidebar a:hover { background: rgba(56, 189, 248, 0.08); color: #fff; transform: translateX(5px); }
+        .sidebar a.active { 
+            background: rgba(56, 189, 248, 0.15); color: #fff; 
+            border-left: 3px solid var(--accent-blue); border-color: var(--glass-border);
+            box-shadow: 0 0 15px rgba(56,189,248,0.1);
+        }
+
+        /* Main Content Styling */
+        .main { flex: 1; margin-left: 280px; padding: 2rem 3rem; display: flex; flex-direction: column; gap: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border);}
+        .header h1 { font-size: 1.8rem; font-weight: 600; display: flex; align-items: center; gap: 12px; }
+        
+        .btn-action {
+            background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(168,85,247,0.2)); 
+            color: var(--text-main); border: 1px solid var(--accent-blue);
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 500; display: flex; gap: 8px; align-items: center;
+        }
+        .btn-action:hover { background: var(--accent-blue); color: #000; box-shadow: 0 0 15px var(--accent-blue); }
+
+        /* Top Summary Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .stat-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 1.5rem;
+            border-radius: 12px; display: flex; align-items: center; gap: 1.5rem; transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); border-color: var(--accent-blue); }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .stat-info h4 { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; margin-bottom: 5px; }
+        .stat-info h2 { font-size: 1.5rem; font-weight: 600; }
+
+        /* Dashboard Grid (Charts & Table) */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        
+        .card { 
+            background: var(--glass-bg); border: 1px solid var(--glass-border); 
+            border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px);
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .card-header h3 { font-size: 1.1rem; display: flex; align-items: center; gap: 10px; font-weight: 600;}
+
+        /* Sleek Table Styling */
+        .table-container { overflow-y: auto; max-height: 320px; padding-right: 5px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        thead th { 
+            position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); 
+            padding: 12px; color: var(--accent-blue); font-size: 0.85rem; text-transform: uppercase; z-index: 1;
+        }
+        tbody td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; transition: 0.2s;}
+        tbody tr:hover td { background: rgba(255,255,255,0.02); }
+        
+        .temp-badge { background: rgba(56, 189, 248, 0.1); color: var(--accent-blue); padding: 4px 10px; border-radius: 20px; font-weight: 600; font-size: 0.8rem;}
+
+        canvas { max-height: 300px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-meteor"></i> MASTER AI</div>
+        
+        <div class="nav-section">Core Operations</div>
+        <a href="master-dashboard.html" class="active"><i class="fas fa-home"></i> Global Dashboard</a>
+        <a href="deployment-center.html"><i class="fas fa-rocket"></i> Deployment Center</a>
+        <a href="user-tracking-center.html"><i class="fas fa-users-viewfinder"></i> User Tracking</a>
+        <a href="reports-command.html"><i class="fas fa-file-invoice"></i> Reports Command</a>
+        
+        <div class="nav-section">Data Architecture</div>
+        <a href="data-governance-center.html"><i class="fas fa-database"></i> Data Governance</a>
+        <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
+        <a href="satellite-command.html"><i class="fas fa-satellite"></i> Satellite Command</a>
+        
+        <div class="nav-section">Security & Cloud</div>
+        <a href="cybersecurity-command-center.html"><i class="fas fa-shield-halved"></i> Cybersecurity</a>
+        <a href="compliance-center.html"><i class="fas fa-scale-balanced"></i> Compliance Center</a>
+        <a href="cloud-command-center.html"><i class="fas fa-cloud"></i> Cloud Command</a>
+        
+        <div style="flex-grow: 1;"></div>
+        <a href="#" onclick="logoutAdmin()" style="color: var(--accent-danger); border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); margin-top: 10px;">
+            <i class="fas fa-power-off"></i> Secure Logout
+        </a>
+    </div>
+
+    <main class="main">
+        <div class="header">
+            <h1><i class="fas fa-earth-americas" style="color: var(--accent-blue);"></i> Weather Intelligence Hub</h1>
+            <button class="btn-action" onclick="location.reload()">
+                <i class="fas fa-rotate-right"></i> Sync Live Data
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(56, 189, 248, 0.1); color: var(--accent-blue);">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>System Health</h4>
+                    <h2>99.9%</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(168, 85, 247, 0.1); color: var(--accent-purple);">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>API Requests (1h)</h4>
+                    <h2>14.2k</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(74, 222, 128, 0.1); color: var(--accent-green);">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Avg Latency</h4>
+                    <h2>42ms</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(250, 204, 21, 0.1); color: var(--accent-warning);">
+                    <i class="fas fa-shield-virus"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Threats Blocked</h4>
+                    <h2>128</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line" style="color: var(--accent-purple);"></i> Live Traffic Throughput</h3>
+                    <i class="fas fa-ellipsis-v" style="color: var(--text-muted); cursor: pointer;"></i>
+                </div>
+                <canvas id="throughputChart"></canvas>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list-check" style="color: var(--accent-green);"></i> Recent Global Queries</h3>
+                    <span style="font-size: 0.8rem; color: var(--accent-blue); background: rgba(56,189,248,0.1); padding: 3px 8px; border-radius: 12px;">Live Updates</span>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Target City</th>
+                                <th>Recorded Temp</th>
+                                <th>Timestamp (IST)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 2rem;">
+                                    <i class="fas fa-circle-notch fa-spin" style="color: var(--accent-blue); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                                    <p style="color: var(--text-muted);">Fetching secure logs...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 1. Fetch Live Data From Backend
+        window.onload = loadHistory;
+
+        async function loadHistory() {
+            try {
+                const token = localStorage.getItem("adminToken"); 
+                const response = await fetch('http://127.0.0.1:8000/weather/history', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const tableBody = document.getElementById('history-table-body');
+
+                if (!response.ok) {
+                    tableBody.innerHTML = `<tr><td colspan="3" style="color: var(--accent-danger); text-align:center;"><i class="fas fa-triangle-exclamation"></i> API Connection Lost. Ensure Backend is running.</td></tr>`;
+                    return;
+                }
+
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">No query logs found in the database today.</td></tr>`;
+                    return;
+                }
+
+                tableBody.innerHTML = ''; 
+                data.forEach(item => {
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 500;"><i class="fas fa-location-dot" style="color: var(--text-muted); font-size: 0.8rem; margin-right: 8px;"></i> ${item.city}</td>
+                            <td><span class="temp-badge">${item.temperature}°C</span></td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">${new Date(item.searched_at).toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                document.getElementById('history-table-body').innerHTML = `<tr><td colspan="3" style="color: var(--accent-danger); text-align:center;"><i class="fas fa-plug-circle-xmark"></i> Server Unreachable. Check CORS & Uvicorn.</td></tr>`;
+            }
+        }
+
+        // 2. Initialize Sleek Chart
+        document.addEventListener('DOMContentLoaded', function() {
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
+
+            const ctx = document.getElementById('throughputChart').getContext('2d');
+            
+            // Create Gradient for Chart
+            let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(168, 85, 247, 0.8)');   
+            gradient.addColorStop(1, 'rgba(56, 189, 248, 0.2)');
+
+            new Chart(ctx, {
+                type: 'line', // Line chart looks more premium than bar
+                data: {
+                    labels: ['08:00', '09:00', '10:00', '11:00', '12:00', 'Now'],
+                    datasets: [{
+                        label: 'Throughput (MB/s)',
+                        data: [45, 62, 85, 120, 95, 110],
+                        borderColor: '#a855f7',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4, // Smooth curves
+                        pointBackgroundColor: '#38bdf8',
+                        pointBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, border: { dash: [4, 4] } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        });
+
+        // 3. Secure Admin Logout
+        function logoutAdmin() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('userRole');
+            window.location.replace('admin-login.html');
+        }
+    </script>
+</body>
+</html>

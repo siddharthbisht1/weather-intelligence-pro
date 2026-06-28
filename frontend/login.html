@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Intelligence Pro - Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #0B1120; 
+            color: white; 
+            margin: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+        }
+
+        #particles-js { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: -1; 
+        }
+
+        .glass { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 24px; 
+        }
+
+        .login-card { 
+            padding: 50px; 
+            width: 100%; 
+            max-width: 450px; 
+            z-index: 10; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+        }
+
+        .logo { text-align: center; margin-bottom: 35px; }
+        .logo h1 { font-size: 24px; font-weight: 700; margin: 10px 0 5px 0; color: white; }
+        .logo p { color: #94A3B8; font-size: 14px; margin: 0; }
+
+        .input-box { position: relative; margin-bottom: 20px; }
+        .input-box i { 
+            position: absolute; 
+            left: 15px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: #94A3B8; 
+        }
+        .input-box .toggle-password { 
+            left: auto; 
+            right: 15px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
+        .input-box .toggle-password:hover { color: #38BDF8; }
+        
+        .input-box input { 
+            width: 100%; 
+            padding: 15px 15px 15px 45px; 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; 
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            font-size: 14px; 
+            outline: none; 
+            transition: 0.3s; 
+            box-sizing: border-box; 
+        }
+        .input-box input:focus { 
+            border-color: #38BDF8; 
+            background: rgba(56, 189, 248, 0.05); 
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        .remember { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 13px; 
+            color: #94A3B8; 
+            margin-bottom: 25px; 
+        }
+        .remember label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .remember a { color: #38BDF8; text-decoration: none; font-weight: 500; transition: 0.3s; }
+        .remember a:hover { color: white; }
+
+        .login-btn { 
+            width: 100%; 
+            padding: 15px; 
+            background: linear-gradient(135deg, #38BDF8, #2563EB); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-family: 'Poppins', sans-serif; 
+            margin-bottom: 25px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .login-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 20px rgba(56,189,248,0.3); 
+        }
+
+        .social-login { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 10px; 
+            margin-bottom: 25px; 
+        }
+        .social-login button { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: white; 
+            padding: 12px 10px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-size: 13px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            font-family: 'Poppins', sans-serif;
+        }
+        .social-login button:hover { 
+            background: rgba(255,255,255,0.1); 
+            border-color: rgba(255,255,255,0.2); 
+            transform: translateY(-2px); 
+        }
+
+        .login-footer { 
+            text-align: center; 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+            padding-top: 20px; 
+        }
+        .login-footer p { color: #64748B; font-size: 12px; margin: 5px 0; }
+        
+        /* Subtle Admin Link */
+        .admin-link {
+            color: #475569;
+            text-decoration: none;
+            font-size: 11px;
+            transition: color 0.3s ease;
+        }
+        .admin-link:hover { color: #94A3B8; }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+
+    <div class="container" style="width: 100%; display: flex; justify-content: center; padding: 20px;">
+        <div class="login-card glass">
+            
+            <div class="logo">
+                <i class="fa-solid fa-cloud-sun" style="font-size: 50px; color: #38BDF8; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(56,189,248,0.5));"></i>
+                <h1>Weather Intelligence Pro</h1>
+                <p>Environmental Intelligence Platform</p>
+            </div>
+
+            <form id="userLoginForm">
+                <div class="input-box">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    <input type="text" id="username" placeholder="UserName" required>
+                </div>
+                
+                <div class="input-box">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <i id="togglePassword" class="fas fa-eye toggle-password"></i>
+                </div>
+
+                <div class="remember">
+                    <label><input type="checkbox"> Remember Me</label>
+                    <a href="register.html">Create Account</a>
+                </div>
+
+                <button type="submit" id="submitBtn" class="login-btn">
+                    Secure Login <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <div class="social-login">
+                    <button type="button" class="google-btn"><i class="fab fa-google"></i> Google</button>
+                    <button type="button" class="github-btn"><i class="fab fa-github"></i> GitHub</button>
+                    <button type="button" class="microsoft-btn"><i class="fab fa-microsoft"></i> Microsoft</button>
+                </div>
+            </form>
+
+            <div class="login-footer">
+                <p>© 2026 Weather Intelligence Pro</p>
+                <p>AI • Weather • AQI • Water Intelligence</p>
+                <br>
+                <a href="admin-login.html" class="admin-link"><i class="fas fa-shield-halved"></i> Admin Portal</a>
+            </div>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // Particles.js Initialization
+            if (typeof particlesJS !== "undefined") {
+                particlesJS("particles-js", {
+                    particles: {
+                        number: { value: 50, density: { enable: true, value_area: 800 } },
+                        color: { value: "#38BDF8" },
+                        shape: { type: "circle" },
+                        opacity: { value: 0.3, random: true },
+                        size: { value: 3, random: true },
+                        line_linked: { enable: true, distance: 150, color: "#38BDF8", opacity: 0.2, width: 1 },
+                        move: { enable: true, speed: 1.5, direction: "none", random: true, out_mode: "out" }
+                    },
+                    interactivity: {
+                        detect_on: "canvas",
+                        events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true },
+                        modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 3 } }
+                    },
+                    retina_detect: true
+                });
+            }
+
+            // Password Visibility Toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+
+            if (togglePassword && password) {
+                togglePassword.addEventListener('click', function () {
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+
+            // Backend Connectivity Logic
+            document.getElementById('userLoginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // 1. Correct Inputs
+                const username = document.getElementById('username').value;
+                const pass = document.getElementById('password').value;
+                const btn = document.getElementById('submitBtn');
+                
+                btn.innerHTML = 'Authenticating... <i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    // 2. Correct URL: /auth/login
+                    const response = await fetch('http://127.0.0.1:8000/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            username: username, 
+                            password: pass 
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if(response.ok) {
+                        // 3. Save Token correctly
+                        localStorage.setItem('token', data.access_token);
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        // 4. Show real error
+                        alert("Login Failed: " + (data.detail || "Invalid Credentials"));
+                        btn.innerHTML = 'Secure Login <i class="fas fa-arrow-right"></i>';
+                    }
+                } catch(err) {
+                    console.error(err);
+                    alert("System Offline. Check Backend!");
+                    btn.innerHTML = 'Secure Login <i class="fas fa-arrow-right"></i>';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

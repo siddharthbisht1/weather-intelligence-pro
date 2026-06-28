@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Exports - Admin</title>
+    <script>
+    if (localStorage.getItem('userRole') !== 'admin') {
+        document.documentElement.style.display = 'none';
+        window.location.replace('admin-login.html');
+    }
+</script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS Reset & Admin Variables */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(168, 85, 247, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-green: #4ade80;
+            --accent-danger: #ef4444;
+            --accent-orange: #f97316;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; }
+
+        .glass {
+            background: var(--glass-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+        }
+
+        /* Sidebar Layout */
+        .sidebar {
+            width: 280px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+            position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
+            border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 10;
+        }
+        .sidebar h1 { font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 2rem; text-align: center; }
+        .sidebar a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem;
+            border-radius: 8px; transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(168, 85, 247, 0.15); color: #fff; border-left: 3px solid var(--accent-purple);
+        }
+
+        /* Main Content */
+        .main { flex: 1; margin-left: 280px; padding: 2rem 3rem; display: flex; flex-direction: column; gap: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 2rem; display: flex; align-items: center; gap: 10px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(168, 85, 247, 0.1); }
+        .stats-card i { font-size: 2rem; color: var(--accent-purple); margin-bottom: 1rem; }
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+
+        /* Layout Grids */
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .full-width { grid-column: span 2; }
+        @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
+        
+        .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 8px;}
+        
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 500; }
+        
+        .format-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #0f172a; }
+        .pdf-badge { background: #ef4444; } /* Red for PDF */
+        .csv-badge { background: #4ade80; } /* Green for CSV */
+        .json-badge { background: #facc15; } /* Yellow for JSON */
+
+        canvas { max-height: 280px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar glass" id="adminSidebar">
+        <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="fas fa-meteor"></i> MASTER AI
+        </div>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Core Operations</div>
+        <a href="master-dashboard.html"><i class="fas fa-home"></i> Global Dashboard</a>
+        <a href="deployment-center.html"><i class="fas fa-rocket"></i> Deployment Center</a>
+        <a href="user-tracking-center.html"><i class="fas fa-users-viewfinder"></i> User Tracking</a>
+        
+        <a href="reports-command.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+            <i class="fas fa-file-invoice"></i> Reports Command
+        </a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
+        <a href="data-governance-center.html"><i class="fas fa-database"></i> Data Governance</a>
+        <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
+        <a href="satellite-command.html"><i class="fas fa-satellite"></i> Satellite Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Security & Cloud</div>
+        <a href="cybersecurity-command-center.html"><i class="fas fa-shield-halved"></i> Cybersecurity</a>
+        <a href="compliance-center.html"><i class="fas fa-scale-balanced"></i> Compliance Center</a>
+        <a href="cloud-command-center.html"><i class="fas fa-cloud"></i> Cloud Command</a>
+        
+        <div style="flex-grow: 1;"></div>
+        <a href="#" onclick="logoutAdmin()" style="color: var(--accent-danger); border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); margin-top: 10px;">
+            <i class="fas fa-power-off"></i> Secure Logout
+        </a>
+    </div>
+
+    <main class="main">
+        <div class="header">
+            <h1><i class="fas fa-file-invoice"></i> Data Reports & Export Engine</h1>
+            <button class="glass" style="padding: 10px 20px; color: var(--accent-green); border-radius: 8px; cursor:pointer; font-weight: 600;">
+                <i class="fas fa-file-arrow-down"></i> Generate Master Dump
+            </button>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stats-card glass">
+                <i class="fas fa-city"></i>
+                <h3>Cities Compared Today</h3>
+                <h1 style="color: var(--accent-blue);">342</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-file-pdf"></i>
+                <h3>Total Reports Gen.</h3>
+                <h1 style="color: var(--accent-purple);">8,450</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-server"></i>
+                <h3>Total Data Exported</h3>
+                <h1 style="color: var(--accent-green);">45.2 GB</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-triangle-exclamation"></i>
+                <h3>Failed Exports</h3>
+                <h1 style="color: var(--accent-danger);">12</h1>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <div class="section-card glass">
+                <h2><i class="fas fa-code-compare"></i> Top City Comparisons (Live)</h2>
+                <canvas id="comparisonChart"></canvas>
+            </div>
+
+            <div class="section-card glass">
+                <h2><i class="fas fa-chart-pie"></i> Export Format Distribution</h2>
+                <canvas id="exportFormatChart"></canvas>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            
+            <div class="section-card glass full-width">
+                <h2><i class="fas fa-cloud-sun-rain"></i> Automated Weather Report Generation Engine</h2>
+                <table>
+                    <tr>
+                        <th>Report ID</th>
+                        <th>Region Coverage</th>
+                        <th>Report Type</th>
+                        <th>Generation Trigger</th>
+                        <th>Status</th>
+                        <th>Size</th>
+                    </tr>
+                    <tr>
+                        <td>#RPT-8091</td>
+                        <td>Delhi NCR, India</td>
+                        <td>Severe AQI Alert</td>
+                        <td>AI Anomaly Detection</td>
+                        <td style="color: var(--accent-green);">Completed</td>
+                        <td>1.2 MB</td>
+                    </tr>
+                    <tr>
+                        <td>#RPT-8090</td>
+                        <td>Mumbai, India</td>
+                        <td>Weekly Climate Summary</td>
+                        <td>Scheduled Cron Job</td>
+                        <td style="color: var(--accent-green);">Completed</td>
+                        <td>4.5 MB</td>
+                    </tr>
+                    <tr>
+                        <td>#RPT-8089</td>
+                        <td>New York, USA</td>
+                        <td>Flash Flood Risk</td>
+                        <td>User Request (Premium)</td>
+                        <td style="color: var(--accent-orange);">Generating...</td>
+                        <td>--</td>
+                    </tr>
+                    <tr>
+                        <td>#RPT-8088</td>
+                        <td>Global Overview</td>
+                        <td>CO2 Emission Heatmap</td>
+                        <td>Admin Override</td>
+                        <td style="color: var(--accent-danger);">Failed (API Timeout)</td>
+                        <td>0 KB</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="section-card glass full-width">
+                <h2><i class="fas fa-file-export"></i> Live User Export Audit Logs</h2>
+                <table>
+                    <tr>
+                        <th>User Email</th>
+                        <th>Exported Data</th>
+                        <th>Format</th>
+                        <th>Timestamp</th>
+                        <th>IP Address</th>
+                    </tr>
+                    <tr>
+                        <td>siddharth@wip.com</td>
+                        <td>Dehradun vs Delhi Comparison Data</td>
+                        <td><span class="format-badge pdf-badge">PDF</span></td>
+                        <td>2 mins ago</td>
+                        <td>192.168.1.45</td>
+                    </tr>
+                    <tr>
+                        <td>research_team@ngo.org</td>
+                        <td>Historical Rainfall (2020-2025)</td>
+                        <td><span class="format-badge csv-badge">CSV</span></td>
+                        <td>15 mins ago</td>
+                        <td>103.44.55.12</td>
+                    </tr>
+                    <tr>
+                        <td>data_analyst@corp.com</td>
+                        <td>Live AQI Sensor Feeds</td>
+                        <td><span class="format-badge json-badge">JSON</span></td>
+                        <td>42 mins ago</td>
+                        <td>18.22.45.99</td>
+                    </tr>
+                    <tr>
+                        <td>guest_4992@gmail.com</td>
+                        <td>Basic Weather Forecast (Mumbai)</td>
+                        <td><span class="format-badge pdf-badge">PDF</span></td>
+                        <td>1 hour ago</td>
+                        <td>122.10.4.55</td>
+                    </tr>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+
+   <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            if (localStorage.getItem('userRole') !== 'admin') {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
+                setTimeout(() => window.location.href = 'admin-login.html', 1500);
+                return;
+            }
+
+            // Global Chart Defaults
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            // 1. City Comparison Chart (Horizontal Bar)
+            const compCanvas = document.getElementById('comparisonChart');
+            if (compCanvas) {
+                const compCtx = compCanvas.getContext('2d');
+                new Chart(compCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Delhi vs Mumbai', 'NY vs London', 'Bangalore vs Pune', 'Tokyo vs Seoul', 'Dubai vs Doha'],
+                        datasets: [{
+                            label: 'Comparison Queries Today',
+                            data: [145, 98, 85, 62, 41],
+                            backgroundColor: 'rgba(56, 189, 248, 0.8)',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Makes the bar chart horizontal
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // 2. Export Format Distribution (Doughnut)
+            const formatCanvas = document.getElementById('exportFormatChart');
+            if (formatCanvas) {
+                const formatCtx = formatCanvas.getContext('2d');
+                new Chart(formatCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['PDF Reports', 'CSV Data Dumps', 'JSON API Exports'],
+                        datasets: [{
+                            data: [65, 25, 10],
+                            backgroundColor: ['#ef4444', '#4ade80', '#facc15'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'right' } },
+                        cutout: '70%'
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

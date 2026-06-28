@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Weather Intelligence Pro</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <style>
+        /* =========================================
+           BASE & UTILITIES
+           ========================================= */
+        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; padding: 0; }
+        
+        /* =========================================
+           PREMIUM UNIFIED SIDEBAR STYLING
+           ========================================= */
+        aside#mySidebar {
+            position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
+            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
+            padding-bottom: 50px; background: #0B1120 !important; border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
+        aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
+
+        aside#mySidebar h1 { 
+            text-align: center; color: #38BDF8 !important; font-weight: 700; 
+            padding: 30px 0 20px 0; font-size: 28px; letter-spacing: 1px; margin: 0;
+        }
+
+        aside#mySidebar a, aside#mySidebar .auth-action-btn {
+            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
+            font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
+            background: transparent; border: none; cursor: pointer; text-align: left; width: calc(100% - 30px);
+        }
+        
+        aside#mySidebar a i, aside#mySidebar .auth-action-btn i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
+        
+        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
+        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+
+        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
+        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+
+        /* Sidebar Dropdown Styling */
+        .sidebar-group-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
+            width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-group-btn:hover { color: #38BDF8; }
+        
+        .sidebar-dropdown-container { 
+            display: none; flex-direction: column; padding-left: 10px; 
+            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
+        }
+        .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
+        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
+        .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
+
+        /* Main Content Layout */
+        @media (min-width: 1025px) {
+            aside#mySidebar { transform: translateX(0); }
+            #myMainContent { margin-left: 300px; width: calc(100% - 300px); padding: 20px 40px; }
+        }
+        @media (max-width: 1024px) {
+            aside#mySidebar { transform: translateX(-110%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+            #myMainContent { margin-left: 0; width: 100%; padding: 15px; }
+        }
+
+        /* =========================================
+           GLASS CARDS & HOVER EFFECTS
+           ========================================= */
+        .glass {
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px;
+        }
+        .hover-card { transition: all 0.3s ease-in-out; cursor: pointer; }
+        .hover-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* =========================================
+           PROFILE SPECIFIC STYLING
+           ========================================= */
+        /* Profile Hero */
+        .profile-hero { display: flex; align-items: center; gap: 40px; padding: 40px; margin-bottom: 30px; flex-wrap: wrap; }
+        .avatar-container { position: relative; width: 150px; height: 150px; border-radius: 50%; overflow: hidden; border: 4px solid #38BDF8; box-shadow: 0 0 20px rgba(56,189,248,0.3); flex-shrink: 0; cursor: pointer; }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .avatar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; color: white; font-size: 14px; }
+        .avatar-container:hover .avatar-overlay { opacity: 1; }
+        .avatar-container:hover .avatar-img { transform: scale(1.1); }
+        .profile-details h1 { font-size: 32px; font-weight: 700; margin: 0 0 10px 0; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(250, 204, 21, 0.15); color: #FACC15; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600; border: 1px solid rgba(250, 204, 21, 0.3); margin-bottom: 20px; }
+        .hero-actions { display: flex; gap: 15px; }
+        .btn-primary { background: #38BDF8; color: #0B1120; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-primary:hover { background: #0284C7; box-shadow: 0 0 15px rgba(56,189,248,0.5); transform: translateY(-2px); }
+        .btn-secondary { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: white; transform: translateY(-2px); }
+
+        /* Mini Cards */
+        .dashboard-grid { display: grid; gap: 20px; }
+        .mini-card { padding: 20px; display: flex; align-items: center; gap: 20px; transition: all 0.3s ease; cursor: default; }
+        .mini-card i { font-size: 28px; width: 40px; text-align: center; }
+        .mini-card p { margin: 0; color: #94A3B8; font-size: 13px; }
+        .mini-card h3 { margin: 5px 0 0 0; font-size: 16px; font-weight: 600; }
+        .mini-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
+        /* Content Grid */
+        .profile-content-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+        @media (max-width: 1024px) { .profile-content-grid { grid-template-columns: 1fr; } }
+        .section-card { padding: 30px; }
+        .section-card h2 { font-size: 18px; font-weight: 600; margin: 0 0 25px 0; display: flex; align-items: center; gap: 10px; color: white; }
+
+        /* Stats Row */
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; }
+        .stat-box { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; transition: all 0.3s ease; }
+        .stat-box:hover { background: rgba(255,255,255,0.05); transform: translateY(-3px); }
+        .stat-box h1 { font-size: 36px; margin: 0; font-weight: 700; }
+        .stat-box p { color: #94A3B8; margin: 5px 0 0 0; font-size: 14px; }
+
+        /* Timeline */
+        .timeline { border-left: 2px solid rgba(255,255,255,0.1); margin-left: 20px; padding-left: 25px; position: relative; }
+        .timeline-item { position: relative; margin-bottom: 25px; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .t-icon { position: absolute; left: -42px; top: 0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; background: #0B1120; border: 2px solid; }
+        .t-icon.blue { color: #38BDF8; border-color: #38BDF8; }
+        .t-icon.green { color: #4ADE80; border-color: #4ADE80; }
+        .t-icon.purple { color: #A855F7; border-color: #A855F7; }
+        .t-icon.red { color: #F87171; border-color: #F87171; }
+        .t-content h4 { margin: 0; font-size: 15px; font-weight: 500; color: #E2E8F0; }
+        .t-content span { font-size: 12px; color: #64748B; }
+
+        /* Settings Rows */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .setting-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .glass-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 15px; border-radius: 8px; font-size: 13px; cursor: pointer; transition: 0.3s; }
+        .glass-btn:hover { background: rgba(255,255,255,0.1); border-color: white; }
+
+        /* Toggle Switches */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: #94A3B8; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: rgba(56,189,248,0.2); border-color: #38BDF8; }
+        input:checked + .slider:before { transform: translateX(20px); background-color: #38BDF8; box-shadow: 0 0 10px rgba(56,189,248,0.8); }
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND PARTICLES -->
+    <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+    <!-- UNIVERSAL HIERARCHICAL SIDEBAR -->
+    <aside id="mySidebar">
+        <!-- Sidebar content remains same as your original code -->
+        <h1>WIP</h1>
+        <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
+        <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
+        <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
+        <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
+        <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
+        <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
+        <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <a href="profile.html" class="active"><i class="fas fa-user-circle"></i> Profile</a>
+        <a href="ai-assistant.html"><i class="fas fa-headset"></i> AI Assistant</a>
+        <div id="user-profile" style="display: none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <button id="logout-button" class="auth-action-btn" style="color: #F87171;">
+                <i class="fas fa-sign-out-alt" style="color: #F87171 !important;"></i> Log Out
+            </button>
+        </div>
+
+        <div id="auth-buttons" style="display: none;">
+            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Log In</a>
+            <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
+        </div>
+        
+        <!-- ADVANCED FEATURES DROPDOWN -->
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+           <a href="emergency-alerts.html"><i class="fa-solid fa-lightbulb"></i> Alerts Center</a>
+            <a href="eco-insights.html"><i class="fas fa-leaf"></i> Eco Insights</a>
+            <a href="city-comparison.html"><i class="fa-solid fa-city"></i> City Comparison</a>
+            <a href="climate-trends.html"><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
+        </div>
+
+        <!-- OPERATIONS CENTER DROPDOWN -->
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="workflow-automation-center.html"><i class="fa-solid fa-bolt"></i> Workflow Automation</a>
+            <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
+        </div>
+
+         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="export-center.html"><i class="fa-solid fa-file-export"></i> Export Center</a>
+            <a href="help-center.html"><i class="fa-solid fa-circle-info"></i> Help Center</a>
+            <a href="about.html"><i class="fa-solid fa-address-card"></i> About</a>
+            <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+        </div>
+
+        <!-- LEGAL DROPDOWN -->
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
+            <a href="terms-and-conditions.html"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="main-content" id="myMainContent">
+
+        <!-- UNIFIED TOP NAVIGATION -->
+        <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <!-- Nav content remains same -->
+            <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
+                <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <i class="fas fa-search" style="color: #94A3B8;"></i>
+                <input id="search-input" type="text" placeholder="Search profile settings..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="top-actions" style="display: flex; gap: 15px;">
+                <button class="action-btn glass theme-toggle" id="themeToggle" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-moon"></i></button>
+                <button class="action-btn glass" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
+                <div class="profile-pic glass" style="border-radius: 50%; overflow: hidden; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; padding: 0; border: 2px solid #38BDF8;">
+                    <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=150&h=150&fit=crop" alt="User Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </nav>
+
+        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
+
+        <!-- PAGE HEADER -->
+        <header style="margin-bottom: 30px;">
+            <h1 style="font-size: 32px; font-weight: 700; color: white; margin: 0;">
+                <i class="fas fa-id-badge" style="color: #38BDF8; margin-right: 10px;"></i> My Profile
+            </h1>
+            <p style="color: #94A3B8; margin-top: 5px;">Manage your personal information and view your platform activity.</p>
+        </header>
+
+        <!-- PROFILE HERO (Added IDs) -->
+        <section class="glass profile-hero hover-card">
+            <div class="avatar-container" onclick="document.getElementById('profileUpload').click()">
+                <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=250&h=250&fit=crop" alt="Profile" class="avatar-img" id="profileImage">
+                <div class="avatar-overlay">
+                    <i class="fas fa-camera" style="font-size: 24px; margin-bottom: 5px;"></i>
+                    <span>Change Photo</span>
+                </div>
+                <input type="file" id="profileUpload" accept="image/*" style="display: none;">
+            </div>
+            <div class="profile-details">
+                <h1 id="profileNameDisplay">Siddharth Bisht</h1> <!-- ID Added -->
+                <div class="badge" id="profileBadge"><i class="fas fa-crown"></i> Premium User</div> <!-- ID Added -->
+                <div class="hero-actions">
+                    <button class="btn-primary" id="primaryActionBtn"><i class="fas fa-pen"></i> Edit Profile</button> <!-- ID Added -->
+                    <button class="btn-secondary" id="secondaryActionBtn"><i class="fas fa-share-nodes"></i> Share</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- INFO STATS GRID (Added IDs) -->
+        <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 30px;">
+            <div class="glass mini-card">
+                <i class="fas fa-envelope" style="color: #38BDF8;"></i>
+                <div>
+                    <p>Email Address</p>
+                    <h3 id="profileEmailDisplay">siddharth@wip.com</h3> <!-- ID Added -->
+                </div>
+            </div>
+            <div class="glass mini-card">
+                <i class="fas fa-phone" style="color: #4ADE80;"></i>
+                <div>
+                    <p>Phone Number</p>
+                    <h3 id="profilePhoneDisplay">+91 98765 43210</h3> <!-- ID Added -->
+                </div>
+            </div>
+            <div class="glass mini-card">
+                <i class="fas fa-location-dot" style="color: #F87171;"></i>
+                <div>
+                    <p>Location</p>
+                    <h3 id="profileLocationDisplay">Dehradun, India</h3> <!-- ID Added -->
+                </div>
+            </div>
+            <div class="glass mini-card">
+                <i class="fas fa-calendar-days" style="color: #A855F7;"></i>
+                <div>
+                    <p>Member Since</p>
+                    <h3 id="profileMemberSinceDisplay">Jan 2026</h3> <!-- ID Added -->
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN LAYOUT GRID -->
+        <div class="profile-content-grid">
+            
+            <!-- LEFT COLUMN -->
+            <div class="left-col" id="activitySection"> <!-- ID Added -->
+                
+                <!-- Activity Stats -->
+                <div class="glass section-card hover-card" style="margin-bottom: 30px;">
+                    <h2><i class="fas fa-chart-simple" style="color: #38BDF8;"></i> Activity Overview</h2>
+                    <div class="stats-row">
+                        <div class="stat-box">
+                            <h1 style="color: #38BDF8;">156</h1>
+                            <p>Searches Performed</p>
+                        </div>
+                        <div class="stat-box">
+                            <h1 style="color: #4ADE80;">23</h1>
+                            <p>Reports Exported</p>
+                        </div>
+                        <div class="stat-box">
+                            <h1 style="color: #FACC15;">12</h1>
+                            <p>Saved Locations</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Timeline -->
+                <div class="glass section-card hover-card">
+                    <h2><i class="fas fa-clock-rotate-left" style="color: #FACC15;"></i> Recent Activity</h2>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="t-icon blue"><i class="fas fa-search"></i></div>
+                            <div class="t-content">
+                                <h4>Searched Dehradun Weather Forecast</h4>
+                                <span>2 hours ago</span>
+                            </div>
+                        </div>
+                        <!-- ... Timeline items ... -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="right-col">
+                
+                <!-- Account Security (Added ID for hiding later) -->
+                <div class="glass section-card hover-card" id="securitySection" style="margin-bottom: 30px;">
+                    <h2><i class="fas fa-shield-halved" style="color: #F87171;"></i> Security Settings</h2>
+                    <div class="setting-row">
+                        <div>
+                            <span style="display: block; color: white; font-weight: 500;">Username</span>
+                            <span id="profileUsernameDisplay" style="display: block; font-size: 13px; color: #94A3B8; margin-top: 2px;">Siddharth_WIP</span>
+                        </div>
+                        <button class="glass-btn">Edit</button>
+                    </div>
+                    <div class="setting-row">
+                        <div>
+                            <span style="display: block; color: white; font-weight: 500;">Password</span>
+                            <span style="display: block; font-size: 13px; color: #94A3B8; margin-top: 2px;">Last changed 30 days ago</span>
+                        </div>
+                        <button class="glass-btn">Update</button>
+                    </div>
+                    <div class="setting-row">
+                        <div>
+                            <span style="display: block; color: white; font-weight: 500;">Two-Factor Authentication</span>
+                            <span style="display: block; font-size: 13px; color: #94A3B8; margin-top: 2px;">Currently Disabled</span>
+                        </div>
+                        <button class="glass-btn" style="color: #4ADE80; border-color: rgba(74,222,128,0.5);">Enable</button>
+                    </div>
+                </div>
+
+                <!-- Quick Preferences -->
+                <div class="glass section-card hover-card">
+                    <h2><i class="fas fa-sliders" style="color: #A855F7;"></i> Quick Preferences</h2>
+                    <div class="setting-row">
+                        <span style="color: white; font-weight: 500;">Dark Mode Experience</span>
+                        <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                    </div>
+                    <!-- ... Preferences items ... -->
+                </div>
+
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="glass footer" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px; margin-top: 40px;">
+            <div>
+                <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
+                <p style="color: #94A3B8; margin: 0; font-size: 14px;">Premium Profile Dashboard</p>
+            </div>
+            <div style="color: #94A3B8; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-user-shield"></i> Secured by WIP Auth
+            </div>
+        </footer>
+
+    </main>
+    <script src="js/api.js"></script>
+    <!-- INLINE SCRIPTS -->
+    <script>
+        // GATEKEEPER LOGIC & UI INITIALIZATION
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 1. Theme & Particles
+            const themeBtn = document.getElementById("themeToggle");
+            if (themeBtn) themeBtn.addEventListener("click", () => document.body.classList.toggle("light-mode"));
+            
+            if (typeof particlesJS !== "undefined") {
+                particlesJS("particles-js", { 
+                    particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
+ 
+                });
+            }
+
+            // 2. Auth Elements
+            const token = localStorage.getItem('token');
+            const nameEl = document.getElementById('profileNameDisplay');
+            const emailEl = document.getElementById('profileEmailDisplay');
+            const securitySection = document.getElementById('securitySection');
+            const activitySection = document.getElementById('activitySection');
+
+            // 3. Auth Check & Data Fetch
+            if (!token) {
+                if(nameEl) nameEl.textContent = "Guest Explorer";
+                if(securitySection) securitySection.style.display = 'none';
+                if(activitySection) activitySection.style.display = 'none';
+            } else {
+                fetch('http://127.0.0.1:8000/auth/me', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(res => {
+                    if(!res.ok) throw new Error("Auth Failed");
+                    return res.json();
+                })
+                .then(data => {
+                    if(nameEl) nameEl.textContent = data.username;
+                    if(emailEl) emailEl.textContent = data.email;
+                    if(securitySection) securitySection.style.display = 'block';
+                    if(activitySection) activitySection.style.display = 'block';
+                })
+                .catch(err => {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                });
+            }
+
+            // 4. Logout Handler
+            document.getElementById('logout-button')?.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            });
+        });
+
+        // ==========================================
+        // UI UTILITY FUNCTIONS (Global Scope)
+        // ==========================================
+
+        function brahmastraToggle() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("myMainContent");
+            if (window.innerWidth > 1024) {
+                if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
+                    sidebar.style.transform = "translateX(-110%)"; main.style.marginLeft = "0px"; main.style.width = "100%";
+                } else {
+                    sidebar.style.transform = "translateX(0px)"; main.style.marginLeft = "300px"; main.style.width = "calc(100% - 300px)";
+                }
+            } else {
+                sidebar.style.transform = (sidebar.style.transform === "translateX(-110%)" || sidebar.style.transform === "") ? "translateX(0px)" : "translateX(-110%)";
+            }
+        }
+
+        function toggleSidebarMenu(btn) {
+            btn.classList.toggle("active");
+            var dropdownContent = btn.nextElementSibling;
+            dropdownContent.style.display = (dropdownContent.style.display === "flex") ? "none" : "flex";
+        }
+
+        document.getElementById('profileUpload')?.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => document.getElementById('profileImage').src = e.target.result;
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Weather Intelligence Pro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <style>
+        /* =========================================
+           BASE & UTILITIES
+           ========================================= */
+        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; padding: 0; }
+        
+        /* =========================================
+           PREMIUM UNIFIED SIDEBAR STYLING
+           ========================================= */
+        aside#mySidebar {
+            position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
+            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
+            padding-bottom: 50px; background: #0B1120 !important; border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
+        aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
+
+        aside#mySidebar h1 { 
+            text-align: center; color: #38BDF8 !important; font-weight: 700; 
+            padding: 30px 0 20px 0; font-size: 28px; letter-spacing: 1px; margin: 0;
+        }
+
+        aside#mySidebar a {
+            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
+            font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
+        }
+        
+        aside#mySidebar a i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
+        
+        aside#mySidebar a:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
+        aside#mySidebar a:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+
+        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
+        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+
+        /* Sidebar Dropdown Styling */
+        .sidebar-group-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
+            width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-group-btn:hover { color: #38BDF8; }
+        
+        .sidebar-dropdown-container { 
+            display: none; flex-direction: column; padding-left: 10px; 
+            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
+        }
+        .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
+        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
+        .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
+
+        /* Main Content Layout */
+        @media (min-width: 1025px) {
+            aside#mySidebar { transform: translateX(0); }
+            #myMainContent { margin-left: 300px; width: calc(100% - 300px); padding: 20px 40px; }
+        }
+        @media (max-width: 1024px) {
+            aside#mySidebar { transform: translateX(-110%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+            #myMainContent { margin-left: 0; width: 100%; padding: 15px; }
+        }
+
+        /* =========================================
+           GLASS CARDS & HOVER EFFECTS
+           ========================================= */
+        .glass {
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px;
+        }
+        .hover-card { transition: all 0.3s ease-in-out; cursor: pointer; }
+        .hover-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Settings Styles */
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
+        .settings-card { padding: 30px; }
+        .settings-card h2 { font-size: 18px; font-weight: 600; color: white; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .setting-row span { color: #E2E8F0; font-size: 14px; }
+        .glass-select { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 15px; border-radius: 10px; outline: none; font-size: 13px;}
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 34px; border: 1px solid rgba(255,255,255,0.2); }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #38BDF8; border-color: #38BDF8; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Danger Zone */
+        .danger-zone { border: 1px solid rgba(248, 113, 113, 0.3) !important; }
+        .danger-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .danger-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(248, 113, 113, 0.05); border-radius: 15px; }
+        .btn-warning { background: #FACC15; color: #0B1120; padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;}
+        .btn-danger { background: #F87171; color: white; padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;}
+
+        .colors-grid { display: flex; gap: 10px; }
+        .color-circle { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .color-circle.active { border-color: white; transform: scale(1.1); }
+        .glass-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 6px 15px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+    <aside id="mySidebar">
+        <h1>WIP</h1>
+        
+        <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
+        <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
+        <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
+        <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
+        <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
+        <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
+        <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html" class="active"><i class="fas fa-gear"></i> Settings</a>
+        <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a href="ai-assistant.html"><i class="fas fa-headset"></i> AI Assistant</a>
+        <div id="user-profile" style="display: none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <button id="logout-button" class="auth-action-btn" style="color: #F87171;">
+                <i class="fas fa-sign-out-alt" style="color: #F87171 !important;"></i> Log Out
+            </button>
+        </div>
+
+        <div id="auth-buttons" style="display: none;">
+            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Log In</a>
+            <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
+        </div>
+        
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="emergency-alerts.html"><i class="fa-solid fa-lightbulb"></i> Alerts Center</a>
+            <a href="eco-insights.html"><i class="fas fa-leaf"></i> Eco Insights</a>
+            <a href="city-comparison.html"><i class="fa-solid fa-city"></i> City Comparison</a>
+            <a href="climate-trends.html"><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
+        </div>
+
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="workflow-automation-center.html"><i class="fa-solid fa-bolt"></i> Workflow Automation</a>
+            <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
+        </div>
+
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="export-center.html"><i class="fa-solid fa-file-export"></i> Export Center</a>
+            <a href="help-center.html"><i class="fa-solid fa-circle-info"></i> Help Center</a>
+            <a href="about.html"><i class="fa-solid fa-address-card"></i> About</a>
+            <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+        </div>
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
+            <a href="terms-and-conditions.html"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="myMainContent">
+        
+        <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; padding: 10px 20px; border-radius: 30px;">
+                <button onclick="brahmastraToggle()" style="background:transparent; border:none; color:white; cursor:pointer; font-size:20px; z-index:100000; padding:5px;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <i class="fas fa-search" style="color: #94A3B8;"></i>
+                <input id="search-input" type="text" placeholder="Search settings..." style="background: transparent; border: none; color: white; outline: none; width: 250px; font-family: 'Poppins';">
+                <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="top-actions" style="display: flex; gap: 15px;">
+                <button class="action-btn glass theme-toggle" id="themeToggle" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-moon"></i></button>
+                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fa-solid fa-bell"></i></button>
+                <div class="profile-pic glass" style="width: 45px; height: 45px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=150&h=150&fit=crop" alt="User Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </nav>
+
+        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
+
+        <header style="margin-bottom: 30px;">
+            <h1 style="font-size: 32px; font-weight: 700; color: white;">
+                <i class="fas fa-gear" style="color: #38BDF8; margin-right: 10px;"></i> Platform Settings
+            </h1>
+            <p style="color: #94A3B8; margin-top: 5px;">Manage your preferences, security, and application data.</p>
+        </header>
+
+        <div class="settings-grid">
+            
+            <section class="glass settings-card hover-card">
+                <h2><i class="fas fa-palette" style="color: #38BDF8;"></i> Appearance</h2>
+                <div class="setting-row">
+                    <span>Dark Mode</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <span>Animations</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row" style="border: none;">
+                    <span>Glass Effects</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+            </section>
+
+            <section class="glass settings-card hover-card">
+                <h2><i class="fas fa-fill-drip" style="color: #4ADE80;"></i> Theme Colors</h2>
+                <p style="color: #94A3B8; font-size: 14px; margin-bottom: 15px;">Select your primary dashboard accent color.</p>
+                <div class="colors-grid">
+                    <div class="color-circle active" style="background: #38BDF8;"></div> 
+                    <div class="color-circle" style="background: #4ADE80;"></div> 
+                    <div class="color-circle" style="background: #A855F7;"></div> 
+                    <div class="color-circle" style="background: #FACC15;"></div> 
+                    <div class="color-circle" style="background: #F87171;"></div> 
+                </div>
+            </section>
+
+            <section class="glass settings-card hover-card">
+                <h2><i class="fas fa-globe" style="color: #38BDF8;"></i> Regional & Units</h2>
+                <div class="setting-row">
+                    <span>Temperature Unit</span>
+                    <select class="glass-select"><option>Celsius °C</option><option>Fahrenheit °F</option></select>
+                </div>
+                <div class="setting-row">
+                    <span>Wind Speed</span>
+                    <select class="glass-select"><option>km/h</option><option>mph</option><option>m/s</option></select>
+                </div>
+                <div class="setting-row" style="border: none;">
+                    <span>App Language</span>
+                    <select class="glass-select"><option>English</option><option>Hindi</option><option>Spanish</option></select>
+                </div>
+            </section>
+
+            <section class="glass settings-card hover-card">
+                <h2><i class="fas fa-bell" style="color: #FACC15;"></i> Notifications</h2>
+                <div class="setting-row">
+                    <span>Severe Weather Alerts</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <span>AQI Warnings</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row" style="border: none;">
+                    <span>AI Prediction Digest</span>
+                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+            </section>
+
+            <section class="glass settings-card hover-card">
+                <h2><i class="fas fa-shield-halved" style="color: #A855F7;"></i> Security & Privacy</h2>
+                <div class="setting-row">
+                    <span>Two-Factor Auth (2FA)</span>
+                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <span>Location Access</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row" style="border: none;">
+                    <span>Share Analytics Data</span>
+                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+            </section>
+
+            <section class="glass settings-card hover-card">
+                <h2><i class="fas fa-download" style="color: #F87171;"></i> Backup & Export</h2>
+                <div class="setting-row">
+                    <span>Export CSV Data</span>
+                    <button class="glass-btn"><i class="fas fa-file-csv"></i> Download</button>
+                </div>
+                <div class="setting-row">
+                    <span>Export PDF Report</span>
+                    <button class="glass-btn"><i class="fas fa-file-pdf"></i> Download</button>
+                </div>
+                <div class="setting-row" style="border: none;">
+                    <span>Cloud Sync</span>
+                    <button class="glass-btn" style="color: #4ADE80;"><i class="fas fa-cloud-arrow-up"></i> Sync Now</button>
+                </div>
+            </section>
+
+            <section class="glass settings-card danger-zone hover-card" style="grid-column: 1 / -1;">
+                <h2><i class="fas fa-triangle-exclamation" style="color: #F87171;"></i> Danger Zone</h2>
+                <div class="danger-grid">
+                    <div class="danger-item">
+                        <div>
+                            <h3 style="color: white; font-size: 16px;">Reset Application Settings</h3>
+                            <p style="color: #94A3B8; font-size: 14px;">Revert all preferences back to default.</p>
+                        </div>
+                        <button class="btn-warning">Reset Settings</button>
+                    </div>
+                    <div class="danger-item">
+                        <div>
+                            <h3 style="color: white; font-size: 16px;">Delete Account</h3>
+                            <p style="color: #94A3B8; font-size: 14px;">Permanently delete account and all saved data.</p>
+                        </div>
+                        <button class="btn-danger">Delete Account</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="glass" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px; margin-top: 40px;">
+            <div>
+                <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
+                <p style="color: #94A3B8; margin: 0; font-size: 14px;">Premium Settings Dashboard</p>
+            </div>
+            <div style="color: #94A3B8; font-weight: 500; font-size: 14px;">© 2026</div>
+        </footer>
+    </main>
+
+    <script src="js/api.js"></script>
+
+    <script>
+        // Sidebar Toggle Logic
+        function brahmastraToggle() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("myMainContent");
+            var isDesktop = window.innerWidth > 1024;
+
+            if (isDesktop) {
+                if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
+                    sidebar.style.transform = "translateX(-110%)"; main.style.marginLeft = "0px"; main.style.width = "100%";
+                } else {
+                    sidebar.style.transform = "translateX(0px)"; main.style.marginLeft = "300px"; main.style.width = "calc(100% - 300px)";
+                }
+            } else {
+                sidebar.style.transform = (sidebar.style.transform === "translateX(-110%)" || sidebar.style.transform === "") ? "translateX(0px)" : "translateX(-110%)";
+            }
+        }
+
+        // Sidebar Dropdown Toggle
+        function toggleSidebarMenu(btn) {
+            btn.classList.toggle("active");
+            var dropdownContent = btn.nextElementSibling;
+            dropdownContent.style.display = (dropdownContent.style.display === "flex") ? "none" : "flex";
+        }
+
+        // Initialize particles
+        if (typeof particlesJS !== "undefined") {
+            particlesJS("particles-js", {
+                particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
+            });
+        }
+    </script>
+</body>
+</html>

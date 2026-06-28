@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Tracking & Audit - Admin</title>
+    <script>
+    if (localStorage.getItem('userRole') !== 'admin') {
+        document.documentElement.style.display = 'none';
+        window.location.replace('admin-login.html');
+    }
+</script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS Reset & Admin Variables (Purple Theme) */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(168, 85, 247, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-green: #4ade80;
+            --accent-danger: #ef4444;
+            --accent-orange: #f97316;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; }
+
+        .glass {
+            background: var(--glass-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+        }
+
+        /* Sidebar Layout */
+        .sidebar {
+            width: 280px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+            position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
+            border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 10;
+        }
+        .sidebar h1 { font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 2rem; text-align: center; }
+        .sidebar a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem;
+            border-radius: 8px; transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(168, 85, 247, 0.15); color: #fff; border-left: 3px solid var(--accent-purple);
+        }
+
+        /* Main Content */
+        .main { flex: 1; margin-left: 280px; padding: 2rem 3rem; display: flex; flex-direction: column; gap: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 2rem; display: flex; align-items: center; gap: 10px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; }
+        .stats-card i { font-size: 2rem; color: var(--accent-purple); margin-bottom: 1rem; }
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+
+        /* Tables & Charts layout */
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } }
+        
+        .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-purple); display: flex; align-items: center; gap: 8px;}
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 500; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .status-success { background: rgba(74, 222, 128, 0.1); color: var(--accent-green); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .status-fail { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        /* Live Activity Feed */
+        .feed-container { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .feed-container::-webkit-scrollbar { width: 4px; }
+        .feed-container::-webkit-scrollbar-thumb { background: var(--glass-border); }
+        .feed-item { display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .feed-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .feed-content h4 { font-size: 0.95rem; margin-bottom: 3px; font-weight: 500; }
+        .feed-content p { font-size: 0.8rem; color: var(--text-muted); }
+        .feed-time { font-size: 0.75rem; color: var(--accent-blue); margin-top: 5px; display: block; }
+
+        canvas { max-height: 250px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <!-- SECURE SIDEBAR -->
+    <div class="sidebar glass" id="adminSidebar">
+        <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="fas fa-meteor"></i> MASTER AI
+        </div>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Core Operations</div>
+        <a href="master-dashboard.html"><i class="fas fa-home"></i> Global Dashboard</a>
+        <a href="deployment-center.html"><i class="fas fa-rocket"></i> Deployment Center</a>
+        
+        <!-- ✅ YAHAN USER TRACKING ACTIVE HAI -->
+        <a href="user-tracking-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+            <i class="fas fa-users-viewfinder"></i> User Tracking
+        </a>
+        
+        <a href="reports-command.html"><i class="fas fa-file-invoice"></i> Reports Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
+        <a href="data-governance-center.html"><i class="fas fa-database"></i> Data Governance</a>
+        <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
+        <a href="satellite-command.html"><i class="fas fa-satellite"></i> Satellite Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Security & Cloud</div>
+        <a href="cybersecurity-command-center.html"><i class="fas fa-shield-halved"></i> Cybersecurity</a>
+        <a href="compliance-center.html"><i class="fas fa-scale-balanced"></i> Compliance Center</a>
+        <a href="cloud-command-center.html"><i class="fas fa-cloud"></i> Cloud Command</a>
+        
+        <!-- Push logout to bottom -->
+        <div style="flex-grow: 1;"></div>
+        <a href="#" onclick="logoutAdmin()" style="color: var(--accent-danger); border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); margin-top: 10px;">
+            <i class="fas fa-power-off"></i> Secure Logout
+        </a>
+    </div>
+
+    <main class="main">
+        <div class="header">
+            <h1><i class="fas fa-users-viewfinder"></i> User Tracking & Search Audit</h1>
+            <button class="glass" style="padding: 10px 20px; color: white; border-radius: 8px; cursor:pointer;"><i class="fas fa-download"></i> Export Logs</button>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stats-card glass">
+                <i class="fas fa-users"></i>
+                <h3>Active Users (Live)</h3>
+                <h1 style="color: var(--accent-blue);">1,248</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-magnifying-glass-chart"></i>
+                <h3>Total Searches Today</h3>
+                <h1>45,892</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-user-lock"></i>
+                <h3>Failed Logins</h3>
+                <h1 style="color: var(--accent-orange);">124</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-file-export"></i>
+                <h3>Reports Downloaded</h3>
+                <h1 style="color: var(--accent-green);">856</h1>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <div class="section-card glass">
+                    <h2><i class="fas fa-chart-line"></i> Top Searched Cities/Keywords</h2>
+                    <canvas id="searchChart"></canvas>
+                </div>
+
+                <div class="section-card glass">
+                    <h2><i class="fas fa-shield-halved"></i> Recent Authentication Logs</h2>
+                    <table>
+                        <tr>
+                            <th>User Email</th>
+                            <th>IP Address</th>
+                            <th>Location</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                        <tr>
+                            <td>siddharth@wip.com</td>
+                            <td>192.168.1.45</td>
+                            <td>Dehradun, IN</td>
+                            <td>10:14 PM</td>
+                            <td><span class="status-badge status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td>guest_884@gmail.com</td>
+                            <td>103.44.55.12</td>
+                            <td>Mumbai, IN</td>
+                            <td>10:12 PM</td>
+                            <td><span class="status-badge status-fail">Wrong Password</span></td>
+                        </tr>
+                        <tr>
+                            <td>researcher_01@mit.edu</td>
+                            <td>18.22.45.99</td>
+                            <td>Boston, US</td>
+                            <td>10:05 PM</td>
+                            <td><span class="status-badge status-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td>admin_suspect@hack.com</td>
+                            <td>45.33.21.11</td>
+                            <td>Unknown (VPN)</td>
+                            <td>09:55 PM</td>
+                            <td><span class="status-badge status-fail">Blocked</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-card glass">
+                <h2><i class="fas fa-satellite-dish"></i> Live Platform Activity</h2>
+                <div class="feed-container">
+                    
+                    <div class="feed-item">
+                        <div class="feed-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;"><i class="fas fa-search"></i></div>
+                        <div class="feed-content">
+                            <h4>Public User 4599</h4>
+                            <p>Searched AQI data for "New Delhi"</p>
+                            <span class="feed-time">Just now</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-icon" style="background: rgba(74, 222, 128, 0.2); color: #4ade80;"><i class="fas fa-download"></i></div>
+                        <div class="feed-content">
+                            <h4>siddharth@wip.com</h4>
+                            <p>Exported Climate Trend PDF Report</p>
+                            <span class="feed-time">2 mins ago</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-icon" style="background: rgba(168, 85, 247, 0.2); color: #a855f7;"><i class="fas fa-brain"></i></div>
+                        <div class="feed-content">
+                            <h4>research_team@ngo.org</h4>
+                            <p>Triggered AI Prediction Model for Rainfall</p>
+                            <span class="feed-time">5 mins ago</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-icon" style="background: rgba(249, 115, 22, 0.2); color: #f97316;"><i class="fas fa-map"></i></div>
+                        <div class="feed-content">
+                            <h4>Guest Explorer</h4>
+                            <p>Viewed Satellite Map Layer (Heatmap)</p>
+                            <span class="feed-time">12 mins ago</span>
+                        </div>
+                    </div>
+
+                    <div class="feed-item">
+                        <div class="feed-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;"><i class="fas fa-triangle-exclamation"></i></div>
+                        <div class="feed-content">
+                            <h4>SYSTEM AUTOMATION</h4>
+                            <p>Triggered Flood Alert for Region: Mumbai</p>
+                            <span class="feed-time">15 mins ago</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            if (localStorage.getItem('userRole') !== 'admin') {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
+                setTimeout(() => window.location.href = 'admin-login.html', 1500);
+                return;
+            }
+
+            // Set Chart Defaults
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            // Render Search Trends Chart safely
+            const searchCanvas = document.getElementById('searchChart');
+            if (searchCanvas) {
+                const ctx = searchCanvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Delhi AQI', 'Mumbai Weather', 'Rainfall Prediction', 'Bangalore Temp', 'Flood Alerts'],
+                        datasets: [{
+                            label: 'Search Volume (Today)',
+                            data: [12500, 9800, 8400, 6200, 4100],
+                            backgroundColor: ['#ef4444', '#38bdf8', '#a855f7', '#4ade80', '#facc15'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Dashboard - Weather Intelligence Pro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        /* =========================================
+           BASE & UTILITIES
+           ========================================= */
+        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; padding: 0; }
+        
+        /* =========================================
+           PREMIUM UNIFIED SIDEBAR STYLING
+           ========================================= */
+        aside#mySidebar {
+            position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
+            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
+            padding-bottom: 50px; background: #0B1120 !important; border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
+        aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
+
+        aside#mySidebar h1 { 
+            text-align: center; color: #38BDF8 !important; font-weight: 700; 
+            padding: 30px 0 20px 0; font-size: 28px; letter-spacing: 1px; margin: 0;
+        }
+
+        aside#mySidebar a {
+            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
+            font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
+        }
+        
+        aside#mySidebar a i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
+        
+        aside#mySidebar a:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
+        aside#mySidebar a:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+
+        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
+        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+
+        /* Sidebar Dropdown Styling */
+        .sidebar-group-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
+            width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-group-btn:hover { color: #38BDF8; }
+        
+        .sidebar-dropdown-container { 
+            display: none; flex-direction: column; padding-left: 10px; 
+            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
+        }
+        .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
+        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
+        .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
+
+        /* Main Content Layout */
+        @media (min-width: 1025px) {
+            aside#mySidebar { transform: translateX(0); }
+            #myMainContent { margin-left: 300px; width: calc(100% - 300px); padding: 20px 40px; }
+        }
+        @media (max-width: 1024px) {
+            aside#mySidebar { transform: translateX(-110%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+            #myMainContent { margin-left: 0; width: 100%; padding: 15px; }
+        }
+
+        /* =========================================
+           GLASS CARDS & HOVER EFFECTS
+           ========================================= */
+        .glass {
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px;
+        }
+        .hover-card { transition: all 0.3s ease-in-out; cursor: pointer; }
+        .hover-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Satellite Specific Elements */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { display: flex; align-items: center; padding: 25px; gap: 20px; border-radius: 20px; }
+        .stat-icon { width: 60px; height: 60px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 24px; flex-shrink: 0; }
+        
+        .bg-blue-glow { background: rgba(56, 189, 248, 0.15); color: #38BDF8; box-shadow: inset 0 0 15px rgba(56,189,248,0.1); }
+        .bg-purple-glow { background: rgba(168, 85, 247, 0.15); color: #A855F7; }
+        .bg-green-glow { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
+        .bg-orange-glow { background: rgba(251, 146, 60, 0.15); color: #FB923C; }
+
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        @media (max-width: 1200px) { .main-grid { grid-template-columns: 1fr; } }
+        
+        .left-col, .right-col { display: flex; flex-direction: column; gap: 30px; }
+
+        .section-card { padding: 30px; }
+        .section-card h2 { font-size: 18px; font-weight: 600; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .chart-wrapper { height: 250px; position: relative; width: 100%; }
+
+        /* Health Grid */
+        .health-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .health-card { padding: 15px; text-align: center; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .health-card h2 { font-size: 16px; margin: 0 0 5px 0; }
+        .health-card p { font-size: 18px; font-weight: 700; margin: 0; }
+        .health-card.green h2, .health-card.green p { color: #4ADE80; }
+        .health-card.yellow h2, .health-card.yellow p { color: #FACC15; }
+        .health-card.red h2, .health-card.red p { color: #F87171; }
+
+        /* Timelines & Lists */
+        .timeline-item { padding: 15px; background: rgba(0,0,0,0.2); border-left: 3px solid #38BDF8; border-radius: 0 10px 10px 0; margin-bottom: 15px; font-size: 14px; }
+        .ai-item { display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #E2E8F0; }
+        .ai-item:last-child { border-bottom: none; }
+        
+        .fire-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 10px; font-size: 14px;}
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge.high { background: rgba(248, 113, 113, 0.2); color: #F87171; border: 1px solid rgba(248,113,113,0.3); }
+        .badge.medium { background: rgba(251, 146, 60, 0.2); color: #FB923C; border: 1px solid rgba(251,146,60,0.3); }
+        .badge.low { background: rgba(74, 222, 128, 0.2); color: #4ADE80; border: 1px solid rgba(74,222,128,0.3); }
+
+        /* Heatmap Grid */
+        .heatmap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .heat { padding: 15px; text-align: center; border-radius: 12px; font-weight: 500; font-size: 14px; border: 1px solid rgba(255,255,255,0.1); }
+        .heat.low { background: rgba(74, 222, 128, 0.15); color: #4ADE80; }
+        .heat.medium { background: rgba(251, 146, 60, 0.15); color: #FB923C; }
+        .heat.high { background: rgba(248, 113, 113, 0.15); color: #F87171; }
+
+        /* Map Container */
+        #satelliteMap { height: 350px; width: 100%; border-radius: 15px; z-index: 1; }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+    <aside id="mySidebar">
+        <h1>WIP</h1>
+        
+        <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
+        <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
+        <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
+        <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
+        <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
+        <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        <a href="satellite-dashboard.html" class="active"><i class="fa-solid fa-satellite"></i> Satellite Data</a>
+        <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
+        <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a href="ai-assistant.html"><i class="fas fa-headset"></i> AI Assistant</a>
+        
+        <div id="user-profile" style="display: none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <button id="logout-button" class="auth-action-btn" style="color: #F87171;">
+                <i class="fas fa-sign-out-alt" style="color: #F87171 !important;"></i> Log Out
+            </button>
+        </div>
+
+        <div id="auth-buttons" style="display: none;">
+            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Log In</a>
+            <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
+        </div>
+        
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="emergency-alerts.html"><i class="fa-solid fa-lightbulb"></i> Alerts Center</a>
+            <a href="eco-insights.html"><i class="fas fa-leaf"></i> Eco Insights</a>
+            <a href="city-comparison.html"><i class="fa-solid fa-city"></i> City Comparison</a>
+            <a href="climate-trends.html"><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
+        </div>
+
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="workflow-automation-center.html"><i class="fa-solid fa-bolt"></i> Workflow Automation</a>
+            <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
+        </div>
+
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="export-center.html"><i class="fa-solid fa-file-export"></i> Export Center</a>
+            <a href="help-center.html"><i class="fa-solid fa-circle-info"></i> Help Center</a>
+            <a href="about.html"><i class="fa-solid fa-address-card"></i> About</a>
+            <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+        </div>
+        
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
+            <a href="terms-and-conditions.html"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="myMainContent">
+
+        <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
+                <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <i class="fas fa-search" style="color: #94A3B8;"></i>
+                <input id="search-input" type="text" placeholder="Search satellite telemetry..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="top-actions" style="display: flex; gap: 15px;">
+                <button class="action-btn glass theme-toggle" id="themeToggle" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-moon"></i></button>
+                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
+                <div class="profile-pic glass" style="border-radius: 50%; overflow: hidden; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: rgba(56,189,248,0.1);">
+                    <i class="fa-solid fa-satellite-dish" style="color: #38BDF8;"></i>
+                </div>
+            </div>
+        </nav>
+
+        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
+
+        <header class="glass" style="margin-bottom: 30px; padding: 30px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #38BDF8;">
+            <div>
+                <h1 style="font-size: 32px; font-weight: 700; color: white; margin: 0;">Satellite Monitoring Center</h1>
+                <p style="color: #94A3B8; margin-top: 5px; margin-bottom: 0;">Earth Observation • Climate • Pollution • Vegetation</p>
+            </div>
+            <i class="fa-solid fa-satellite" style="font-size: 48px; color: #38BDF8; animation: float 3s ease-in-out infinite;"></i>
+        </header>
+
+        <section class="stats-grid">
+            <div class="glass stat-card hover-card">
+                <div class="stat-icon bg-blue-glow"><i class="fa-solid fa-earth-asia"></i></div>
+                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">640+</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Satellites Active</p></div>
+            </div>
+            <div class="glass stat-card hover-card">
+                <div class="stat-icon bg-purple-glow"><i class="fa-solid fa-cloud"></i></div>
+                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">82%</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Cloud Coverage</p></div>
+            </div>
+            <div class="glass stat-card hover-card">
+                <div class="stat-icon bg-green-glow"><i class="fa-solid fa-leaf"></i></div>
+                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">91%</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Vegetation Index</p></div>
+            </div>
+            <div class="glass stat-card hover-card">
+                <div class="stat-icon bg-orange-glow"><i class="fa-solid fa-smog"></i></div>
+                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">74</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Pollution Index</p></div>
+            </div>
+        </section>
+
+        <div class="main-grid">
+            
+            <div class="left-col">
+                
+                <div class="glass section-card hover-card" style="padding: 20px;">
+                    <h2 style="margin-left: 10px;"><i class="fas fa-map" style="color: #4ADE80;"></i> Live Satellite Map Integration</h2>
+                    <div id="satelliteMap"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                    <div class="glass section-card hover-card">
+                        <h2><i class="fa-solid fa-leaf" style="color: #4ADE80;"></i> NDVI Vegetation Index</h2>
+                        <div class="chart-wrapper"><canvas id="ndviChart"></canvas></div>
+                    </div>
+                    <div class="glass section-card hover-card">
+                        <h2><i class="fa-solid fa-cloud" style="color: #A855F7;"></i> Cloud Coverage Trends</h2>
+                        <div class="chart-wrapper"><canvas id="cloudChart"></canvas></div>
+                    </div>
+                    <div class="glass section-card hover-card">
+                        <h2><i class="fa-solid fa-temperature-full" style="color: #F87171;"></i> Thermal Imaging Data</h2>
+                        <div class="chart-wrapper"><canvas id="thermalChart"></canvas></div>
+                    </div>
+                    <div class="glass section-card hover-card">
+                        <h2><i class="fa-solid fa-cloud-showers-heavy" style="color: #38BDF8;"></i> Satellite Rainfall Detection</h2>
+                        <div class="chart-wrapper"><canvas id="rainfallChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="glass section-card hover-card">
+                    <h2><i class="fa-solid fa-tree" style="color: #FB923C;"></i> Deforestation Analysis (Annual)</h2>
+                    <div class="chart-wrapper"><canvas id="forestChart"></canvas></div>
+                </div>
+
+            </div>
+
+            <div class="right-col">
+
+                <div class="glass section-card hover-card">
+                    <h2><i class="fas fa-satellite-dish" style="color: #38BDF8;"></i> Satellite Fleet Health</h2>
+                    <div class="health-grid">
+                        <div class="health-card green">
+                            <h2>Operational</h2>
+                            <p>612</p>
+                        </div>
+                        <div class="health-card yellow">
+                            <h2>Maintenance</h2>
+                            <p>21</p>
+                        </div>
+                        <div class="health-card red">
+                            <h2>Offline</h2>
+                            <p>7</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass section-card hover-card">
+                    <h2><i class="fas fa-robot" style="color: #A855F7;"></i> AI Satellite Insights</h2>
+                    <div style="margin-top: 15px;">
+                        <div class="ai-item"><i class="fa-solid fa-leaf text-green" style="color: #4ADE80; width: 20px;"></i> Vegetation levels are stable across northern regions.</div>
+                        <div class="ai-item"><i class="fa-solid fa-cloud-rain text-blue" style="color: #38BDF8; width: 20px;"></i> Rainfall intensity is expected to increase next week.</div>
+                        <div class="ai-item"><i class="fa-solid fa-fire text-red" style="color: #F87171; width: 20px;"></i> Wildfire risk is elevated in western India.</div>
+                        <div class="ai-item"><i class="fa-solid fa-cloud text-purple" style="color: #A855F7; width: 20px;"></i> Cloud cover remains above seasonal averages.</div>
+                    </div>
+                </div>
+
+                <div class="glass section-card hover-card">
+                    <h2><i class="fas fa-clock-rotate-left" style="color: #FACC15;"></i> Recent Satellite Events</h2>
+                    <div style="margin-top: 15px;">
+                        <div class="timeline-item"><i class="fa-solid fa-satellite" style="color: #38BDF8; margin-right: 8px;"></i> Sentinel-2 High-Res Image Updated</div>
+                        <div class="timeline-item"><i class="fa-solid fa-cloud-showers-heavy" style="color: #4ADE80; margin-right: 8px;"></i> Global Rainfall Scan Complete</div>
+                        <div class="timeline-item"><i class="fa-solid fa-leaf" style="color: #A855F7; margin-right: 8px;"></i> Vegetation Index (NDVI) Refreshed</div>
+                        <div class="timeline-item"><i class="fa-solid fa-smog" style="color: #FB923C; margin-right: 8px;"></i> Global Pollution Monitoring Updated</div>
+                    </div>
+                </div>
+
+                <div class="glass section-card hover-card">
+                    <h2><i class="fas fa-fire" style="color: #F87171;"></i> Wildfire Monitoring</h2>
+                    <div style="margin-top: 20px;">
+                        <div class="fire-item"><span>🇮🇳 Uttarakhand</span><span class="badge medium">Moderate Risk</span></div>
+                        <div class="fire-item"><span>🇮🇳 Himachal Pradesh</span><span class="badge low">Low Risk</span></div>
+                        <div class="fire-item"><span>🇮🇳 Rajasthan</span><span class="badge high">High Risk</span></div>
+                        <div class="fire-item"><span>🇮🇳 Maharashtra</span><span class="badge low">Low Risk</span></div>
+                    </div>
+                </div>
+
+                <div class="glass section-card hover-card">
+                    <h2><i class="fas fa-temperature-arrow-up" style="color: #FB923C;"></i> Environmental Heatmap</h2>
+                    <div class="heatmap-grid">
+                        <div class="heat low">North India</div>
+                        <div class="heat medium">Central India</div>
+                        <div class="heat high">Western India</div>
+                        <div class="heat low">South India</div>
+                        <div class="heat medium">East India</div>
+                        <div class="heat low">North-East India</div>
+                    </div>
+                </div>
+
+                <div class="glass section-card hover-card" style="background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2);">
+                    <h2><i class="fas fa-list-check" style="color: #38BDF8;"></i> System Summary</h2>
+                    <p style="color: #E2E8F0; font-size: 14px; line-height: 1.8; margin: 0;">
+                        Satellite observations indicate healthy vegetation conditions and stable environmental parameters. 
+                        Rainfall activity is increasing across several regions while wildfire risks remain localized. 
+                        Cloud cover and pollution levels are within acceptable limits, supporting favorable environmental conditions.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="glass footer" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px; margin-top: 40px;">
+            <div>
+                <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
+                <p style="color: #94A3B8; margin: 0; font-size: 14px;">Satellite Monitoring Center</p>
+            </div>
+            <div style="color: #94A3B8; font-weight: 500; font-size: 14px;">
+                <i class="fa-solid fa-satellite" style="color: #38BDF8;"></i> NASA • Sentinel Hub • Earth Engine
+            </div>
+        </footer>
+
+    </main>
+
+    <script src="js/api.js"></script>
+
+    <script>
+        // Sidebar Toggle Logic
+        function brahmastraToggle() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("myMainContent");
+            var isDesktop = window.innerWidth > 1024;
+
+            if (isDesktop) {
+                if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
+                    sidebar.style.transform = "translateX(-110%)"; main.style.marginLeft = "0px"; main.style.width = "100%";
+                } else {
+                    sidebar.style.transform = "translateX(0px)"; main.style.marginLeft = "300px"; main.style.width = "calc(100% - 300px)";
+                }
+            } else {
+                sidebar.style.transform = (sidebar.style.transform === "translateX(-110%)" || sidebar.style.transform === "") ? "translateX(0px)" : "translateX(-110%)";
+            }
+        }
+
+        // Sidebar Dropdown Toggle Logic
+        function toggleSidebarMenu(btn) {
+            btn.classList.toggle("active");
+            var dropdownContent = btn.nextElementSibling;
+            dropdownContent.style.display = (dropdownContent.style.display === "flex") ? "none" : "flex";
+        }
+
+        // Float Animation for Header Icon
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }`;
+        document.head.appendChild(styleSheet);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Theme Toggle
+            const themeBtn = document.getElementById("themeToggle");
+            if (themeBtn) {
+                themeBtn.addEventListener("click", () => { document.body.classList.toggle("light-mode"); });
+            }
+
+            // Particles.js
+            if (typeof particlesJS !== "undefined") {
+                particlesJS("particles-js", {
+                    particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
+                });
+            }
+
+            // Leaflet Map Initialization (Dark Mode Satellite feel)
+            if(typeof L !== "undefined") {
+                const map = L.map('satelliteMap').setView([22.5937, 78.9629], 4); 
+                // Using Esri World Imagery for Satellite View
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                }).addTo(map);
+
+                L.circleMarker([28.7041, 77.1025], { color: '#F87171', radius: 10, fillOpacity: 0.6 }).addTo(map).bindPopup("High Thermal Anomaly");
+                L.circleMarker([19.0760, 72.8777], { color: '#38BDF8', radius: 15, fillOpacity: 0.6 }).addTo(map).bindPopup("Dense Cloud Cover");
+            }
+
+            // Chart Configurations
+            const commonOptions = {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } },
+                    x: { grid: { display: false }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } }
+                }
+            };
+
+            // NDVI Chart (Line)
+            if (document.getElementById("ndviChart")) {
+                new Chart(document.getElementById("ndviChart"), {
+                    type: "line",
+                    data: {
+                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                        datasets: [{ label: "NDVI Score", data: [0.45, 0.50, 0.65, 0.80, 0.88, 0.91], borderColor: "#4ADE80", backgroundColor: "rgba(74,222,128,0.1)", fill: true, tension: 0.4 }]
+                    }, options: commonOptions
+                });
+            }
+
+            // Cloud Coverage Chart (Bar)
+            if (document.getElementById("cloudChart")) {
+                new Chart(document.getElementById("cloudChart"), {
+                    type: "bar",
+                    data: {
+                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                        datasets: [{ label: "Cloud %", data: [40, 60, 82, 55, 30, 20], backgroundColor: "#A855F7", borderRadius: 4 }]
+                    }, options: commonOptions
+                });
+            }
+
+            // Thermal Chart (Line)
+            if (document.getElementById("thermalChart")) {
+                new Chart(document.getElementById("thermalChart"), {
+                    type: "line",
+                    data: {
+                        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+                        datasets: [{ label: "Avg Temp (°C)", data: [28, 30, 35, 33], borderColor: "#F87171", backgroundColor: "rgba(248,113,113,0.1)", fill: true, tension: 0.4 }]
+                    }, options: commonOptions
+                });
+            }
+
+            // Rainfall Chart (Bar)
+            if (document.getElementById("rainfallChart")) {
+                new Chart(document.getElementById("rainfallChart"), {
+                    type: "bar",
+                    data: {
+                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                        datasets: [{ label: "Rainfall (mm)", data: [12, 45, 80, 30, 5, 0], backgroundColor: "#38BDF8", borderRadius: 4 }]
+                    }, options: commonOptions
+                });
+            }
+
+            // Forest/Deforestation Chart (Line)
+            if (document.getElementById("forestChart")) {
+                new Chart(document.getElementById("forestChart"), {
+                    type: "line",
+                    data: {
+                        labels: ["2021", "2022", "2023", "2024", "2025", "2026"],
+                        datasets: [{ label: "Forest Cover (M ha)", data: [80, 79.5, 78.8, 78.0, 77.5, 77.1], borderColor: "#FB923C", backgroundColor: "rgba(251,146,60,0.1)", fill: true, tension: 0.3 }]
+                    }, options: commonOptions
+                });
+            }
+        });
+    </script>
+</body>
+</html>

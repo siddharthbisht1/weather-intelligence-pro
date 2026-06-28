@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Weather Intelligence Pro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <style>
+        :root {
+            --brand-dark: #0f172a;
+            --brand-blue: #3b82f6;
+            --brand-purple: #a855f7;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--brand-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Abstract Background Elements */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .background::before, .background::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+        }
+
+        .background::before {
+            width: 400px;
+            height: 400px;
+            background: var(--brand-blue);
+            top: -10%;
+            left: -10%;
+        }
+
+        .background::after {
+            width: 500px;
+            height: 500px;
+            background: var(--brand-purple);
+            bottom: -20%;
+            right: -10%;
+        }
+
+        /* Glassmorphism Card */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-card h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: -10px;
+            margin-bottom: 5px;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Input Fields */
+        .input-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .input-box i.fa-user, .input-box i.fa-lock {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .input-box input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem 1rem 1rem 3rem;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-box input:focus {
+            border-color: var(--brand-blue);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-box input::placeholder {
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        /* Password Toggle */
+        #togglePassword {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        #togglePassword:hover {
+            color: var(--text-main);
+        }
+
+        /* Remember & Forgot Password */
+        .remember {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+        }
+
+        .remember label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .remember a {
+            color: var(--brand-blue);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .remember a:hover {
+            color: var(--brand-purple);
+        }
+
+        /* Login Button */
+        button#loginBtn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--brand-blue), var(--brand-purple));
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        button#loginBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+        }
+
+        button#loginBtn:active {
+            transform: translateY(1px);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background"></div>
+
+    <div class="login-card glass">
+        
+        <lottie-player
+            src="https://assets1.lottiefiles.com/packages/lf20_t9gkkhz4.json"
+            background="transparent"
+            speed="1"
+            style="width:140px; height:140px; margin: 0 auto -10px auto"
+            loop
+            autoplay>
+        </lottie-player>
+
+        <h1>Admin Panel</h1>
+        <p>Weather Intelligence Pro</p>
+
+        <form id="loginForm">
+            <div class="input-box">
+                <i class="fas fa-user"></i>
+                <input id="username" type="text" placeholder="Admin Username" required>
+            </div>
+
+            <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input id="password" type="password" placeholder="Password" required>
+                <i class="fas fa-eye" id="togglePassword"></i>
+            </div>
+
+            <div class="remember">
+                <label>
+                    <input type="checkbox"> Remember Me
+                </label>
+                <a href="#">Forgot Password?</a>
+            </div>
+
+            <button type="submit" id="loginBtn">Login to Dashboard</button>
+        </form>
+    </div>
+
+    <footer class="footer">
+        © 2026 Weather Intelligence Pro
+    </footer>
+
+    <script>
+        // 1. Password Visibility Toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            // Toggle the type attribute
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle the eye / eye-slash icon
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // 2. Real Backend Login Integration
+        const loginForm = document.getElementById('loginForm');
+        
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('loginBtn'); 
+            const originalText = btn.innerText;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Verifying...`;
+            btn.disabled = true;
+
+            const requestData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Token aur Role ko browser mein save kar lo
+                    localStorage.setItem('adminToken', data.access_token);
+                    localStorage.setItem('userRole', data.role);
+                    
+                    // Login pass, ab seedha dashboard par
+                    window.location.href = 'master-dashboard.html';
+                } else {
+                    const errData = await response.json();
+                    alert("Login Failed: " + (errData.detail || "Invalid Credentials"));
+                }
+            } catch (error) {
+                console.error("System Error:", error);
+                alert("Backend offline hai ya CORS error aaya hai. Console check karo!");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+</html>

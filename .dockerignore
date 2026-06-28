@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Environment variables
+.env
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Local databases
+*.db
+*.sqlite3
+test.db
+
+# Logs and local reports
+logs/
+reports/
+
+# Pytest and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE configurations
+.vscode/
+.idea/
+
+# Other Services (Excluded from the Python backend container)
+frontend/
+nginx/
+docs/

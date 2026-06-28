@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Command - Admin</title>
+    <>
+    <script>
+        if (localStorage.getItem('userRole') !== 'admin') {
+            document.documentElement.style.display = 'none'; // Page dikhna turant band
+            window.location.replace('admin-login.html'); // Wapas phenk dega
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS Reset & Admin Variables (Security/Red Theme) */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(239, 68, 68, 0.2); /* Red tint for security */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-green: #4ade80;
+            --accent-danger: #ef4444;
+            --accent-orange: #f97316;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
+
+        .glass {
+            background: var(--glass-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 16px;
+        }
+
+        /* Sidebar Layout */
+        .sidebar {
+            width: 280px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+            position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
+            border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 10;
+        }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--accent-danger); border-radius: 10px; }
+
+        .sidebar h1 { font-size: 1.5rem; color: var(--accent-danger); margin-bottom: 2rem; text-align: center; }
+        .sidebar a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem;
+            border-radius: 8px; transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(239, 68, 68, 0.15); color: #fff; border-left: 3px solid var(--accent-danger);
+        }
+
+        /* Main Content */
+        .main { flex: 1; margin-left: 280px; padding: 2rem 3rem; display: flex; flex-direction: column; gap: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 2rem; display: flex; align-items: center; gap: 10px; color: #fff; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; position: relative; overflow: hidden; }
+        .stats-card i { font-size: 2rem; color: var(--accent-danger); margin-bottom: 1rem; }
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+
+        /* Warning Animation */
+        .alert-bg { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.4); animation: flash 2s infinite; }
+        @keyframes flash { 0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.1); } 50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); } 100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.1); } }
+
+        /* Layout Grids */
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .full-width { grid-column: span 2; }
+        @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
+        
+        .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-danger); display: flex; align-items: center; gap: 8px;}
+        
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 500; }
+        
+        .threat-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #fff; }
+        .high-risk { background: var(--accent-danger); }
+        .med-risk { background: var(--accent-orange); }
+        .low-risk { background: var(--accent-blue); }
+
+        canvas { max-height: 280px; width: 100%; }
+
+        /* Terminal Feed */
+        .terminal { background: #000; padding: 15px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; height: 280px; overflow-y: auto; border: 1px solid #333; }
+        .terminal::-webkit-scrollbar { width: 4px; }
+        .terminal::-webkit-scrollbar-thumb { background: var(--accent-danger); }
+        .t-red { color: #ef4444; } .t-green { color: #4ade80; } .t-blue { color: #38bdf8; } .t-yellow { color: #facc15; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar glass" id="adminSidebar">
+        <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="fas fa-meteor"></i> MASTER AI
+        </div>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Core Operations</div>
+        <a href="master-dashboard.html"><i class="fas fa-home"></i> Global Dashboard</a>
+        <a href="deployment-center.html"><i class="fas fa-rocket"></i> Deployment Center</a>
+        <a href="user-tracking-center.html"><i class="fas fa-users-viewfinder"></i> User Tracking</a>
+        <a href="reports-command.html"><i class="fas fa-file-invoice"></i> Reports Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
+        <a href="data-governance-center.html"><i class="fas fa-database"></i> Data Governance</a>
+        <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
+        <a href="satellite-command.html"><i class="fas fa-satellite"></i> Satellite Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Security & Cloud</div>
+        
+        <a href="cybersecurity-command-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+            <i class="fas fa-shield-halved"></i> Cybersecurity
+        </a>
+        
+        <a href="compliance-center.html"><i class="fas fa-scale-balanced"></i> Compliance Center</a>
+        <a href="cloud-command-center.html"><i class="fas fa-cloud"></i> Cloud Command</a>
+        
+        <div style="flex-grow: 1;"></div>
+        <a href="#" onclick="logoutAdmin()" style="color: var(--accent-danger); border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); margin-top: 10px;">
+            <i class="fas fa-power-off"></i> Secure Logout
+        </a>
+    </div>
+
+    <main class="main">
+        <div class="header">
+            <h1><i class="fas fa-shield-halved"></i> Cybersecurity & SIEM Hub</h1>
+            <div style="display:flex; gap:10px;">
+                <button class="glass" style="padding: 10px 20px; color: var(--accent-danger); border-radius: 8px; cursor:pointer; font-weight: 600;"><i class="fas fa-ban"></i> Lockdown Mode</button>
+            </div>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stats-card glass alert-bg">
+                <i class="fas fa-skull-crossbones"></i>
+                <h3>Active Threats Blocked</h3>
+                <h1 style="color: var(--accent-danger);">1,042</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-user-secret"></i>
+                <h3>Suspicious IPs Banned</h3>
+                <h1 style="color: var(--accent-orange);">84</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-lock"></i>
+                <h3>API Traffic Encrypted</h3>
+                <h1 style="color: var(--accent-green);">100%</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-globe"></i>
+                <h3>WAF Status (Cloudflare)</h3>
+                <h1 style="color: var(--accent-blue);">Active</h1>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <div class="section-card glass">
+                <h2><i class="fas fa-chart-pie"></i> Attack Vectors (Last 24h)</h2>
+                <canvas id="attackChart"></canvas>
+            </div>
+
+            <div class="section-card glass">
+                <h2><i class="fas fa-terminal"></i> WAF Firewall Logs (Live)</h2>
+                <div class="terminal" id="secTerminal">
+                    <div><span class="t-blue">[10:45:01]</span> <span class="t-green">INFO</span>: Normal traffic routed from AS15169 (Google).</div>
+                    <div><span class="t-blue">[10:45:04]</span> <span class="t-yellow">WARN</span>: Rate limit exceeded for IP 104.22.3.1. Throttling...</div>
+                    <div><span class="t-blue">[10:45:09]</span> <span class="t-red">CRITICAL</span>: SQL Injection attempt dropped. Payload: ' OR 1=1--</div>
+                    <div><span class="t-blue">[10:45:12]</span> <span class="t-red">CRITICAL</span>: Multiple failed logins (Admin). IP 45.12.33.1 banned.</div>
+                    <div><span class="t-blue">[10:45:20]</span> <span class="t-green">INFO</span>: SSL/TLS Handshake successful with client.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <div class="section-card glass full-width">
+                <h2><i class="fas fa-radar"></i> Active Incident Response Log</h2>
+                <table>
+                    <tr>
+                        <th>Incident ID</th>
+                        <th>Attack Type</th>
+                        <th>Source IP / Region</th>
+                        <th>Target Endpoint</th>
+                        <th>Severity</th>
+                        <th>Action Taken</th>
+                    </tr>
+                    <tr>
+                        <td>#SEC-9012</td>
+                        <td>DDoS (Volumetric)</td>
+                        <td>Botnet (Russia/China)</td>
+                        <td>/api/weather/live</td>
+                        <td><span class="threat-badge high-risk">CRITICAL</span></td>
+                        <td>Traffic rerouted via Scrubbing Center</td>
+                    </tr>
+                    <tr>
+                        <td>#SEC-9011</td>
+                        <td>SQL Injection</td>
+                        <td>192.168.1.10 (Local)</td>
+                        <td>/api/users/login</td>
+                        <td><span class="threat-badge high-risk">HIGH</span></td>
+                        <td>IP Blacklisted automatically</td>
+                    </tr>
+                    <tr>
+                        <td>#SEC-9010</td>
+                        <td>API Scraper Bot</td>
+                        <td>AWS EC2 (US-East)</td>
+                        <td>/api/data/export</td>
+                        <td><span class="threat-badge med-risk">MEDIUM</span></td>
+                        <td>Rate Limited (429 Too Many Requests)</td>
+                    </tr>
+                    <tr>
+                        <td>#SEC-9009</td>
+                        <td>Invalid JWT Token</td>
+                        <td>45.22.11.9 (Unknown)</td>
+                        <td>/admin/dashboard</td>
+                        <td><span class="threat-badge low-risk">LOW</span></td>
+                        <td>Session Terminated</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+   <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. FIXED: Gatekeeper Check ab localStorage use karega
+            if (localStorage.getItem('userRole') !== 'admin') {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
+                setTimeout(() => window.location.href = 'admin-login.html', 1500);
+                return;
+            }
+
+            // Chart Configuration
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            // Attack Vector Chart (Doughnut)
+            const attackCtx = document.getElementById('attackChart').getContext('2d');
+            new Chart(attackCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['DDoS Attempts', 'SQL Injection', 'API Scraping', 'Brute Force'],
+                    datasets: [{
+                        data: [45, 15, 30, 10],
+                        backgroundColor: ['#ef4444', '#f97316', '#facc15', '#a855f7'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } },
+                    cutout: '75%'
+                }
+            });
+
+            // Simulate Live Terminal Logging
+            const terminal = document.getElementById('secTerminal');
+            if (terminal) {
+                setInterval(() => {
+                    const now = new Date();
+                    const timeStr = `[${now.getUTCHours()}:${now.getUTCMinutes()}:${now.getUTCSeconds()}]`;
+                    const logs = [
+                        `<span class="t-blue">${timeStr}</span> <span class="t-green">INFO</span>: Clean traffic from AS396982 (Google Cloud).`,
+                        `<span class="t-blue">${timeStr}</span> <span class="t-yellow">WARN</span>: Unusually high payload detected. Inspecting...`,
+                        `<span class="t-blue">${timeStr}</span> <span class="t-red">CRITICAL</span>: XSS attempt blocked on /profile update.`,
+                        `<span class="t-blue">${timeStr}</span> <span class="t-green">INFO</span>: Let's Encrypt SSL certificate auto-renewed.`
+                    ];
+                    const msg = logs[Math.floor(Math.random() * logs.length)];
+                    
+                    const newLog = document.createElement('div');
+                    newLog.innerHTML = msg;
+                    terminal.appendChild(newLog);
+                    terminal.scrollTop = terminal.scrollHeight; // Auto-scroll
+                }, 4500);
+            }
+        });
+    </script>
+</body>
+</html>

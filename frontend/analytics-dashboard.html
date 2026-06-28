@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental Analytics - Weather Intelligence Pro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/analytics.css">
+    <style>
+        /* =========================================
+           PREMIUM UNIFIED SIDEBAR STYLING
+           ========================================= */
+        aside#mySidebar {
+            position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
+            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
+            padding-bottom: 50px; 
+            background: #0B1120 !important; 
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
+        aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
+
+        aside#mySidebar h1 { 
+            text-align: center; color: #38BDF8 !important; font-weight: 700; 
+            padding: 30px 0 20px 0; font-size: 28px; letter-spacing: 1px; margin: 0;
+        }
+
+        aside#mySidebar a, aside#mySidebar .auth-action-btn {
+            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
+            font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
+            background: transparent; border: none; cursor: pointer; text-align: left; width: calc(100% - 30px);
+        }
+        
+        aside#mySidebar a i, aside#mySidebar .auth-action-btn i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
+        
+        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
+        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+
+        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
+        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+
+        /* Sidebar Dropdown Styling */
+        .sidebar-group-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
+            width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-group-btn:hover { color: #38BDF8; }
+        
+        .sidebar-dropdown-container { 
+            display: none; flex-direction: column; padding-left: 10px; 
+            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
+        }
+        .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
+        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
+        .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
+
+        /* Main Content Layout */
+        @media (min-width: 1025px) {
+            aside#mySidebar { transform: translateX(0); }
+            #myMainContent { margin-left: 300px; width: calc(100% - 300px); padding: 20px 40px; }
+        }
+        @media (max-width: 1024px) {
+            aside#mySidebar { transform: translateX(-110%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+            #myMainContent { margin-left: 0; width: 100%; padding: 15px; }
+        }
+
+        /* =========================================
+           BOTTOM SECTION STYLES & HOVER EFFECTS
+           ========================================= */
+        
+        .correlation-card, .report-card, .city-card, .summary-card, .ai-card, .kpi-card, .chart-card {
+            padding: 35px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            overflow: auto;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* 3D Hover Lift for all cards */
+        .correlation-card:hover, .report-card:hover, .city-card:hover, .summary-card:hover, .ai-card:hover, .kpi-card:hover, .chart-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Correlation Matrix Table */
+        .correlation-card table { width: 100%; border-collapse: collapse; }
+        .correlation-card th, .correlation-card td { padding: 15px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); color: #E2E8F0; }
+        .correlation-card th { color: #38BDF8; background: rgba(255, 255, 255, 0.03); font-weight: 600; }
+
+        /* City Items */
+        .city-item {
+            padding: 15px; margin-top: 15px; background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px; color: white; transition: 0.3s; display: flex; align-items: center; gap: 10px;
+        }
+        .city-item:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(5px); }
+
+        /* Export Buttons */
+        .export-grid { display: flex; gap: 20px; margin-top: 30px; }
+        .export-btn {
+            flex: 1; padding: 20px 30px; border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05); color: white; border-radius: 15px;
+            cursor: pointer; font-weight: bold; transition: 0.3s; display: flex;
+            justify-content: center; align-items: center; gap: 10px;
+        }
+        .export-btn:hover { background: rgba(56, 189, 248, 0.2); border-color: #38BDF8; }
+    </style>
+</head>
+<body style="background: #0B1120; color: white; overflow-x: hidden; font-family: 'Poppins', sans-serif;">
+
+    <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+    <aside id="mySidebar">
+        <h1>WIP</h1>
+        
+        <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
+        <a href="search-center.html"><i class="fas fa-search"></i> Search Center</a>
+        <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
+        <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
+        <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
+        <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
+        <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        
+        <a href="analytics-dashboard.html" class="active"><i class="fas fa-chart-pie"></i> Analytics</a>
+        
+        <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
+        <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        
+        <a href="ai-assistant.html"><i class="fas fa-headset"></i> AI Assistant</a>
+        <div id="user-profile" style="display: none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <button id="logout-button" class="auth-action-btn" style="color: #F87171;">
+                <i class="fas fa-sign-out-alt" style="color: #F87171 !important;"></i> Log Out
+            </button>
+        </div>
+
+        <div id="auth-buttons" style="display: none;">
+            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Log In</a>
+            <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
+        </div>
+        
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+           <a href="emergency-alerts.html"><i class="fa-solid fa-lightbulb"></i> alerts Center</a>
+            <a href="eco-insights.html"><i class="fas fa-leaf"></i> Eco Insights</a>
+            <a href="city-comparison.html"><i class="fa-solid fa-city"></i> City Comparison</a>
+            <a href="climate-trends.html"><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
+        </div>
+
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="workflow-automation-center.html"><i class="fa-solid fa-bolt"></i> Workflow Automation</a>
+            <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
+        </div>
+
+         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="export-center.html"><i class="fa-solid fa-file-export"></i> Export Center</a>
+            <a href="help-center.html"><i class="fa-solid fa-circle-info"></i> Help Center</a>
+           <a href="about.html"><i class="fa-solid fa-address-card"></i> About</a>
+            <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+        </div>
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
+            <a href="terms-and-conditions.html"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="myMainContent">
+
+        <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
+                <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <i class="fas fa-search" style="color: #94A3B8;"></i>
+                
+                <input id="search-input" type="text" placeholder="Search analytics..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                
+                <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
+            </div>
+            
+            <div class="top-actions" style="display: flex; gap: 15px;">
+                <button class="action-btn glass theme-toggle" id="themeToggle" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-moon"></i></button>
+                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
+                <div class="profile-pic glass" style="border-radius: 50%; overflow: hidden; width: 45px; height: 45px;">
+                    <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=150&h=150&fit=crop" alt="User Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </nav>
+
+        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
+
+        <section class="hero-analytics glass tilt" style="padding: 40px; margin-bottom: 30px; border-radius: 24px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="hero-left">
+                <h1 style="font-size: 50px; font-weight: 700; margin: 0; line-height: 1.2;">Environmental Analytics</h1>
+                <p style="font-size: 18px; color: #38BDF8; margin-top: 10px;">Weather • AQI • Water • AI Predictions</p>
+            </div>
+            <div class="hero-right">
+                <i class="fas fa-chart-line analytics-icon" style="font-size: 80px; color: #4ADE80;"></i>
+            </div>
+        </section>
+
+        <section class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div class="glass kpi-card" style="text-align: center;">
+                <i class="fas fa-temperature-high" style="font-size: 28px; color: #F87171; margin-bottom: 15px;"></i>
+                <h3 style="color: #94A3B8; font-size: 14px;">Average Temperature</h3>
+                <h1 style="font-size: 32px; font-weight: 700; margin-top: 10px;">26°C</h1>
+            </div>
+            <div class="glass kpi-card" style="text-align: center;">
+                <i class="fas fa-wind" style="font-size: 28px; color: #4ADE80; margin-bottom: 15px;"></i>
+                <h3 style="color: #94A3B8; font-size: 14px;">Average AQI</h3>
+                <h1 style="font-size: 32px; font-weight: 700; margin-top: 10px;">72</h1>
+            </div>
+            <div class="glass kpi-card" style="text-align: center;">
+                <i class="fas fa-droplet" style="font-size: 28px; color: #38BDF8; margin-bottom: 15px;"></i>
+                <h3 style="color: #94A3B8; font-size: 14px;">Water Quality</h3>
+                <h1 style="font-size: 32px; font-weight: 700; margin-top: 10px;">94%</h1>
+            </div>
+            <div class="glass kpi-card" style="text-align: center;">
+                <i class="fas fa-robot" style="font-size: 28px; color: #A855F7; margin-bottom: 15px;"></i>
+                <h3 style="color: #94A3B8; font-size: 14px;">AI Accuracy</h3>
+                <h1 style="font-size: 32px; font-weight: 700; margin-top: 10px;">96%</h1>
+            </div>
+        </section>
+
+        <section class="charts-grid-2x2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-bottom: 30px;">
+            <div class="glass chart-card">
+                <h2 style="color: white; margin-bottom: 20px; font-size: 18px;">Temperature Trend</h2>
+                <div class="chart-wrapper" style="height: 250px;"><canvas id="tempChart"></canvas></div>
+            </div>
+            <div class="glass chart-card">
+                <h2 style="color: white; margin-bottom: 20px; font-size: 18px;">AQI Trend</h2>
+                <div class="chart-wrapper" style="height: 250px;"><canvas id="aqiChart"></canvas></div>
+            </div>
+            <div class="glass chart-card">
+                <h2 style="color: white; margin-bottom: 20px; font-size: 18px;">Water Quality Trend</h2>
+                <div class="chart-wrapper" style="height: 250px;"><canvas id="waterChart"></canvas></div>
+            </div>
+            <div class="glass chart-card">
+                <h2 style="color: white; margin-bottom: 20px; font-size: 18px;">AI Prediction Accuracy</h2>
+                <div class="chart-wrapper" style="height: 250px;"><canvas id="accuracyChart"></canvas></div>
+            </div>
+        </section>
+
+        <section class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-bottom: 30px;">
+            <div class="glass chart-card">
+                <h2 style="color: white; margin-bottom: 20px; font-size: 18px;">Pollutant Distribution</h2>
+                <div class="chart-wrapper" style="height: 300px;"><canvas id="pollutionPieChart"></canvas></div>
+            </div>
+            <div class="glass chart-card">
+                <h2 style="color: white; margin-bottom: 20px; font-size: 18px;">Water Parameters</h2>
+                <div class="chart-wrapper" style="height: 300px;"><canvas id="waterPieChart"></canvas></div>
+            </div>
+        </section>
+
+        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-bottom: 30px;">
+            <div class="glass correlation-card">
+                <h2 style="color: #38BDF8; margin-bottom: 20px;">Environmental Correlation Matrix</h2>
+                <table class="data-table">
+                    <tr><th>Metric</th><th>Temperature</th><th>AQI</th><th>Water Quality</th></tr>
+                    <tr><td>Temperature</td><td>1.00</td><td>0.72</td><td>-0.35</td></tr>
+                    <tr><td>AQI</td><td>0.72</td><td>1.00</td><td>-0.48</td></tr>
+                    <tr><td>Water Quality</td><td>-0.35</td><td>-0.48</td><td>1.00</td></tr>
+                </table>
+            </div>
+            
+            <div class="glass summary-card" style="display: flex; flex-direction: column; justify-content: center;">
+                <h2 style="color: #4ADE80; margin-bottom: 20px;">Environmental Summary</h2>
+                <ul class="summary-list" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 15px; color: #E2E8F0;">
+                    <li><i class="fas fa-check-circle" style="color: #4ADE80; margin-right: 10px;"></i> Temperature remained stable this week.</li>
+                    <li><i class="fas fa-info-circle" style="color: #FACC15; margin-right: 10px;"></i> AQI levels are moderate.</li>
+                    <li><i class="fas fa-tint" style="color: #38BDF8; margin-right: 10px;"></i> Water quality is excellent.</li>
+                    <li><i class="fas fa-brain" style="color: #A855F7; margin-right: 10px;"></i> AI prediction accuracy is above 95%.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px;">
+            <div class="glass city-card">
+                <h2 style="color: #F87171; margin-bottom: 15px;">Most Polluted Cities</h2>
+                <div class="city-item">🏭 Delhi — AQI 182</div>
+                <div class="city-item">🏭 Kanpur — AQI 164</div>
+                <div class="city-item">🏭 Lucknow — AQI 153</div>
+                <div class="city-item">🏭 Ghaziabad — AQI 149</div>
+            </div>
+
+            <div class="glass city-card">
+                <h2 style="color: #38BDF8; margin-bottom: 15px;">Most Searched Cities</h2>
+                <div class="city-item">📍 Dehradun</div>
+                <div class="city-item">📍 Delhi</div>
+                <div class="city-item">📍 Mumbai</div>
+                <div class="city-item">📍 Bengaluru</div>
+            </div>
+
+            <div class="glass report-card">
+                <h2 style="color: #A855F7; margin-bottom: 15px;">Monthly Reports</h2>
+                <ul class="report-list" style="list-style: none; padding: 0; color: #E2E8F0; display: flex; flex-direction: column; gap: 12px;">
+                    <li><i class="fas fa-chart-bar" style="margin-right: 10px; color: #94A3B8;"></i> January Report</li>
+                    <li><i class="fas fa-chart-bar" style="margin-right: 10px; color: #94A3B8;"></i> February Report</li>
+                    <li><i class="fas fa-chart-bar" style="margin-right: 10px; color: #94A3B8;"></i> March Report</li>
+                    <li><i class="fas fa-chart-bar" style="margin-right: 10px; color: #94A3B8;"></i> April Report</li>
+                </ul>
+                <div class="export-grid" style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button class="glass export-btn"><i class="fas fa-file-excel" style="color: #4ADE80;"></i> Excel</button>
+                    <button class="glass export-btn"><i class="fas fa-file-pdf" style="color: #F87171;"></i> PDF</button>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-bottom: 40px;">
+            <div class="glass ai-card" style="padding: 35px; border-radius: 24px; text-align: center;">
+                <h2 style="color: #A855F7; margin-bottom: 15px;"><i class="fa-solid fa-brain"></i> AI Analytics Insights</h2>
+                <p style="color: #E2E8F0; line-height: 1.8; max-width: 800px; margin: auto;">
+                    AQI levels have increased by 8% overall, while water quality has remained perfectly stable. Temperature fluctuations are minimal compared to last month. AI prediction accuracy remains above 95%, ensuring reliable forecasts. Overall, environmental conditions are healthy.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="js/api.js"></script>
+
+    <script>
+        // Premium Sidebar Toggle Logic
+        function brahmastraToggle() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("myMainContent");
+            var isDesktop = window.innerWidth > 1024;
+
+            if (isDesktop) {
+                if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
+                    sidebar.style.transform = "translateX(-110%)";
+                    main.style.marginLeft = "0px";
+                    main.style.width = "100%";
+                } else {
+                    sidebar.style.transform = "translateX(0px)";
+                    main.style.marginLeft = "300px";
+                    main.style.width = "calc(100% - 300px)";
+                }
+            } else {
+                if (sidebar.style.transform === "translateX(-110%)" || sidebar.style.transform === "") {
+                    sidebar.style.transform = "translateX(0px)";
+                } else {
+                    sidebar.style.transform = "translateX(-110%)";
+                }
+            }
+        }
+
+        // Sidebar Dropdown Toggle Logic
+        function toggleSidebarMenu(btn) {
+            btn.classList.toggle("active");
+            var dropdownContent = btn.nextElementSibling;
+            
+            if (dropdownContent.style.display === "flex") {
+                dropdownContent.style.display = "none";
+            } else {
+                dropdownContent.style.display = "flex";
+            }
+        }
+
+        // Particles Init
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof particlesJS !== "undefined") {
+                particlesJS("particles-js", {
+                    particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: .4 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
+                });
+            }
+
+            console.log("Analytics Dashboard Loaded");
+
+            function initChart(id, config) {
+                const canvas = document.getElementById(id);
+                if (canvas) new Chart(canvas, config);
+            }
+
+            const commonOptions = {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#E2E8F0', font: {family: 'Poppins'} } } },
+                scales: {
+                    y: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                    x: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
+                }
+            };
+
+            // 1. Temp
+            initChart("tempChart", {
+                type: "line",
+                data: {
+                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                    datasets: [{ label: "Temperature (°C)", data: [22, 24, 25, 26, 28, 26, 24], borderColor: "#F87171", backgroundColor: "rgba(248, 113, 113, 0.2)", fill: true, tension: 0.4 }]
+                },
+                options: commonOptions
+            });
+
+            // 2. AQI
+            initChart("aqiChart", {
+                type: "bar",
+                data: {
+                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                    datasets: [{ label: "AQI Level", data: [65, 70, 85, 72, 60, 55, 58], backgroundColor: "#4ADE80", borderRadius: 4 }]
+                },
+                options: commonOptions
+            });
+
+            // 3. Water
+            initChart("waterChart", {
+                type: "line",
+                data: {
+                    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+                    datasets: [{ label: "Purity Index (%)", data: [92, 94, 91, 95], borderColor: "#38BDF8", backgroundColor: "rgba(56, 189, 248, 0.2)", fill: true, tension: 0.4 }]
+                },
+                options: commonOptions
+            });
+
+            // 4. Accuracy
+            initChart("accuracyChart", {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+                    datasets: [{ label: "Accuracy (%)", data: [91, 93, 95, 94, 96], borderColor: "#A855F7", borderDash: [5, 5], tension: 0.1 }]
+                },
+                options: commonOptions
+            });
+
+            // 5. Pollution Pie
+            initChart("pollutionPieChart", {
+                type: "doughnut",
+                data: {
+                    labels: ["PM2.5", "PM10", "O3", "NO2"],
+                    datasets: [{ data: [45, 25, 20, 10], backgroundColor: ["#F87171", "#FACC15", "#4ADE80", "#38BDF8"], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#E2E8F0', font: {family: 'Poppins'} } } } }
+            });
+
+            // 6. Water Pie
+            initChart("waterPieChart", {
+                type: "doughnut",
+                data: {
+                    labels: ["pH Balance", "Dissolved Oxygen", "Turbidity", "TDS"],
+                    datasets: [{ data: [40, 30, 15, 15], backgroundColor: ["#38BDF8", "#60A5FA", "#93C5FD", "#BFDBFE"], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#E2E8F0', font: {family: 'Poppins'} } } } }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Quality Analytics - Weather Intelligence Pro</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+
+    <style>
+        /* =========================================
+           BASE & UTILITIES
+           ========================================= */
+        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; padding: 0; }
+        
+        /* =========================================
+           PREMIUM UNIFIED SIDEBAR STYLING
+           ========================================= */
+        aside#mySidebar {
+            position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
+            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
+            padding-bottom: 50px; background: #0B1120 !important; border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
+        aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
+
+        aside#mySidebar h1 { 
+            text-align: center; color: #38BDF8 !important; font-weight: 700; 
+            padding: 30px 0 20px 0; font-size: 28px; letter-spacing: 1px; margin: 0;
+        }
+
+        aside#mySidebar a, aside#mySidebar .auth-action-btn {
+            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
+            font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
+            background: transparent; border: none; cursor: pointer; text-align: left; width: calc(100% - 30px);
+        }
+        
+        aside#mySidebar a i, aside#mySidebar .auth-action-btn i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
+        
+        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
+        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+
+        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
+        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+
+        /* Sidebar Dropdown Styling */
+        .sidebar-group-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
+            width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-group-btn:hover { color: #38BDF8; }
+        
+        .sidebar-dropdown-container { 
+            display: none; flex-direction: column; padding-left: 10px; 
+            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
+        }
+        .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
+        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
+        .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
+
+        /* Main Content Layout */
+        @media (min-width: 1025px) {
+            aside#mySidebar { transform: translateX(0); }
+            #myMainContent { margin-left: 300px; width: calc(100% - 300px); padding: 20px 40px; }
+        }
+        @media (max-width: 1024px) {
+            aside#mySidebar { transform: translateX(-110%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+            #myMainContent { margin-left: 0; width: 100%; padding: 15px; }
+        }
+
+        /* =========================================
+           GLASS CARDS & HOVER EFFECTS
+           ========================================= */
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; }
+        .hover-card { transition: all 0.3s ease-in-out; cursor: pointer; }
+        .hover-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2) !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; }
+
+        /* Water Section */
+        .hero-water { display: flex; justify-content: space-between; align-items: center; padding: 40px; border-radius: 24px; margin-bottom: 30px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(15, 23, 42, 0.6));}
+        .water-circle { width: 180px; height: 180px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #38BDF8, #0B1120); box-shadow: 0 0 30px rgba(56, 189, 248, 0.3); }
+
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .status-card { padding: 20px; text-align: center; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .w-excellent { border-left: 5px solid #4ADE80; }
+        .w-good { border-left: 5px solid #38BDF8; }
+        .w-moderate { border-left: 5px solid #FACC15; }
+        .w-poor { border-left: 5px solid #F87171; }
+
+        .analytics-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+        .analytics-card { padding: 25px; border-radius: 20px; }
+        .card-top { display: flex; align-items: center; gap: 10px; color: #38BDF8; margin-bottom: 15px; }
+        .analytics-card h1 { font-size: 32px; font-weight: 700; margin: 0; }
+        .analytics-card p { color: #94A3B8; font-size: 14px; }
+
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 20px; }
+        .chart-card { padding: 25px; border-radius: 20px; height: 350px; }
+        .chart-wrapper { height: 260px; position: relative; }
+        #waterMap { height: 400px; width: 100%; border-radius: 16px; z-index: 1;}
+        
+        /* Top Bar Reusables */
+        .search-box input { flex: 1; background: transparent; border: none; outline: none; color: white; font-size: 14px; font-family: 'Poppins'; }
+        .action-btn { width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+    <aside id="mySidebar">
+        <h1>WIP</h1>
+        <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
+        <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
+        <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
+        <a href="water.html" class="active"><i class="fas fa-droplet"></i> Water Quality</a>
+        <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
+        <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
+        <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a href="ai-assistant.html"><i class="fas fa-headset"></i> AI Assistant</a>
+        <div id="user-profile" style="display: none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <button id="logout-button" class="auth-action-btn" style="color: #F87171;">
+                <i class="fas fa-sign-out-alt" style="color: #F87171 !important;"></i> Log Out
+            </button>
+        </div>
+
+        <div id="auth-buttons" style="display: none;">
+            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Log In</a>
+            <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
+        </div>
+        
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="emergency-alerts.html"><i class="fa-solid fa-lightbulb"></i> Alerts Center</a>
+            <a href="eco-insights.html"><i class="fas fa-leaf"></i> Eco Insights</a>
+            <a href="city-comparison.html"><i class="fa-solid fa-city"></i> City Comparison</a>
+            <a href="climate-trends.html"><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
+        </div>
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="workflow-automation-center.html"><i class="fa-solid fa-bolt"></i> Workflow Automation</a>
+            <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
+        </div>
+         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container">
+            <a href="export-center.html"><i class="fa-solid fa-file-export"></i> Export Center</a>
+            <a href="help-center.html"><i class="fa-solid fa-circle-info"></i> Help Center</a>
+            <a href="about.html"><i class="fa-solid fa-address-card"></i> About</a>
+            <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+        </div>
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container" style="display: none;">
+            <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
+            <a href="terms-and-conditions.html"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="myMainContent">
+
+        <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
+                <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <i class="fas fa-search" style="color: #94A3B8;"></i>
+                <input id="search-input" type="text" placeholder="Search a city..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="top-actions" style="display: flex; gap: 15px;">
+                <button class="action-btn glass theme-toggle" id="themeToggle" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-moon"></i></button>
+                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
+                <div class="profile-pic glass" style="border-radius: 50%; overflow: hidden; width: 45px; height: 45px;">
+                    <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=150&h=150&fit=crop" alt="User Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </nav>
+
+        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
+
+        <section class="hero-water glass hover-card">
+            <div>
+                <h1 style="font-size: 60px; font-weight: 700; margin: 0;">94%</h1>
+                <h2 style="font-size: 24px; color: #4ADE80; font-weight: 600; margin: 10px 0;">Excellent</h2>
+                <p style="color: #94A3B8;">Overall Water Quality Index</p>
+            </div>
+            <div class="water-circle"><h1 style="font-size: 50px;">94%</h1></div>
+        </section>
+
+        <section class="status-grid">
+            <div class="status-card w-excellent glass"><h2>Excellent</h2><p>90 - 100</p></div>
+            <div class="status-card w-good glass"><h2>Good</h2><p>70 - 89</p></div>
+            <div class="status-card w-moderate glass"><h2>Moderate</h2><p>50 - 69</p></div>
+            <div class="status-card w-poor glass"><h2>Poor</h2><p>0 - 49</p></div>
+        </section>
+
+        <section class="analytics-section">
+            <div class="analytics-card glass hover-card">
+                <div class="card-top"><i class="fas fa-vial"></i><span>pH Level</span></div>
+                <h1>7.2</h1><p>Balanced</p>
+            </div>
+            <div class="analytics-card glass hover-card">
+                <div class="card-top"><i class="fas fa-water"></i><span>TDS</span></div>
+                <h1>220</h1><p>ppm</p>
+            </div>
+            <div class="analytics-card glass hover-card">
+                <div class="card-top"><i class="fas fa-wave-square"></i><span>Turbidity</span></div>
+                <h1>1.5</h1><p>NTU</p>
+            </div>
+            <div class="analytics-card glass hover-card">
+                <div class="card-top"><i class="fas fa-flask"></i><span>Chlorine</span></div>
+                <h1>0.8</h1><p>mg/L</p>
+            </div>
+        </section>
+
+        <section class="charts-grid">
+            <div class="chart-card glass hover-card">
+                <h2>Water Quality Trend</h2>
+                <div class="chart-wrapper"><canvas id="waterChart"></canvas></div>
+            </div>
+            <div class="chart-card glass hover-card">
+                <h2>Parameter Comparison</h2>
+                <div class="chart-wrapper"><canvas id="parameterChart"></canvas></div>
+            </div>
+        </section>
+
+        <section class="map-section" style="margin-top: 30px;">
+            <div class="section-title" style="margin-bottom: 20px; font-size: 24px; font-weight: 600;"><i class="fas fa-map-location-dot" style="color: #38BDF8;"></i> Water Monitoring Map</div>
+            <div class="glass" style="padding: 20px; border-radius: 20px;">
+                <div id="waterMap"></div>
+            </div>
+        </section>
+
+        <footer class="glass" style="padding: 30px; border-radius: 20px; margin-top: 40px; text-align: center; color: #94A3B8;">
+            © 2026 Weather Intelligence Pro - Water Quality Division
+        </footer>
+    </main>
+
+    <script src="js/api.js"></script>
+
+    <script>
+        function brahmastraToggle() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("myMainContent");
+            if (window.innerWidth > 1024) {
+                if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
+                    sidebar.style.transform = "translateX(-110%)"; main.style.marginLeft = "0px"; main.style.width = "100%";
+                } else {
+                    sidebar.style.transform = "translateX(0px)"; main.style.marginLeft = "300px"; main.style.width = "calc(100% - 300px)";
+                }
+            } else {
+                sidebar.style.transform = (sidebar.style.transform === "translateX(-110%)" || sidebar.style.transform === "") ? "translateX(0px)" : "translateX(-110%)";
+            }
+        }
+
+        function toggleSidebarMenu(btn) {
+            btn.classList.toggle("active");
+            var dropdownContent = btn.nextElementSibling;
+            dropdownContent.style.display = (dropdownContent.style.display === "flex") ? "none" : "flex";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Theme Toggle
+            const themeBtn = document.getElementById("themeToggle");
+            if (themeBtn) {
+                themeBtn.addEventListener("click", () => { document.body.classList.toggle("light-mode"); });
+            }
+
+            // Particles
+            if (typeof particlesJS !== "undefined") {
+                particlesJS("particles-js", { particles: { number: { value: 50 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
+            }
+
+            // Leaflet Map Init
+            if(document.getElementById('waterMap')) {
+                const map = L.map('waterMap').setView([30.3165, 78.0322], 10);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
+                L.marker([30.3165, 78.0322]).addTo(map).bindPopup("Quality Station: Alpha");
+            }
+
+            // Simple Charts Init
+            const common = { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, 
+                    x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } 
+                } 
+            };
+
+            const waterCtx = document.getElementById('waterChart');
+            if (waterCtx) {
+                new Chart(waterCtx, { 
+                    type: 'line', 
+                    data: { 
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], 
+                        datasets: [{ data: [92, 93, 91, 94, 94], borderColor: '#38BDF8', fill: true, tension: 0.4, backgroundColor: 'rgba(56,189,248,0.1)' }] 
+                    }, 
+                    options: common 
+                });
+            }
+
+            const paramCtx = document.getElementById('parameterChart');
+            if (paramCtx) {
+                new Chart(paramCtx, { 
+                    type: 'bar', 
+                    data: { 
+                        labels: ['pH', 'TDS', 'Turb', 'Cl'], 
+                        datasets: [{ data: [7.2, 220, 1.5, 0.8], backgroundColor: ['#38BDF8', '#4ADE80', '#FACC15', '#A855F7'], borderRadius: 4 }] 
+                    }, 
+                    options: common 
+                });
+            }
+        });
+    </script>
+</body>
+</html>

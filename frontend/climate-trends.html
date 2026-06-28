@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Trends Center | Weather Intelligence Pro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/climate-trends.css">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; }
+        
+        /* =========================================
+           PREMIUM UNIFIED SIDEBAR STYLING
+           ========================================= */
+        aside#mySidebar {
+            position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
+            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
+            padding-bottom: 50px; background: #0B1120 !important; border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
+        aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
+
+        aside#mySidebar h1 { 
+            text-align: center; color: #38BDF8 !important; font-weight: 700; 
+            padding: 30px 0 20px 0; font-size: 28px; letter-spacing: 1px; margin: 0;
+        }
+
+        aside#mySidebar a, aside#mySidebar .auth-action-btn {
+            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
+            font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
+            background: transparent; border: none; cursor: pointer; text-align: left; width: calc(100% - 30px);
+        }
+        
+        aside#mySidebar a i, aside#mySidebar .auth-action-btn i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
+        
+        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
+        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+
+        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8; }
+        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+
+        /* Sidebar Dropdown Styling */
+        .sidebar-group-btn {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
+            width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-group-btn:hover { color: #38BDF8; }
+        
+        .sidebar-dropdown-container { 
+            display: flex; flex-direction: column; padding-left: 10px; 
+            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
+        }
+        .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
+        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
+        .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
+
+        /* Main Content Layout */
+        @media (min-width: 1025px) {
+            aside#mySidebar { transform: translateX(0); }
+            #myMainContent { margin-left: 300px; width: calc(100% - 300px); padding: 20px 40px; }
+        }
+        @media (max-width: 1024px) {
+            aside#mySidebar { transform: translateX(-110%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+            #myMainContent { margin-left: 0; width: 100%; padding: 15px; }
+        }
+
+        /* Glass Cards & Effects */
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; }
+        .stat-card, .section-card { transition: all 0.3s ease-in-out; cursor: pointer; padding: 25px; }
+        .stat-card:hover, .section-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Reusable Components */
+        .list-item { padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #E2E8F0; border: 1px solid rgba(255,255,255,0.05); }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        th { padding: 12px; color: #94A3B8; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; }
+        .progress-bar-bg { background: rgba(255,255,255,0.1); height: 8px; border-radius: 10px; overflow: hidden; width: 100%; margin-top: 8px; }
+        .progress-fill { height: 100%; border-radius: 10px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+    <!-- UNIVERSAL HIERARCHICAL SIDEBAR -->
+    <aside id="mySidebar">
+        <h1>WIP</h1>
+        
+        <!-- MAIN SIDEBAR ITEMS -->
+        <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
+        <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
+        <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
+        <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
+        <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
+        <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
+        <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
+        <a href="notifications.html"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a href="ai-assistant.html"><i class="fas fa-headset"></i> AI Assistant</a>
+        <div id="user-profile" style="display: none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <button id="logout-button" class="auth-action-btn" style="color: #F87171;">
+                <i class="fas fa-sign-out-alt" style="color: #F87171 !important;"></i> Log Out
+            </button>
+        </div>
+
+        <div id="auth-buttons" style="display: none;">
+            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Log In</a>
+            <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
+        </div>
+        <!-- ADVANCED FEATURES DROPDOWN (Active State for Climate Trends) -->
+        <button class="sidebar-group-btn active" onclick="toggleSidebarMenu(this)">
+            <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon" style="color: #38BDF8; transform: rotate(180deg);"></i>
+        </button>
+        <div class="sidebar-dropdown-container" style="display: flex;">
+            <a href="emergency-alerts.html"><i class="fa-solid fa-lightbulb"></i> alerts Center</a>
+            <a href="eco-insights.html"><i class="fas fa-leaf"></i> Eco Insights</a>
+            <a href="city-comparison.html"><i class="fa-solid fa-city"></i> City Comparison</a>
+            <a href="climate-trends.html" class="active"><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
+        </div>
+
+        <!-- OPERATIONS CENTER DROPDOWN -->
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container" style="display: none;">
+            <a href="workflow-automation-center.html"><i class="fa-solid fa-bolt"></i> Workflow Automation</a>
+            <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
+        </div>
+
+        <!-- MORE DROPDOWN -->
+         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container" style="display: none;">
+            <a href="export-center.html"><i class="fa-solid fa-file-export"></i> Export Center</a>
+            <a href="help-center.html"><i class="fa-solid fa-circle-info"></i> Help Center</a>
+            <a href="about.html"><i class="fa-solid fa-address-card"></i> About</a>
+            <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+        </div>
+        <!-- LEGAL DROPDOWN -->
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+            <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
+        </button>
+        <div class="sidebar-dropdown-container" style="display: none;">
+            <a href="privacy-policy.html"><i class="fa-solid fa-shield-halved"></i> Privacy Policy</a>
+            <a href="terms-and-conditions.html"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</a>
+        </div>
+    </aside>
+
+    <main id="myMainContent" class="main-content">
+        
+        <!-- UNIFIED TOP NAVIGATION -->
+        <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
+                <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <i class="fas fa-search" style="color: #94A3B8;"></i>
+                <input id="search-input" type="text" placeholder="Search climate data..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="top-actions" style="display: flex; gap: 15px;">
+                <button class="action-btn glass theme-toggle" id="themeToggle" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-moon"></i></button>
+                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
+                <div class="profile-pic glass" style="border-radius: 50%; overflow: hidden; width: 45px; height: 45px;">
+                    <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=150&h=150&fit=crop" alt="User Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </nav>
+
+        <!-- Where the global API Data Will Appear -->
+        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
+
+        <header class="glass section-card" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 32px; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-earth-americas" style="color: #4ADE80;"></i> Climate Analytics
+                </h1>
+                <p style="color: #94A3B8; margin-top: 5px; margin-bottom: 0;">Temperature • Rainfall • AQI • Sustainability</p>
+            </div>
+            <div style="text-align: right;">
+                <h2 style="font-size: 24px; color: #38BDF8; font-weight: 700; margin: 0;">7 Years</h2>
+                <p style="color: #94A3B8; font-size: 12px; margin: 0;">Historical Data Analyzed</p>
+            </div>
+        </header>
+
+        <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div class="glass stat-card" style="text-align: center;">
+                <i class="fa-solid fa-temperature-high" style="font-size: 28px; color: #F87171; margin-bottom: 10px;"></i>
+                <h2 style="font-size: 28px; font-weight: 700; margin: 0;">28°C</h2><p style="color: #94A3B8; font-size: 13px; margin: 0;">Avg Temperature</p>
+            </div>
+            <div class="glass stat-card" style="text-align: center;">
+                <i class="fa-solid fa-cloud-rain" style="font-size: 28px; color: #38BDF8; margin-bottom: 10px;"></i>
+                <h2 style="font-size: 28px; font-weight: 700; margin: 0;">148 mm</h2><p style="color: #94A3B8; font-size: 13px; margin: 0;">Avg Rainfall</p>
+            </div>
+            <div class="glass stat-card" style="text-align: center;">
+                <i class="fa-solid fa-wind" style="font-size: 28px; color: #A855F7; margin-bottom: 10px;"></i>
+                <h2 style="font-size: 28px; font-weight: 700; margin: 0;">81</h2><p style="color: #94A3B8; font-size: 13px; margin: 0;">Average AQI</p>
+            </div>
+            <div class="glass stat-card" style="text-align: center;">
+                <i class="fa-solid fa-droplet" style="font-size: 28px; color: #4ADE80; margin-bottom: 10px;"></i>
+                <h2 style="font-size: 28px; font-weight: 700; margin: 0;">95%</h2><p style="color: #94A3B8; font-size: 13px; margin: 0;">Water Quality</p>
+            </div>
+        </section>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(600px, 1fr)); gap: 30px;">
+            
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div class="glass section-card">
+                        <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-temperature-arrow-up" style="color:#F87171;"></i> Temperature Trend</h2>
+                        <div style="height: 220px;"><canvas id="temperatureTrendChart"></canvas></div>
+                    </div>
+                    <div class="glass section-card">
+                        <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-cloud-showers-water" style="color:#38BDF8;"></i> Rainfall Analytics</h2>
+                        <div style="height: 220px;"><canvas id="rainfallChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div class="glass section-card">
+                        <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-smog" style="color:#A855F7;"></i> AQI History</h2>
+                        <div style="height: 220px;"><canvas id="aqiTrendChart"></canvas></div>
+                    </div>
+                    <div class="glass section-card">
+                        <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-leaf" style="color:#4ADE80;"></i> Carbon Footprint Analytics</h2>
+                        <div style="height: 220px;"><canvas id="carbonChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="glass section-card">
+                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-chart-line" style="color:#FACC15;"></i> Future Climate Forecast</h2>
+                    <div style="height: 250px;"><canvas id="futureChart"></canvas></div>
+                </div>
+
+                <div class="glass section-card" style="overflow-x: auto;">
+                    <h2 style="color: white; margin-bottom: 20px;"><i class="fa-solid fa-trophy" style="color: #FACC15;"></i> Top Sustainable Cities</h2>
+                    <table style="min-width: 500px;">
+                        <tr><th>City</th><th>Temperature</th><th>AQI</th><th>Water Quality</th><th>Score</th></tr>
+                        <tr><td>Dehradun</td><td>26°C</td><td>72</td><td>96%</td><td style="color:#4ADE80; font-weight:bold;">94</td></tr>
+                        <tr><td>Bengaluru</td><td>25°C</td><td>78</td><td>94%</td><td style="color:#4ADE80; font-weight:bold;">92</td></tr>
+                        <tr><td>Mumbai</td><td>29°C</td><td>82</td><td>95%</td><td style="color:#FACC15; font-weight:bold;">88</td></tr>
+                        <tr><td>Delhi</td><td>34°C</td><td>132</td><td>83%</td><td style="color:#F87171; font-weight:bold;">71</td></tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+                
+                <div class="glass section-card">
+                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-triangle-exclamation" style="color:#F87171;"></i> Environmental Risk</h2>
+                    <div class="list-item"><span>🔥 Heatwaves</span> <span class="badge" style="background:rgba(248,113,113,0.2); color:#F87171;">High</span></div>
+                    <div class="list-item"><span>🌊 Flooding</span> <span class="badge" style="background:rgba(250,204,21,0.2); color:#FACC15;">Moderate</span></div>
+                    <div class="list-item"><span>🌫 Air Pollution</span> <span class="badge" style="background:rgba(74,222,128,0.2); color:#4ADE80;">Low</span></div>
+                </div>
+
+                <div class="glass section-card">
+                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-heart-pulse" style="color:#4ADE80;"></i> Environmental Health Score</h2>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Air Quality</span><span style="color:#4ADE80;">88%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-fill" style="width: 88%; background: #4ADE80;"></div></div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Water Quality</span><span style="color:#38BDF8;">95%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-fill" style="width: 95%; background: #38BDF8;"></div></div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Climate Stability</span><span style="color:#FACC15;">82%</span></div>
+                        <div class="progress-bar-bg"><div class="progress-fill" style="width: 82%; background: #FACC15;"></div></div>
+                    </div>
+                </div>
+
+                <div class="glass section-card">
+                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-robot" style="color:#A855F7;"></i> AI Climate Insights</h2>
+                    <div class="list-item"><span style="line-height: 1.4;"><i class="fa-solid fa-arrow-trend-up" style="color:#F87171; margin-right:8px;"></i> Temperature has increased by 1.8°C since 2018.</span></div>
+                    <div class="list-item"><span style="line-height: 1.4;"><i class="fa-solid fa-cloud-showers-heavy" style="color:#38BDF8; margin-right:8px;"></i> Rainfall is expected to increase by 18%.</span></div>
+                    <div class="list-item"><span style="line-height: 1.4;"><i class="fa-solid fa-wind" style="color:#4ADE80; margin-right:8px;"></i> AQI levels show gradual improvement.</span></div>
+                    <div class="list-item"><span style="line-height: 1.4;"><i class="fa-solid fa-droplet" style="color:#38BDF8; margin-right:8px;"></i> Water quality remains exceptionally stable.</span></div>
+                </div>
+
+                <div class="glass section-card">
+                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-timeline" style="color:#94A3B8;"></i> Climate Timeline</h2>
+                    <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 15px; margin-left: 10px;">
+                        <div style="margin-bottom: 15px; position: relative;">
+                            <div style="position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 10px #4ADE80;"></div>
+                            <h3 style="font-size: 13px; color: white; margin: 0;">2019</h3><p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Air quality improvements recorded.</p>
+                        </div>
+                        <div style="margin-bottom: 15px; position: relative;">
+                            <div style="position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #38BDF8; box-shadow: 0 0 10px #38BDF8;"></div>
+                            <h3 style="font-size: 13px; color: white; margin: 0;">2021</h3><p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Rainfall increased by 12%.</p>
+                        </div>
+                        <div style="margin-bottom: 15px; position: relative;">
+                            <div style="position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #FACC15; box-shadow: 0 0 10px #FACC15;"></div>
+                            <h3 style="font-size: 13px; color: white; margin: 0;">2023</h3><p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Heatwaves became more frequent.</p>
+                        </div>
+                        <div style="position: relative;">
+                            <div style="position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #F87171; box-shadow: 0 0 10px #F87171;"></div>
+                            <h3 style="font-size: 13px; color: white; margin: 0;">2025</h3><p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Global warming impact intensified.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="glass stat-card" style="padding: 15px; text-align: center;">
+                        <h2 style="font-size: 20px; font-weight: 700; color: #4ADE80; margin: 0;">94%</h2><p style="color: #94A3B8; font-size: 11px; margin: 0;">Prediction Accuracy</p>
+                    </div>
+                    <div class="glass stat-card" style="padding: 15px; text-align: center;">
+                        <h2 style="font-size: 20px; font-weight: 700; color: #F87171; margin: 0;">1.8°C</h2><p style="color: #94A3B8; font-size: 11px; margin: 0;">Temperature Rise</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="glass" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px; margin-top: 40px;">
+            <div>
+                <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
+                <p style="color: #94A3B8; margin: 0; font-size: 14px;">Climate Trends Center</p>
+            </div>
+            <div style="color: #4ADE80; font-weight: 600; font-size: 14px;"><i class="fa-solid fa-earth-americas"></i> 7 Years of Analytics Active</div>
+        </footer>
+
+    </main>
+
+    <script src="js/api.js"></script>
+
+    <script>
+        // Premium Sidebar Toggle Logic
+        function brahmastraToggle() {
+            var sidebar = document.getElementById("mySidebar");
+            var main = document.getElementById("myMainContent");
+            var isDesktop = window.innerWidth > 1024;
+
+            if (isDesktop) {
+                if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
+                    sidebar.style.transform = "translateX(-110%)"; main.style.marginLeft = "0px"; main.style.width = "100%";
+                } else {
+                    sidebar.style.transform = "translateX(0px)"; main.style.marginLeft = "300px"; main.style.width = "calc(100% - 300px)";
+                }
+            } else {
+                sidebar.style.transform = (sidebar.style.transform === "translateX(-110%)" || sidebar.style.transform === "") ? "translateX(0px)" : "translateX(-110%)";
+            }
+        }
+
+        // Sidebar Dropdown Toggle Logic
+        function toggleSidebarMenu(btn) {
+            btn.classList.toggle("active");
+            var dropdownContent = btn.nextElementSibling;
+            
+            if (dropdownContent.style.display === "flex") {
+                dropdownContent.style.display = "none";
+            } else {
+                dropdownContent.style.display = "flex";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Particles setup
+            if (typeof particlesJS !== "undefined") {
+                particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: "#4ADE80" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
+            }
+
+            // Common ChartJS Options
+            const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } } };
+            const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
+
+            // 1. Temp Trend (Line)
+            if(document.getElementById('temperatureTrendChart')) new Chart(document.getElementById('temperatureTrendChart').getContext('2d'), { type: 'line', data: { labels: years, datasets: [{ data: [26.2, 26.5, 26.9, 27.2, 27.5, 27.8, 28.0], borderColor: '#F87171', backgroundColor: 'rgba(248,113,113,0.1)', fill: true, tension: 0.4 }] }, options: commonOptions });
+
+            // 2. Rainfall Analytics (Bar)
+            if(document.getElementById('rainfallChart')) new Chart(document.getElementById('rainfallChart').getContext('2d'), { type: 'bar', data: { labels: years, datasets: [{ data: [110, 115, 125, 120, 135, 142, 148], backgroundColor: '#38BDF8', borderRadius: 4 }] }, options: commonOptions });
+
+            // 3. AQI History (Line)
+            if(document.getElementById('aqiTrendChart')) new Chart(document.getElementById('aqiTrendChart').getContext('2d'), { type: 'line', data: { labels: years, datasets: [{ data: [95, 92, 88, 85, 83, 82, 81], borderColor: '#A855F7', tension: 0.4 }] }, options: commonOptions });
+
+            // 4. Carbon Footprint (Bar)
+            if(document.getElementById('carbonChart')) new Chart(document.getElementById('carbonChart').getContext('2d'), { type: 'bar', data: { labels: years, datasets: [{ data: [4.5, 4.2, 4.0, 3.8, 3.6, 3.4, 3.2], backgroundColor: '#4ADE80', borderRadius: 4 }] }, options: commonOptions });
+
+            // 5. Future Forecast (Line)
+            if(document.getElementById('futureChart')) new Chart(document.getElementById('futureChart').getContext('2d'), { type: 'line', data: { labels: ['2026', '2027', '2028', '2029', '2030'], datasets: [{ data: [28.2, 28.5, 28.7, 29.0, 29.3], borderColor: '#FACC15', borderDash: [5, 5], fill: false, tension: 0.4 }] }, options: commonOptions });
+        });
+    </script>
+</body>
+</html>

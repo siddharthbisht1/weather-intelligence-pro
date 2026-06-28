@@ -1,0 +1,39 @@
+# --- Python Specific ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Environment ---
+.env
+.venv/
+venv/
+env/
+.env.local
+.env.development.local
+
+# --- Databases ---
+*.db
+*.sqlite3
+*.sqlite
+
+# --- Machine Learning Artifacts ---
+# Do not push your trained models or scalar state to GitHub
+*.pkl
+*.joblib
+backend/ml/*.pkl
+
+# --- IDEs & OS Files ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Logs & Temp ---
+logs/
+*.log
+temp/
+
+# --- Build & Deployment ---
+dist/
+build/
+*.egg-info/

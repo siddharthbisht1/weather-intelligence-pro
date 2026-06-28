@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Center - Admin</title>
+    <script>
+    if (localStorage.getItem('userRole') !== 'admin') {
+        document.documentElement.style.display = 'none';
+        window.location.replace('admin-login.html');
+    }
+</script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS Reset & Admin Variables (Indigo/DevOps Theme) */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(99, 102, 241, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-indigo: #6366f1;
+            --accent-purple: #a855f7;
+            --accent-green: #4ade80;
+            --accent-danger: #ef4444;
+            --accent-warning: #facc15;
+            --accent-blue: #38bdf8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
+
+        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; }
+
+        /* Sidebar Layout (Matched Exactly) */
+        .sidebar {
+            width: 280px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+            position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
+            border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 10;
+        }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--accent-indigo); border-radius: 10px; }
+
+        .sidebar h1 { font-size: 1.5rem; color: var(--accent-indigo); margin-bottom: 2rem; text-align: center; letter-spacing: 2px; }
+        .sidebar a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem;
+            border-radius: 8px; transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active { background: rgba(99, 102, 241, 0.15); color: #fff; border-left: 3px solid var(--accent-indigo); }
+
+        /* Main Content */
+        .main { flex: 1; margin-left: 280px; padding: 2rem 3rem; display: flex; flex-direction: column; gap: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 2rem; display: flex; align-items: center; gap: 10px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.1); }
+        .stats-card i { font-size: 2rem; color: var(--accent-indigo); margin-bottom: 1rem; }
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+
+        /* CI/CD Pipeline Visualizer */
+        .cicd-container { display: flex; justify-content: space-between; align-items: center; padding: 2rem; overflow-x: auto; }
+        .cicd-node { 
+            background: rgba(15, 23, 42, 0.9); border: 2px solid var(--accent-indigo); 
+            padding: 1.5rem; border-radius: 50%; width: 130px; height: 130px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; position: relative; z-index: 2; box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+        .cicd-node i { font-size: 1.8rem; margin-bottom: 8px; }
+        .cicd-node h4 { font-size: 0.85rem; color: #fff; }
+        .cicd-node.active-node { border-color: var(--accent-green); box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); animation: pulse-node 2s infinite; }
+        
+        @keyframes pulse-node { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* Progress Connector */
+        .connector { flex-grow: 1; height: 4px; background: rgba(99, 102, 241, 0.2); position: relative; z-index: 1; margin: 0 -15px; }
+        .connector-fill { height: 100%; width: 100%; background: var(--accent-green); }
+        .connector-partial { height: 100%; width: 50%; background: var(--accent-blue); animation: progress-load 2s infinite linear; }
+        @keyframes progress-load { 0% { background-position: 0 0; } 100% { background-position: 50px 0; } }
+
+        /* Tables & Charts */
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } }
+        .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-indigo); display: flex; align-items: center; gap: 8px;}
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 500; }
+        
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .badge-success { background: rgba(74, 222, 128, 0.1); color: var(--accent-green); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .badge-pending { background: rgba(56, 189, 248, 0.1); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        
+        .code-hash { font-family: 'Courier New', Courier, monospace; color: var(--accent-warning); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+
+        canvas { max-height: 280px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <!-- SECURE SIDEBAR -->
+    <div class="sidebar glass" id="adminSidebar">
+        <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="fas fa-meteor"></i> MASTER AI
+        </div>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Core Operations</div>
+        <a href="master-dashboard.html"><i class="fas fa-home"></i> Global Dashboard</a>
+        
+        <!-- ✅ YAHAN DEPLOYMENT CENTER ACTIVE HAI -->
+        <a href="deployment-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+            <i class="fas fa-rocket"></i> Deployment Center
+        </a>
+        
+        <a href="user-tracking-center.html"><i class="fas fa-users-viewfinder"></i> User Tracking</a>
+        <a href="reports-command.html"><i class="fas fa-file-invoice"></i> Reports Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
+        <a href="data-governance-center.html"><i class="fas fa-database"></i> Data Governance</a>
+       
+        <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
+        <a href="satellite-command.html"><i class="fas fa-satellite"></i> Satellite Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Security & Cloud</div>
+        <a href="cybersecurity-command-center.html"><i class="fas fa-shield-halved"></i> Cybersecurity</a>
+        <a href="compliance-center.html"><i class="fas fa-scale-balanced"></i> Compliance Center</a>
+        <a href="cloud-command-center.html"><i class="fas fa-cloud"></i> Cloud Command</a>
+        
+        <!-- Push logout to bottom -->
+        <div style="flex-grow: 1;"></div>
+        <a href="#" onclick="logoutAdmin()" style="color: var(--accent-danger); border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); margin-top: 10px;">
+            <i class="fas fa-power-off"></i> Secure Logout
+        </a>
+    </div>
+
+    <main class="main">
+        <div class="header">
+            <h1><i class="fas fa-code-branch"></i> Release & Deployment Control</h1>
+            <button class="glass" style="padding: 10px 20px; background: var(--accent-indigo); color: white; border-radius: 8px; cursor:pointer; border: none; font-weight: 600; box-shadow: 0 4px 15px rgba(99,102,241,0.4);">
+                <i class="fas fa-upload"></i> Trigger Manual Deploy
+            </button>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stats-card glass">
+                <i class="fas fa-code-commit"></i>
+                <h3>Current Version</h3>
+                <h1 style="color: var(--accent-indigo);">v2.4.1</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-check-circle"></i>
+                <h3>Build Success Rate</h3>
+                <h1 style="color: var(--accent-green);">98.2%</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-clock-rotate-left"></i>
+                <h3>Last Deployment</h3>
+                <h1 style="color: var(--accent-blue);">2h ago</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-server"></i>
+                <h3>Active Environments</h3>
+                <h1 style="color: var(--accent-warning);">3 / 3</h1>
+            </div>
+        </section>
+
+        <section class="section-card glass">
+            <h2><i class="fas fa-random"></i> Live CI/CD Pipeline (Branch: main)</h2>
+            <div class="cicd-container">
+                
+                <div class="cicd-node" style="border-color: var(--accent-green);">
+                    <i class="fab fa-github" style="color: var(--text-main);"></i>
+                    <h4>Code Commit</h4>
+                </div>
+                <div class="connector"><div class="connector-fill"></div></div>
+
+                <div class="cicd-node" style="border-color: var(--accent-green);">
+                    <i class="fas fa-box-open" style="color: var(--accent-warning);"></i>
+                    <h4>Build Assets</h4>
+                </div>
+                <div class="connector"><div class="connector-fill"></div></div>
+
+                <div class="cicd-node active-node">
+                    <i class="fas fa-vial" style="color: var(--accent-blue);"></i>
+                    <h4>Unit Tests</h4>
+                </div>
+                <div class="connector"><div class="connector-partial"></div></div>
+
+                <div class="cicd-node">
+                    <i class="fas fa-server" style="color: var(--text-muted);"></i>
+                    <h4>Deploy Staging</h4>
+                </div>
+                <div class="connector"></div>
+
+                <div class="cicd-node">
+                    <i class="fas fa-rocket" style="color: var(--text-muted);"></i>
+                    <h4>Production</h4>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="content-grid">
+            
+            <div class="section-card glass">
+                <h2><i class="fas fa-history"></i> Recent Deployment History</h2>
+                <table>
+                    <tr>
+                        <th>Version</th>
+                        <th>Commit Hash</th>
+                        <th>Environment</th>
+                        <th>Triggered By</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td><strong>v2.4.1</strong></td>
+                        <td><span class="code-hash">a7f82b1</span></td>
+                        <td>Production</td>
+                        <td>GitHub Actions</td>
+                        <td><span class="badge badge-success">Success</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>v2.4.2-beta</strong></td>
+                        <td><span class="code-hash">c930d4e</span></td>
+                        <td>Staging</td>
+                        <td>Siddharth Bisht</td>
+                        <td><span class="badge badge-pending">Building...</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>v2.4.0</strong></td>
+                        <td><span class="code-hash">f12a89c</span></td>
+                        <td>Production</td>
+                        <td>GitHub Actions</td>
+                        <td><span class="badge badge-success">Success</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>v2.3.9</strong></td>
+                        <td><span class="code-hash">e44b10f</span></td>
+                        <td>Development</td>
+                        <td>Jenkins CI</td>
+                        <td><span class="badge badge-danger">Failed (Tests)</span></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="section-card glass">
+                <h2><i class="fas fa-stopwatch"></i> Avg Build Duration (Mins)</h2>
+                <canvas id="buildChart"></canvas>
+            </div>
+
+        </section>
+
+    </main>
+
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            if (localStorage.getItem('userRole') !== 'admin') {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
+                setTimeout(() => window.location.href = 'admin-login.html', 1500);
+                return;
+            }
+
+            // Chart Configuration
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            // Build Duration Chart
+            const buildCanvas = document.getElementById('buildChart');
+            if (buildCanvas) {
+                const ctx = buildCanvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['v2.3.7', 'v2.3.8', 'v2.3.9', 'v2.4.0', 'v2.4.1'],
+                        datasets: [{
+                            label: 'Build Time (Mins)',
+                            data: [4.2, 4.5, 7.8, 3.9, 4.1],
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            borderWidth: 2, fill: true, tension: 0.3,
+                            pointBackgroundColor: '#a855f7'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Governance - Admin</title>
+    <script>
+    if (localStorage.getItem('userRole') !== 'admin') {
+        document.documentElement.style.display = 'none';
+        window.location.replace('admin-login.html');
+    }
+</script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS Reset & Admin Variables (Teal Theme) */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #022c22 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(20, 184, 166, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-teal: #14b8a6;
+            --accent-purple: #a855f7;
+            --accent-green: #4ade80;
+            --accent-blue: #38bdf8;
+            --accent-danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
+
+        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; }
+
+        /* Sidebar Layout (Final Synchronized Version) */
+        .sidebar {
+            width: 280px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+            position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
+            border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 10;
+        }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--accent-teal); border-radius: 10px; }
+
+        .sidebar h1 { font-size: 1.5rem; color: var(--accent-teal); margin-bottom: 2rem; text-align: center; letter-spacing: 2px; }
+        .sidebar a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem;
+            border-radius: 8px; transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active { background: rgba(20, 184, 166, 0.15); color: #fff; border-left: 3px solid var(--accent-teal); }
+
+        /* Main Content */
+        .main { flex: 1; margin-left: 280px; padding: 2rem 3rem; display: flex; flex-direction: column; gap: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 2rem; display: flex; align-items: center; gap: 10px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(20, 184, 166, 0.1); }
+        .stats-card i { font-size: 2rem; color: var(--accent-teal); margin-bottom: 1rem; }
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+
+        /* Tables & Layout */
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .full-width { grid-column: span 2; }
+        @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
+        .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-teal); display: flex; align-items: center; gap: 8px;}
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 500; }
+        
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .badge-verified { background: rgba(74, 222, 128, 0.1); color: var(--accent-green); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .badge-pending { background: rgba(250, 204, 21, 0.1); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3); }
+
+        canvas { max-height: 280px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar glass" id="adminSidebar">
+        <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="fas fa-meteor"></i> MASTER AI
+        </div>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Core Operations</div>
+        <a href="master-dashboard.html"><i class="fas fa-home"></i> Global Dashboard</a>
+        <a href="deployment-center.html"><i class="fas fa-rocket"></i> Deployment Center</a>
+        <a href="user-tracking-center.html"><i class="fas fa-users-viewfinder"></i> User Tracking</a>
+        <a href="reports-command.html"><i class="fas fa-file-invoice"></i> Reports Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
+        
+        <a href="data-governance-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+            <i class="fas fa-database"></i> Data Governance
+        </a>
+        
+        <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
+        <a href="satellite-command.html"><i class="fas fa-satellite"></i> Satellite Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Security & Cloud</div>
+        <a href="cybersecurity-command-center.html"><i class="fas fa-shield-halved"></i> Cybersecurity</a>
+        <a href="compliance-center.html"><i class="fas fa-scale-balanced"></i> Compliance Center</a>
+        <a href="cloud-command-center.html"><i class="fas fa-cloud"></i> Cloud Command</a>
+        
+        <div style="flex-grow: 1;"></div>
+        <a href="#" onclick="logoutAdmin()" style="color: var(--accent-danger); border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); margin-top: 10px;">
+            <i class="fas fa-power-off"></i> Secure Logout
+        </a>
+    </div>
+
+    <main class="main">
+        <div class="header">
+            <h1><i class="fas fa-folder-tree"></i> Data Governance & Access Control</h1>
+            <button class="glass" style="padding: 10px 20px; color: var(--accent-teal); border-radius: 8px; cursor:pointer; font-weight: 600;">
+                <i class="fas fa-sync"></i> Sync Data Catalog
+            </button>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stats-card glass">
+                <i class="fas fa-layer-group"></i>
+                <h3>Managed Datasets</h3>
+                <h1 style="color: var(--accent-teal);">284</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-users-gear"></i>
+                <h3>Active Data Stewards</h3>
+                <h1 style="color: var(--accent-blue);">12</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-key"></i>
+                <h3>Access Requests (Pending)</h3>
+                <h1 style="color: #facc15;">5</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-file-shield"></i>
+                <h3>PII Data Masked</h3>
+                <h1 style="color: var(--accent-green);">100%</h1>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            
+            <div class="section-card glass">
+                <h2><i class="fas fa-book-open"></i> Enterprise Data Catalog & Ownership</h2>
+                <table>
+                    <tr>
+                        <th>Dataset Name</th>
+                        <th>Classification</th>
+                        <th>Data Owner</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td><strong>User_Auth_Logs</strong></td>
+                        <td><span style="color: var(--accent-danger);">Highly Confidential (PII)</span></td>
+                        <td>Security Team</td>
+                        <td><span class="badge badge-verified">Governed</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Global_AQI_Archive</strong></td>
+                        <td>Public Data</td>
+                        <td>Climate Research</td>
+                        <td><span class="badge badge-verified">Governed</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Premium_Billing_Info</strong></td>
+                        <td><span style="color: var(--accent-danger);">Financial (PCI-DSS)</span></td>
+                        <td>Finance Dept</td>
+                        <td><span class="badge badge-verified">Governed</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temp_IoT_Sensors</strong></td>
+                        <td>Internal Use</td>
+                        <td>IoT DevOps</td>
+                        <td><span class="badge badge-pending">Reviewing</span></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="section-card glass">
+                <h2><i class="fas fa-chart-pie"></i> Role-Based Access Distribution</h2>
+                <canvas id="rbacChart"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            if (localStorage.getItem('userRole') !== 'admin') {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
+                setTimeout(() => window.location.href = 'admin-login.html', 1500);
+                return;
+            }
+
+            // Chart Configuration
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            // RBAC Doughnut Chart
+            const rbacCanvas = document.getElementById('rbacChart');
+            if (rbacCanvas) {
+                const rbacCtx = rbacCanvas.getContext('2d');
+                new Chart(rbacCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Public Users', 'Premium Subs', 'Data Analysts', 'System Admins'],
+                        datasets: [{
+                            data: [70, 15, 10, 5],
+                            backgroundColor: ['#14b8a6', '#38bdf8', '#a855f7', '#ef4444'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        cutout: '75%'
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

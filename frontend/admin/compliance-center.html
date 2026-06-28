@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Center - Admin</title>
+    <>
+    <script>
+        if (localStorage.getItem('userRole') !== 'admin') {
+            document.documentElement.style.display = 'none'; // Page dikhna turant band
+            window.location.replace('admin-login.html'); // Wapas phenk dega
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS Reset & Admin Variables (Gold/Legal Theme) */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(250, 204, 21, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-gold: #facc15;
+            --accent-purple: #a855f7;
+            --accent-green: #4ade80;
+            --accent-danger: #ef4444;
+            --accent-blue: #38bdf8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
+
+        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; }
+
+        /* Sidebar Layout (Perfect Match) */
+        .sidebar {
+            width: 280px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+            position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
+            border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 10;
+        }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 10px; }
+
+        .sidebar h1 { font-size: 1.5rem; color: var(--accent-gold); margin-bottom: 2rem; text-align: center; letter-spacing: 2px; }
+        .sidebar a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem;
+            border-radius: 8px; transition: 0.3s;
+        }
+        .sidebar a:hover, .sidebar a.active { background: rgba(250, 204, 21, 0.15); color: #fff; border-left: 3px solid var(--accent-gold); }
+
+        /* Main Content */
+        .main { flex: 1; margin-left: 280px; padding: 2rem 3rem; display: flex; flex-direction: column; gap: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 2rem; display: flex; align-items: center; gap: 10px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(250, 204, 21, 0.1); }
+        .stats-card i { font-size: 2rem; color: var(--accent-gold); margin-bottom: 1rem; }
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+
+        /* Status Box */
+        .status-box { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .status-box:hover { background: rgba(255,255,255,0.02); }
+        .status-box:last-child { border-bottom: none; }
+        .audit-tag { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .compliant { background: rgba(74, 222, 128, 0.15); color: var(--accent-green); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .non-compliant { background: rgba(239, 68, 68, 0.15); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        /* Tables & Charts */
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .full-width { grid-column: span 2; }
+        @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
+        .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-gold); display: flex; align-items: center; gap: 8px;}
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 500; }
+        
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .badge-active { background: rgba(56, 189, 248, 0.1); color: var(--accent-blue); }
+
+        canvas { max-height: 280px; width: 100%; }
+    </style>
+</head>
+<body>
+<div class="sidebar glass" id="adminSidebar">
+        <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="fas fa-meteor"></i> MASTER AI
+        </div>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Core Operations</div>
+        <a href="master-dashboard.html"><i class="fas fa-home"></i> Global Dashboard</a>
+        <a href="deployment-center.html"><i class="fas fa-rocket"></i> Deployment Center</a>
+        <a href="user-tracking-center.html"><i class="fas fa-users-viewfinder"></i> User Tracking</a>
+        <a href="reports-command.html"><i class="fas fa-file-invoice"></i> Reports Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
+        <a href="data-governance-center.html"><i class="fas fa-database"></i> Data Governance</a>
+        <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
+        <a href="satellite-command.html"><i class="fas fa-satellite"></i> Satellite Command</a>
+        
+        <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Security & Cloud</div>
+        <a href="cybersecurity-command-center.html"><i class="fas fa-shield-halved"></i> Cybersecurity</a>
+        
+        <a href="compliance-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+            <i class="fas fa-scale-balanced"></i> Compliance Center
+        </a>
+        
+        <a href="cloud-command-center.html"><i class="fas fa-cloud"></i> Cloud Command</a>
+        
+        <div style="flex-grow: 1;"></div>
+        <a href="#" onclick="logoutAdmin()" style="color: var(--accent-danger); border: 1px solid rgba(239,68,68,0.2); background: rgba(239,68,68,0.05); margin-top: 10px;">
+            <i class="fas fa-power-off"></i> Secure Logout
+        </a>
+    </div>
+
+    <main class="main">
+        <div class="header">
+            <h1><i class="fas fa-gavel"></i> Regulatory & Compliance Hub</h1>
+            <button class="glass" style="padding: 10px 20px; color: #0B1120; background: var(--accent-gold); border-radius: 8px; cursor:pointer; font-weight: 600; border: none;">
+                <i class="fas fa-file-pdf"></i> Generate Audit Report
+            </button>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stats-card glass">
+                <i class="fas fa-clipboard-check"></i>
+                <h3>Overall Compliance Score</h3>
+                <h1 style="color: var(--accent-gold);">96.5%</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-user-shield"></i>
+                <h3>Active Data Requests</h3>
+                <h1 style="color: var(--accent-blue);">14</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-triangle-exclamation"></i>
+                <h3>Open Policy Violations</h3>
+                <h1 style="color: var(--accent-danger);">1</h1>
+            </div>
+            <div class="stats-card glass">
+                <i class="fas fa-file-signature"></i>
+                <h3>DPA Agreements Signed</h3>
+                <h1 style="color: var(--accent-green);">128</h1>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <div class="section-card glass">
+                <h2><i class="fas fa-globe"></i> Global Standards Status</h2>
+                
+                <div class="status-box">
+                    <div>
+                        <h3 style="color: white; font-size: 1rem;">GDPR (Europe)</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">User Data Encryption & Right-to-Forget active.</p>
+                    </div>
+                    <div class="audit-tag compliant"><i class="fas fa-check-circle"></i> FULLY COMPLIANT</div>
+                </div>
+
+                <div class="status-box">
+                    <div>
+                        <h3 style="color: white; font-size: 1rem;">ISO/IEC 27001</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Information Security Management System (ISMS).</p>
+                    </div>
+                    <div class="audit-tag compliant"><i class="fas fa-check-circle"></i> VERIFIED</div>
+                </div>
+
+                <div class="status-box">
+                    <div>
+                        <h3 style="color: white; font-size: 1rem;">CCPA (California, USA)</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Opt-out mechanisms for data selling.</p>
+                    </div>
+                    <div class="audit-tag compliant"><i class="fas fa-check-circle"></i> VERIFIED</div>
+                </div>
+
+                <div class="status-box">
+                    <div>
+                        <h3 style="color: white; font-size: 1rem;">DPDP Act 2023 (India)</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Data localization and consent management review.</p>
+                    </div>
+                    <div class="audit-tag non-compliant"><i class="fas fa-times-circle"></i> ACTION REQUIRED</div>
+                </div>
+            </div>
+
+            <div class="section-card glass">
+                <h2><i class="fas fa-chart-line"></i> Compliance Confidence Score (6 Months)</h2>
+                <canvas id="complianceChart"></canvas>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <div class="section-card glass full-width">
+                <h2><i class="fas fa-users-slash"></i> User "Right-to-be-Forgotten" Requests</h2>
+                <table>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>User Email</th>
+                        <th>Region</th>
+                        <th>Action Required</th>
+                        <th>Due Date (SLA)</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td>#RTBF-1092</td>
+                        <td>mark.doe@eu.com</td>
+                        <td>Germany (EU)</td>
+                        <td>Complete Data Wipedown</td>
+                        <td style="color: var(--accent-danger);">Tomorrow</td>
+                        <td><span class="badge badge-active">Processing</span></td>
+                    </tr>
+                    <tr>
+                        <td>#RTBF-1091</td>
+                        <td>siddharth_test@in.com</td>
+                        <td>India</td>
+                        <td>Account Deletion & Logs Purge</td>
+                        <td>In 5 Days</td>
+                        <td><span class="badge badge-active">Pending Approvals</span></td>
+                    </tr>
+                    <tr>
+                        <td>#RTBF-1090</td>
+                        <td>sarah.j@usa.com</td>
+                        <td>California (USA)</td>
+                        <td>Export Personal Data (JSON)</td>
+                        <td>Completed</td>
+                        <td><span style="color: var(--accent-green); font-size: 0.8rem;"><i class="fas fa-check"></i> Fulfilled</span></td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+   <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // FIXED Gatekeeper Check: sessionStorage ko localStorage mein badal diya
+            if (localStorage.getItem('userRole') !== 'admin') {
+                document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
+                setTimeout(() => window.location.href = 'admin-login.html', 1500);
+                return;
+            }
+
+            // Chart Configuration
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            // Compliance Confidence Chart
+            const ctx = document.getElementById('complianceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Confidence Score (%)',
+                        data: [88, 90, 95, 94, 96.5, 96.5],
+                        borderColor: '#facc15',
+                        backgroundColor: 'rgba(250, 204, 21, 0.1)',
+                        borderWidth: 2, fill: true, tension: 0.4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#facc15',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: false, min: 80, max: 100 } }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

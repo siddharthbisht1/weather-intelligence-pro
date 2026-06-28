@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Weather Intelligence Pro</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <style>
+        /* Base Styling */
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #0B1120; 
+            color: white; 
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Particle Background */
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        /* THE MAGIC CARD (Same as Login) */
+        .auth-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px; /* Ye form ko failne se rokega */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        /* Header Text */
+        .auth-header { text-align: center; margin-bottom: 30px; }
+        .auth-header i { font-size: 40px; color: #38BDF8; margin-bottom: 15px; }
+        .auth-header h1 { font-size: 24px; font-weight: 700; margin: 0; }
+        .auth-header p { color: #94A3B8; font-size: 14px; margin-top: 5px; }
+
+        /* Input Fields Container */
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i { 
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%); 
+            color: #64748B; font-size: 14px; 
+        }
+        
+        .auth-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 15px 12px 45px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .auth-input:focus { border-color: #38BDF8; box-shadow: 0 0 10px rgba(56,189,248,0.2); }
+        .auth-input::placeholder { color: #64748B; }
+
+        /* Eye Icon for Password */
+        .toggle-password {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            color: #64748B; cursor: pointer;
+        }
+
+        /* Terms & Checkbox */
+        .terms-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 13px; color: #94A3B8; }
+        .terms-row input[type="checkbox"] { accent-color: #38BDF8; cursor: pointer; }
+        .terms-row a { color: #38BDF8; text-decoration: none; font-weight: 500; }
+        .terms-row a:hover { text-decoration: underline; }
+
+        /* Submit Button */
+        .auth-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #38BDF8, #0284C7);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .auth-btn:hover { box-shadow: 0 10px 20px rgba(56,189,248,0.4); transform: translateY(-2px); }
+
+        /* Footer Links */
+        .auth-footer { text-align: center; margin-top: 25px; font-size: 13px; color: #94A3B8; }
+        .auth-footer a { color: #38BDF8; text-decoration: none; font-weight: 600; }
+        .auth-footer a:hover { text-decoration: underline; }
+
+        /* Password Strength Bar (Optional) */
+        .strength-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+        .strength-fill { height: 100%; width: 0%; transition: 0.3s; }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+
+    <!-- Centered Card Container (Crucial for the Login-like look) -->
+    <div class="auth-card">
+        
+        <div class="auth-header">
+            <i class="fas fa-cloud-sun"></i>
+            <h1>Weather Intelligence Pro</h1>
+            <p>Create your premium account</p>
+        </div>
+
+        <form action="login.html" id="registerForm">
+            
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" class="auth-input" placeholder="Full Name" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" class="auth-input" placeholder="Email Address" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-user-circle"></i>
+                <input type="text" class="auth-input" placeholder="Username" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" class="auth-input" id="regPassword" placeholder="Password" required>
+                <i class="fas fa-eye toggle-password" onclick="togglePass('regPassword')"></i>
+            </div>
+            <!-- Optional Strength Indicator -->
+            <div style="font-size: 11px; color: #64748B; margin: -10px 0 15px 5px;">Password Strength</div>
+
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" class="auth-input" id="regConfirmPassword" placeholder="Confirm Password" required>
+            </div>
+
+            <div class="terms-row">
+                <input type="checkbox" id="termsCheck" required>
+                <label for="termsCheck">I agree to the <a href="#">Terms & Conditions</a></label>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                Create Account <i class="fas fa-arrow-right"></i>
+            </button>
+
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Log In here</a>
+        </div>
+
+    </div>
+    <script src="js/api.js"></script>
+    <!-- Scripts -->
+    <script>
+        // Password Visibility Toggle
+        function togglePass(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling;
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Particle.js Init
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof particlesJS !== "undefined") {
+                particlesJS("particles-js", {
+                    particles: { number: { value: 50 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
