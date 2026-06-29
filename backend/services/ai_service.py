@@ -1,6 +1,8 @@
 import os
 import random
-from google import genai  # Naya package
+from google import genai
+# Note: Agar phir bhi error de, toh try karo:
+from google.genai import client
 from dotenv import load_dotenv
 
 load_dotenv()

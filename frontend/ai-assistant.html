@@ -14,106 +14,6 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
     <style>
-        aside#mySidebar {
-            position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
-            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
-            padding-bottom: 50px; 
-            background: #0B1120 !important; 
-            border-right: 1px solid rgba(255,255,255,0.05);
-        }
-        
-        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
-        aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
-
-        aside#mySidebar h1 { 
-            text-align: center; color: #38BDF8 !important; font-weight: 700; 
-            padding: 30px 0 20px 0; font-size: 28px; letter-spacing: 1px; margin: 0;
-        }
-
-        aside#mySidebar a, aside#mySidebar .auth-action-btn {
-            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
-            font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
-            background: transparent; border: none; cursor: pointer; text-align: left; width: calc(100% - 30px);
-        }
-        
-        aside#mySidebar a i, aside#mySidebar .auth-action-btn i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
-        
-        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
-        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
-
-        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
-        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
-
-        /* Sidebar Dropdown Styling */
-        .sidebar-group-btn {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
-            width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
-            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-            font-family: 'Poppins', sans-serif;
-        }
-        .sidebar-group-btn:hover { color: #38BDF8; }
-        
-        .sidebar-dropdown-container { 
-            display: none; flex-direction: column; padding-left: 10px; 
-            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
-        }
-        .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
-        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
-        .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
-
-        /* Main Content Layout */
-        @media (min-width: 1025px) {
-            aside#mySidebar { transform: translateX(0); }
-            #myMainContent { margin-left: 300px; width: calc(100% - 300px); padding: 20px 40px; }
-        }
-        @media (max-width: 1024px) {
-            aside#mySidebar { transform: translateX(-110%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
-            #myMainContent { margin-left: 0; width: 100%; padding: 15px; }
-        }
-
-        /* =========================================
-           BOTTOM SECTION STYLES & HOVER EFFECTS
-           ========================================= */
-        
-        .correlation-card, .report-card, .city-card, .summary-card, .ai-card, .kpi-card, .chart-card {
-            padding: 35px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            overflow: auto;
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* 3D Hover Lift for all cards */
-        .correlation-card:hover, .report-card:hover, .city-card:hover, .summary-card:hover, .ai-card:hover, .kpi-card:hover, .chart-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
-
-        /* Correlation Matrix Table */
-        .correlation-card table { width: 100%; border-collapse: collapse; }
-        .correlation-card th, .correlation-card td { padding: 15px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); color: #E2E8F0; }
-        .correlation-card th { color: #38BDF8; background: rgba(255, 255, 255, 0.03); font-weight: 600; }
-
-        /* City Items */
-        .city-item {
-            padding: 15px; margin-top: 15px; background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px; color: white; transition: 0.3s; display: flex; align-items: center; gap: 10px;
-        }
-        .city-item:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(5px); }
-
-        /* Export Buttons */
-        .export-grid { display: flex; gap: 20px; margin-top: 30px; }
-        .export-btn {
-            flex: 1; padding: 20px 30px; border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05); color: white; border-radius: 15px;
-            cursor: pointer; font-weight: bold; transition: 0.3s; display: flex;
-            justify-content: center; align-items: center; gap: 10px;
-        }
-        .export-btn:hover { background: rgba(56, 189, 248, 0.2); border-color: #38BDF8; }
         /* BASE & UTILITIES */
         body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; padding: 0; }
         
@@ -344,46 +244,58 @@
         }
 
         async function handleChat() {
-            const messageText = chatInput.value.trim();
-            if (!messageText) return;
+    const messageText = chatInput.value.trim();
+    if (!messageText) return;
 
-            appendMessage(messageText, 'user');
-            chatInput.value = ''; 
+    // 1. User ka message UI pe dikhao
+    appendMessage(messageText, 'user');
+    chatInput.value = ''; 
 
-            // 🚀 FEATURE 2: Animated Loading Spinner
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'bot-message';
-            typingDiv.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="color: #38BDF8; margin-right: 8px;"></i> Processing environmental data...';
-            messagesContainer.appendChild(typingDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    // 2. Loading State
+    const typingId = 'typing-' + Date.now();
+    const typingDiv = document.createElement('div');
+    typingDiv.id = typingId;
+    typingDiv.className = 'bot-message';
+    typingDiv.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+    messagesContainer.appendChild(typingDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            try {
-                const token = localStorage.getItem('token'); // 🔑 ID Card nikalo
+    try {
+        const token = localStorage.getItem('token');
+        
+        console.log("Sending Request to Backend..."); // Debug log
 
-                const response = await fetch('http://127.0.0.1:8000/ai/chat', { 
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` // 🚀 Yeh line entry dilwayegi!
-                    },
-                    body: JSON.stringify({ query: messageText }) 
-                });
+        const response = await fetch('http://127.0.0.1:8000/ai/chat', { 
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({ user_message: messageText }) 
+        });
 
-                const data = await response.json();
-                typingDiv.remove(); // Remove spinner
-                
-                if (!response.ok) throw new Error("API Error");
+        const data = await response.json();
+        
+        // Remove loading state
+        const elementToRemove = document.getElementById(typingId);
+        if (elementToRemove) elementToRemove.remove();
 
-                appendMessage(data.response, 'bot');
-
-            } catch (error) {
-                console.error("Chat Error:", error);
-                typingDiv.remove();
-                appendMessage("Oops! Backend server se connect nahi ho paya. Backend chalu hai ya nahi check karo.", 'bot');
-            }
+        if (!response.ok) {
+            throw new Error(data.detail || "Server error occurred");
         }
 
+        // 3. Bot ka response dikhao
+        appendMessage(data.reply, 'bot');
+
+    } catch (error) {
+        console.error("Chat Error:", error);
+        const elementToRemove = document.getElementById(typingId);
+        if (elementToRemove) elementToRemove.remove();
+        
+        appendMessage("⚠️ Backend connection issue! Console (F12) check karo.", 'bot');
+    }
+}
         sendBtn.addEventListener('click', handleChat);
         chatInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); handleChat(); }

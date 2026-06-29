@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
@@ -222,13 +223,13 @@
 
         <section class="hero-aqi glass tilt">
             <div class="aqi-left">
-                <h1 style="font-size: 80px; font-weight: 700; margin: 0; line-height: 1; color: white;">72</h1>
-                <h2 style="font-size: 32px; font-weight: 500; margin: 10px 0; color: #FACC15;">Moderate</h2>
-                <p style="font-size: 20px; color: #94A3B8; margin: 0;">Overall Air Quality Index</p>
+                <h1 id="hero-aqi-value" style="font-size: 80px; font-weight: 700; margin: 0; line-height: 1; color: white;">72</h1>
+                <h2 id="hero-status-text" style="font-size: 32px; font-weight: 500; margin: 10px 0; color: #FACC15;">Moderate</h2>
+                <p style="font-size: 20px; color: #94A3B8; margin: 0;">Overall Air Quality Index <span id="hero-city" style="color:white;">in Haldwani</span></p>
             </div>
             <div class="aqi-right">
-                <div class="aqi-circle">
-                    <h1>72</h1>
+                <div class="aqi-circle" id="hero-aqi-circle">
+                    <h1 id="circle-aqi-value">72</h1>
                 </div>
             </div>
         </section>
@@ -243,31 +244,31 @@
         <section class="analytics-section">
             <div class="analytics-card glass">
                 <div class="card-top"><i class="fas fa-smog"></i><span>PM2.5</span></div>
-                <h1>34</h1><p>μg/m³</p>
+                <h1 id="val-pm25">34</h1><p>μg/m³</p>
             </div>
             <div class="analytics-card glass">
                 <div class="card-top"><i class="fas fa-industry"></i><span>PM10</span></div>
-                <h1>58</h1><p>μg/m³</p>
+                <h1 id="val-pm10">58</h1><p>μg/m³</p>
             </div>
             <div class="analytics-card glass">
                 <div class="card-top"><i class="fas fa-wind"></i><span>NO₂</span></div>
-                <h1>22</h1><p>ppb</p>
+                <h1 id="val-no2">22</h1><p>ppb</p>
             </div>
             <div class="analytics-card glass">
                 <div class="card-top"><i class="fas fa-cloud"></i><span>SO₂</span></div>
-                <h1>9</h1><p>ppb</p>
+                <h1 id="val-so2">9</h1><p>ppb</p>
             </div>
             <div class="analytics-card glass">
                 <div class="card-top"><i class="fas fa-fire"></i><span>CO</span></div>
-                <h1>1.8</h1><p>ppm</p>
+                <h1 id="val-co">1.8</h1><p>ppm</p>
             </div>
             <div class="analytics-card glass">
                 <div class="card-top"><i class="fas fa-globe"></i><span>O₃</span></div>
-                <h1>40</h1><p>ppb</p>
+                <h1 id="val-o3">40</h1><p>ppb</p>
             </div>
             <div class="analytics-card glass">
                 <div class="card-top"><i class="fas fa-flask"></i><span>NH₃</span></div>
-                <h1>8</h1><p>ppb</p>
+                <h1 id="val-nh3">8</h1><p>ppb</p>
             </div>
         </section>
 
@@ -311,7 +312,7 @@
             <div class="glass alert-card" style="padding: 30px;">
                 <h2 style="font-size: 20px; color: #FACC15; margin-bottom: 20px;"><i class="fas fa-triangle-exclamation"></i> AQI Alerts</h2>
                 <div class="alert-item" style="padding: 15px; background: rgba(255,255,255,0.05); margin-bottom: 15px; border-radius: 12px; color: white; font-size: 14px;">
-                    🌫 AQI increased to 72. PM2.5 concentration rising.
+                    🌫 AQI increased to <span id="alert-aqi-value">72</span>. PM2.5 concentration rising.
                 </div>
                 <div class="alert-item" style="padding: 15px; background: rgba(255,255,255,0.05); margin-bottom: 15px; border-radius: 12px; color: white; font-size: 14px;">
                     🚗 Traffic congestion causing higher PM2.5.
@@ -344,6 +345,9 @@
     <script src="js/api.js"></script>
 
     <script>
+        // Global variables charts ke liye taaki refresh ho sake
+        let globalAqiChart, globalPollutantChart, globalPmChart, globalGasChart;
+
         // Premium Sidebar Toggle Logic
         function brahmastraToggle() {
             var sidebar = document.getElementById("mySidebar");
@@ -377,14 +381,15 @@
             }
 
             // Map Initialization
+            
             if(document.getElementById('aqiMap')) {
-                var map = L.map('aqiMap').setView([28.6139, 77.2090], 11);
+                window.aqiMap = L.map('aqiMap').setView([28.6139, 77.2090], 11);
                 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                    attribution: '&copy; OpenStreetMap contributors',
                     subdomains: 'abcd',
                     maxZoom: 20
-                }).addTo(map);
-                L.marker([28.6139, 77.2090]).addTo(map).bindPopup("<b>Delhi AQI</b><br>Currently 182 (Poor).").openPopup();
+                }).addTo(window.aqiMap);
+                window.aqiMarker = null; // Marker ko khali rakha
             }
 
             // Chart Configurations
@@ -392,7 +397,7 @@
 
             // 1. AQI Trend Chart
             if(document.getElementById('aqiChart')) {
-                new Chart(document.getElementById('aqiChart').getContext('2d'), {
+                globalAqiChart = new Chart(document.getElementById('aqiChart').getContext('2d'), {
                     type: 'line',
                     data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'AQI Level', data: [55, 62, 70, 68, 72, 75, 72], borderColor: '#FACC15', backgroundColor: 'rgba(250, 204, 21, 0.2)', fill: true, tension: 0.4 }] },
                     options: commonOptions
@@ -401,7 +406,7 @@
 
             // 2. Pollutant Comparison
             if(document.getElementById('pollutantChart')) {
-                new Chart(document.getElementById('pollutantChart').getContext('2d'), {
+                globalPollutantChart = new Chart(document.getElementById('pollutantChart').getContext('2d'), {
                     type: 'bar',
                     data: { labels: ['PM2.5', 'PM10', 'NO2', 'SO2', 'O3'], datasets: [{ label: 'Concentration', data: [34, 58, 22, 9, 40], backgroundColor: ['#F87171', '#FACC15', '#38BDF8', '#A855F7', '#4ADE80'], borderRadius: 4 }] },
                     options: commonOptions
@@ -410,7 +415,7 @@
 
             // 3. PM Trend
             if(document.getElementById('pmChart')) {
-                new Chart(document.getElementById('pmChart').getContext('2d'), {
+                globalPmChart = new Chart(document.getElementById('pmChart').getContext('2d'), {
                     type: 'line',
                     data: { labels: ['8am', '10am', '12pm', '2pm', '4pm', '6pm'], datasets: [
                         { label: 'PM2.5', data: [28, 35, 42, 38, 34, 30], borderColor: '#F87171', tension: 0.4 },
@@ -422,13 +427,160 @@
 
             // 4. Gas Concentration Doughnut
             if(document.getElementById('gasChart')) {
-                new Chart(document.getElementById('gasChart').getContext('2d'), {
+                globalGasChart = new Chart(document.getElementById('gasChart').getContext('2d'), {
                     type: 'doughnut',
                     data: { labels: ['NO2', 'SO2', 'O3', 'CO'], datasets: [{ data: [22, 9, 40, 1.8], backgroundColor: ['#38BDF8', '#A855F7', '#4ADE80', '#F87171'], borderWidth: 0 }] },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: 'white', font: {family:'Poppins'} } } } }
                 });
             }
+
+            // Search Bar Events Hookup
+            const searchBtn = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+            
+            searchBtn.addEventListener('click', () => {
+                const city = searchInput.value.trim();
+                if(city) updateAQI(city);
+            });
+            
+            searchInput.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') {
+                    e.preventDefault();
+                    const city = searchInput.value.trim();
+                    if(city) updateAQI(city);
+                }
+            });
+
+            // Initial load
+            updateAQI("Haldwani");
         });
+
+        // 🚀 LIVE FETCH FUNCTION 
+        // 🚀 LIVE FETCH FUNCTION 
+        async function updateAQI(city) {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Button Loading State
+                const searchIcon = document.querySelector('#search-button i');
+                if(searchIcon) searchIcon.className = 'fas fa-spinner fa-spin';
+
+                const response = await fetch(`http://127.0.0.1:8000/aqi/${city}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (searchIcon) searchIcon.className = 'fas fa-arrow-right';
+                if (!response.ok) throw new Error("Data nahi mila");
+
+                const data = await response.json();
+
+                // 1. UI update karo - Hero Section
+                document.getElementById('hero-aqi-value').innerText = data.aqi; 
+                document.getElementById('circle-aqi-value').innerText = data.aqi; 
+                document.getElementById('hero-city').innerText = `in ${data.city || city}`;
+                document.getElementById('hero-status-text').innerText = data.status || "Moderate";
+                document.getElementById('alert-aqi-value').innerText = data.aqi;
+
+                // Color change logic for the circle
+                const heroCircle = document.getElementById('hero-aqi-circle');
+                let aqiColor = "#4ADE80"; // Default Green
+                if (data.aqi > 50 && data.aqi <= 100) aqiColor = "#FACC15"; // Yellow
+                else if (data.aqi > 100 && data.aqi <= 200) aqiColor = "#F97316"; // Orange
+                else if (data.aqi > 200) aqiColor = "#EF4444"; // Red
+                
+                heroCircle.style.background = `conic-gradient(${aqiColor} 0deg, ${aqiColor} 360deg)`;
+                document.getElementById('hero-status-text').style.color = aqiColor;
+
+                // 2. UI update karo - Analytics Cards 
+                if (data.pm25) document.getElementById('val-pm25').innerText = data.pm25;
+                if (data.pm10) document.getElementById('val-pm10').innerText = data.pm10;
+
+                // 3. UI update karo - Chart
+                if(globalPollutantChart) {
+                    globalPollutantChart.data.datasets[0].data[0] = data.pm25 || 34; 
+                    globalPollutantChart.data.datasets[0].data[1] = data.pm10 || 58; 
+                    globalPollutantChart.update();
+                }
+
+                
+                if (window.aqiMap && data.lat && data.lon) {
+                    // 1. Map ko nayi city par smoothly le jao
+                    window.aqiMap.setView([data.lat, data.lon], 9); // Zoom level thoda kam kiya taaki bada area dikhe
+                    
+                    // 2. Purana marker agar hai toh hata do
+                    if (window.aqiMarker) {
+                        window.aqiMap.removeLayer(window.aqiMarker);
+                    }
+                    
+                    // 3. Purani tile layer agar pehle se hai toh hata do (taki overlap na ho)
+                    if (window.aqiTileLayer) {
+                        window.aqiMap.removeLayer(window.aqiTileLayer);
+                    }
+
+                    // 4. AQICN ki official Heatmap Tile Layer add karo!
+                    // NOTE: Apna asli AQICN token yahan daal dena
+                    const WAQI_TOKEN = "TERA_AQICN_API_TOKEN_YAHAN_DAAL"; 
+                    const tileUrl = `https://tiles.waqi.info/tiles/usepa-aqi/{z}/{x}/{y}.png?token=${WAQI_TOKEN}`;
+                    
+                    window.aqiTileLayer = L.tileLayer(tileUrl, {
+                        attribution: 'Air Quality Data &copy; <a href="https://waqi.info/">WAQI</a>',
+                        opacity: 0.7, // 0.7 rakha hai taaki neeche ka dark map bhi dikhe
+                        maxZoom: 15
+                    }).addTo(window.aqiMap);
+
+                    // 5. Ek chhota sa marker bhi rakh sakte ho exact location batane ke liye
+                    window.aqiMarker = L.marker([data.lat, data.lon]).addTo(window.aqiMap)
+                        .bindPopup(`<b>${data.city} AQI</b><br>Currently ${data.aqi} (${data.status}).`)
+                        .openPopup();
+                }
+
+                // ==========================================
+                
+                // 📍 5. YAHAN HISTORY CHART UPDATE CALL KARO (Jo naya add kiya tha)
+                await fetchHistoryAndUpdateChart(city);
+                // ==========================================
+
+            } catch (error) {
+                console.error("AQI Load Error:", error);
+                document.getElementById('hero-aqi-value').innerText = "N/A";
+                document.getElementById('circle-aqi-value').innerText = "N/A";
+                document.getElementById('hero-status-text').innerText = "Error";
+                document.getElementById('hero-city').innerText = `in ${city}`;
+            }
+        }
+        // 🚀 FETCH HISTORY & UPDATE LINE CHART
+        async function fetchHistoryAndUpdateChart(city) {
+            try {
+                const token = localStorage.getItem('token');
+                // Backend endpoint jo humne pichle step mein banaya tha
+                const response = await fetch(`http://127.0.0.1:8000/aqi/history/${city}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const result = await response.json();
+
+                // Agar data successfully mil gaya
+                if (result.success && result.data.length > 0) {
+                    // Database newest to oldest deta hai, chart ke liye reverse karna padega
+                    const history = result.data.reverse(); 
+                    const aqiValues = history.map(item => item.aqi);
+                    const labels = history.map((_, index) => `Log ${index + 1}`); // Ya dates use kar sakte ho
+
+                    // Chart ko naya data dekar refresh karo
+                    if (globalAqiChart) {
+                        globalAqiChart.data.labels = labels;
+                        globalAqiChart.data.datasets[0].data = aqiValues;
+                        globalAqiChart.update();
+                    }
+                }
+            } catch (error) {
+                console.error("History fetch error:", error);
+            }
+        }
     </script>
 </body>
 </html>

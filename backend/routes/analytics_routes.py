@@ -107,3 +107,8 @@ def average_aqi(
     return {
         "average_aqi": get_average_aqi(db)
     }
+@router.get("/climate-trends")
+def get_climate_trends(db: Session = Depends(get_db)):
+    # Pichle 6 mahino ka data nikalte hain
+    trends = db.query(AQIHistory).order_by(AQIHistory.searched_at.desc()).limit(30).all()
+    return {"data": trends}
