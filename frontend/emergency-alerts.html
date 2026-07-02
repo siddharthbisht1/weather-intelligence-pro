@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emergency Alerts Center - Weather Intelligence Pro</title>
 
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Optional Leaflet for Live Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -65,7 +62,7 @@
         .sidebar-group-btn:hover { color: #38BDF8; }
         
         .sidebar-dropdown-container { 
-            display: none; flex-direction: column; padding-left: 10px; 
+            display: flex; flex-direction: column; padding-left: 10px; 
             border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
         }
         .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
@@ -125,8 +122,6 @@
         .badge-yellow { background: rgba(250, 204, 21, 0.2); color: #FACC15; border: 1px solid rgba(250, 204, 21, 0.3); }
 
         .timeline-item { padding: 15px; background: rgba(0,0,0,0.2); border-left: 3px solid #F87171; border-radius: 0 10px 10px 0; margin-bottom: 15px; font-size: 14px; }
-        .ai-item { display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #E2E8F0; }
-        .ai-item:last-child { border-bottom: none; }
         
         .contact-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 10px; }
         .contact-item span { background: #38BDF8; color: #0B1120; padding: 5px 15px; border-radius: 20px; font-weight: 700; font-size: 14px; }
@@ -137,14 +132,11 @@
 </head>
 <body>
 
-    <!-- BACKGROUND PARTICLES -->
     <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
 
-    <!-- UNIVERSAL HIERARCHICAL SIDEBAR -->
- <aside id="mySidebar">
+    <aside id="mySidebar">
         <h1>WIP</h1>
         
-        <!-- MAIN SIDEBAR ITEMS -->
         <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
         <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
         <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
@@ -158,19 +150,7 @@
         <a href="settings.html"><i class="fas fa-gear"></i> Settings</a>
         <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
         <a href="ai-assistant.html"><i class="fas fa-headset"></i> AI Assistant</a>
-        <div id="user-profile" style="display: none;">
-            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-            <button id="logout-button" class="auth-action-btn" style="color: #F87171;">
-                <i class="fas fa-sign-out-alt" style="color: #F87171 !important;"></i> Log Out
-            </button>
-        </div>
-
-        <div id="auth-buttons" style="display: none;">
-            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Log In</a>
-            <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
-        </div>
         
-        <!-- ADVANCED FEATURES DROPDOWN (Active State for Alerts Center) -->
         <button class="sidebar-group-btn active" onclick="toggleSidebarMenu(this)">
             <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon" style="color: #38BDF8; transform: rotate(180deg);"></i>
         </button>
@@ -181,7 +161,6 @@
             <a href="climate-trends.html" ><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
         </div>
 
-        <!-- OPERATIONS CENTER DROPDOWN -->
         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
@@ -190,8 +169,7 @@
             <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
         </div>
 
-        <!-- MORE DROPDOWN -->
-         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
         <div class="sidebar-dropdown-container" style="display: none;">
@@ -200,7 +178,6 @@
             <a href="about.html"><i class="fa-solid fa-address-card"></i> About</a>
             <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
         </div>
-        <!-- LEGAL DROPDOWN -->
         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
@@ -209,17 +186,16 @@
             <a href="terms-and-conditions.html"><i class="fa-solid fa-file-contract"></i> Terms & Conditions</a>
         </div>
     </aside>
-    <!-- MAIN CONTENT WRAPPER -->
+
     <main class="main-content" id="myMainContent">
 
-        <!-- UNIFIED TOP NAVIGATION -->
         <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
                 <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
                     <i class="fas fa-bars"></i>
                 </button>
                 <i class="fas fa-search" style="color: #94A3B8;"></i>
-                <input id="search-input" type="text" placeholder="Search live alerts..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <input id="search-input" type="text" placeholder="Search live alerts by city..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
                 <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer; padding: 5px;"><i class="fas fa-arrow-right"></i></button>
             </div>
             <div class="top-actions" style="display: flex; gap: 15px;">
@@ -231,88 +207,70 @@
             </div>
         </nav>
 
-        <!-- Where the global API Data Will Appear -->
-        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
-
-        <!-- PAGE HEADER -->
         <header class="glass" style="margin-bottom: 30px; padding: 30px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #F87171;">
             <div>
-                <h1 style="font-size: 32px; font-weight: 700; color: white; margin: 0;">Emergency Alerts Center</h1>
+                <h1 style="font-size: 32px; font-weight: 700; color: white; margin: 0;" id="header-title">Emergency Alerts Center</h1>
                 <p style="color: #94A3B8; margin-top: 5px; margin-bottom: 0;">Floods • Heatwaves • AQI • Storms • Earthquakes</p>
             </div>
             <i class="fa-solid fa-tower-broadcast" style="font-size: 48px; color: #F87171; animation: pulse 2s infinite;"></i>
         </header>
 
-        <!-- STATS GRID -->
         <section class="stats-grid">
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-red-glow"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">12</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Active Alerts</p></div>
+                <div><h3 id="alert-active" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">12</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Active Alerts</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-orange-glow"><i class="fa-solid fa-temperature-high"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">4</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Heatwave Alerts</p></div>
+                <div><h3 id="alert-heat" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">4</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Heatwave Alerts</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-blue-glow"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">3</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Flood Warnings</p></div>
+                <div><h3 id="alert-flood" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">3</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Flood Warnings</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-green-glow"><i class="fa-solid fa-wind"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">5</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">AQI Alerts</p></div>
+                <div><h3 id="alert-aqi" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">5</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">AQI Alerts</p></div>
             </div>
         </section>
 
-        <!-- MAIN LAYOUT GRID -->
         <div class="main-grid">
             
-            <!-- LEFT COLUMN -->
             <div class="left-col">
                 
-                <!-- Live Map -->
                 <div class="glass section-card hover-card" style="padding: 20px;">
                     <h2 style="margin-left: 10px;"><i class="fas fa-map-location-dot" style="color: #38BDF8;"></i> Live Emergency Map</h2>
                     <div id="emergencyMap"></div>
                 </div>
 
-                <!-- Current Alerts Table -->
                 <div class="glass section-card hover-card" style="overflow-x: auto;">
                     <h2><i class="fas fa-list-ul" style="color: #F87171;"></i> Current Alerts & Warnings</h2>
                     <table>
-                        <tr>
-                            <th>Location</th>
-                            <th>Event Type</th>
-                            <th>Status/Severity</th>
-                            <th>Action</th>
-                        </tr>
-                        <tr>
-                            <td>Delhi</td>
-                            <td>Poor Air Quality Index</td>
-                            <td><span class="badge badge-red">Critical</span></td>
-                            <td><button style="background:transparent; border:none; color:#38BDF8; cursor:pointer;">View Details</button></td>
-                        </tr>
-                        <tr>
-                            <td>Mumbai</td>
-                            <td>Heavy Rain & Waterlogging</td>
-                            <td><span class="badge badge-orange">Severe</span></td>
-                            <td><button style="background:transparent; border:none; color:#38BDF8; cursor:pointer;">View Details</button></td>
-                        </tr>
-                        <tr>
-                            <td>Dehradun</td>
-                            <td>Heatwave Warning</td>
-                            <td><span class="badge badge-yellow">Moderate</span></td>
-                            <td><button style="background:transparent; border:none; color:#38BDF8; cursor:pointer;">View Details</button></td>
-                        </tr>
-                        <tr>
-                            <td>Bengaluru</td>
-                            <td>Thunderstorm & Lightning</td>
-                            <td><span class="badge badge-red">Critical</span></td>
-                            <td><button style="background:transparent; border:none; color:#38BDF8; cursor:pointer;">View Details</button></td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>Event Type</th>
+                                <th>Status/Severity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-table-body">
+                            <tr>
+                                <td>Delhi</td>
+                                <td>Poor Air Quality Index</td>
+                                <td><span class="badge badge-red">Critical</span></td>
+                                <td><button style="background:transparent; border:none; color:#38BDF8; cursor:pointer;">View Details</button></td>
+                            </tr>
+                            <tr>
+                                <td>Mumbai</td>
+                                <td>Heavy Rain & Waterlogging</td>
+                                <td><span class="badge badge-orange">Severe</span></td>
+                                <td><button style="background:transparent; border:none; color:#38BDF8; cursor:pointer;">View Details</button></td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
 
-                <!-- 2x2 Charts Grid -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
                     <div class="glass section-card hover-card">
                         <h2><i class="fa-solid fa-earth-americas" style="color: #A855F7;"></i> Seismic Activity</h2>
@@ -334,39 +292,24 @@
 
             </div>
 
-            <!-- RIGHT COLUMN -->
             <div class="right-col">
 
-                <!-- AI Emergency Summary -->
                 <div class="glass section-card hover-card">
                     <h2><i class="fas fa-robot" style="color: #4ADE80;"></i> AI Emergency Summary</h2>
-                    <p style="color: #E2E8F0; font-size: 14px; line-height: 1.8; margin: 0;">
-                        Current monitoring indicates <span style="color: #FACC15; font-weight:600;">moderate</span> environmental risks across India. 
-                        Delhi shows elevated AQI conditions while Mumbai is experiencing heavy rainfall. Heatwave risks remain active in northern regions. 
-                        Overall emergency level remains manageable, but continuous monitoring is recommended over the next 24 hours.
+                    <p id="ai-summary-text" style="color: #E2E8F0; font-size: 14px; line-height: 1.8; margin: 0;">
+                        Type a city name to generate a real-time AI emergency threat summary.
                     </p>
                 </div>
 
-                <!-- Recent Events Timeline -->
                 <div class="glass section-card hover-card">
                     <h2><i class="fas fa-clock-rotate-left" style="color: #38BDF8;"></i> Live Events Timeline</h2>
-                    <div style="margin-top: 15px;">
+                    <div id="timeline-container" style="margin-top: 15px;">
                         <div class="timeline-item" style="border-left-color: #FB923C;">
-                            <i class="fa-solid fa-fire" style="color: #FB923C; margin-right: 8px;"></i> Heatwave Alert issued for Delhi (10 mins ago)
-                        </div>
-                        <div class="timeline-item" style="border-left-color: #38BDF8;">
-                            <i class="fa-solid fa-cloud-showers-heavy" style="color: #38BDF8; margin-right: 8px;"></i> Flood Warning upgraded in Mumbai (1 hour ago)
-                        </div>
-                        <div class="timeline-item" style="border-left-color: #F87171;">
-                            <i class="fa-solid fa-bolt" style="color: #F87171; margin-right: 8px;"></i> Thunderstorm Warning for Bengaluru (2 hours ago)
-                        </div>
-                        <div class="timeline-item" style="border-left-color: #A855F7;">
-                            <i class="fa-solid fa-smog" style="color: #A855F7; margin-right: 8px;"></i> AQI Spike detected in Delhi NCR (3 hours ago)
+                            <i class="fa-solid fa-fire" style="color: #FB923C; margin-right: 8px;"></i> Waiting for live feed...
                         </div>
                     </div>
                 </div>
 
-                <!-- Emergency Contacts -->
                 <div class="glass section-card hover-card">
                     <h2><i class="fas fa-phone-volume" style="color: #F87171;"></i> Emergency Contacts</h2>
                     <div style="margin-top: 20px;">
@@ -392,7 +335,6 @@
             </div>
         </div>
 
-        <!-- FOOTER -->
         <footer class="glass footer" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px; margin-top: 40px;">
             <div>
                 <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
@@ -405,16 +347,12 @@
 
     </main>
 
-    <script src="js/api.js"></script>
-
-    <!-- INLINE SCRIPT: Sidebar, Particles, Charts & Map -->
     <script>
-        // Sidebar Toggle Logic
+        // Sidebar Toggle
         function brahmastraToggle() {
             var sidebar = document.getElementById("mySidebar");
             var main = document.getElementById("myMainContent");
             var isDesktop = window.innerWidth > 1024;
-
             if (isDesktop) {
                 if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
                     sidebar.style.transform = "translateX(-110%)"; main.style.marginLeft = "0px"; main.style.width = "100%";
@@ -426,7 +364,6 @@
             }
         }
 
-        // Sidebar Dropdown Toggle
         function toggleSidebarMenu(btn) {
             btn.classList.toggle("active");
             var dropdownContent = btn.nextElementSibling;
@@ -434,86 +371,128 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Theme Toggle
-            const themeBtn = document.getElementById("themeToggle");
-            if (themeBtn) {
-                themeBtn.addEventListener("click", () => { document.body.classList.toggle("light-mode"); });
-            }
-
-            // Particles.js (Red tinted for emergency vibe)
+            // Particles.js
             if (typeof particlesJS !== "undefined") {
                 particlesJS("particles-js", {
                     particles: { number: { value: 40 }, color: { value: "#F87171" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1 } }
                 });
             }
 
-            // Leaflet Map Initialization (Dark Mode)
+            // 🌍 MAP INITIALIZATION (WHITE/LIGHT THEME FIXED)
+            let map, markerLayerGroup;
             if(typeof L !== "undefined") {
-                const map = L.map('emergencyMap').setView([22.5937, 78.9629], 4); // Centered on India
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; OpenStreetMap &copy; CARTO'
+                map = L.map('emergencyMap').setView([22.5937, 78.9629], 4); 
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                    subdomains: 'abcd',
+                    maxZoom: 20
                 }).addTo(map);
-
-                // Add some mock alert markers
-                L.circleMarker([28.7041, 77.1025], { color: '#F87171', radius: 15, fillOpacity: 0.5 }).addTo(map).bindPopup("Delhi: Severe AQI");
-                L.circleMarker([19.0760, 72.8777], { color: '#38BDF8', radius: 20, fillOpacity: 0.5 }).addTo(map).bindPopup("Mumbai: Heavy Flooding");
-                L.circleMarker([30.3165, 78.0322], { color: '#FB923C', radius: 10, fillOpacity: 0.5 }).addTo(map).bindPopup("Dehradun: Heatwave");
+                                
+                markerLayerGroup = L.layerGroup().addTo(map);
             }
 
-            // Chart Configurations
-            const commonOptions = {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } },
-                    x: { grid: { display: false }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } }
+            // 📊 CHART INITIALIZATION
+            let eqChart, fldChart, hwChart, rskChart;
+            const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8" } }, x: { grid: { display: false }, ticks: { color: "#94A3B8" } } } };
+
+            if (document.getElementById("earthquakeChart")) eqChart = new Chart(document.getElementById("earthquakeChart"), { type: "bar", data: { labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], datasets: [{ label: "Magnitude", data: [2.1, 3.5, 1.2, 4.8, 2.5, 3.1], backgroundColor: "#A855F7", borderRadius: 4 }] }, options: commonOptions });
+            if (document.getElementById("floodChart")) fldChart = new Chart(document.getElementById("floodChart"), { type: "line", data: { labels: ["12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM"], datasets: [{ label: "Water Level", data: [120, 135, 180, 210, 205, 190], borderColor: "#38BDF8", backgroundColor: "rgba(56,189,248,0.2)", fill: true, tension: 0.4 }] }, options: commonOptions });
+            if (document.getElementById("heatwaveChart")) hwChart = new Chart(document.getElementById("heatwaveChart"), { type: "line", data: { labels: ["12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM"], datasets: [{ label: "Temp", data: [28, 26, 32, 42, 44, 38], borderColor: "#FB923C", backgroundColor: "rgba(251,146,60,0.2)", fill: true, tension: 0.4 }] }, options: commonOptions });
+            if (document.getElementById("riskChart")) rskChart = new Chart(document.getElementById("riskChart"), { type: "doughnut", data: { labels: ["Critical", "Severe", "Moderate", "Safe"], datasets: [{ data: [15, 25, 40, 20], backgroundColor: ["#F87171", "#FB923C", "#FACC15", "#4ADE80"], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: {color: '#E2E8F0'} } }, cutout: '70%' } });
+
+            // 🚀 CLEAN DYNAMIC SEARCH & FETCH (NO TOKEN HEADER)
+            const searchBtn = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+
+            async function triggerEmergencySearch() {
+                const city = searchInput.value.trim();
+                if (!city) {
+                    alert("Emergency location bata bhai!");
+                    return;
                 }
-            };
 
-            // Earthquake Chart (Bar)
-            if (document.getElementById("earthquakeChart")) {
-                new Chart(document.getElementById("earthquakeChart"), {
-                    type: "bar",
-                    data: {
-                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-                        datasets: [{ label: "Magnitude", data: [2.1, 3.5, 1.2, 4.8, 2.5, 3.1], backgroundColor: "#A855F7", borderRadius: 4 }]
-                    }, options: commonOptions
-                });
+                searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    // 🚀 FIX: Ab hum properly LocalStorage se Token bhej rahe hain!
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/ai/emergency-alerts/${city}`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        document.getElementById('header-title').innerText = `Emergency Alerts: ${data.city}`;
+
+                        // Update KPIs
+                        document.getElementById('alert-active').innerText = data.kpi.active_alerts;
+                        document.getElementById('alert-heat').innerText = data.kpi.heatwave;
+                        document.getElementById('alert-flood').innerText = data.kpi.flood;
+                        document.getElementById('alert-aqi').innerText = data.kpi.aqi;
+
+                        // Update Alerts Table
+                        const tableBody = document.getElementById('alerts-table-body');
+                        tableBody.innerHTML = '';
+                        data.alerts_table.forEach(alert => {
+                            tableBody.innerHTML += `
+                                <tr>
+                                    <td>${alert.location}</td>
+                                    <td>${alert.type}</td>
+                                    <td><span class="badge ${alert.badge_class}">${alert.severity}</span></td>
+                                    <td><button style="background:transparent; border:none; color:#38BDF8; cursor:pointer;">View Details</button></td>
+                                </tr>
+                            `;
+                        });
+
+                        // Update Charts
+                        if (eqChart) { eqChart.data.datasets[0].data = data.charts.earthquake; eqChart.update(); }
+                        if (fldChart) { fldChart.data.datasets[0].data = data.charts.flood; fldChart.update(); }
+                        if (hwChart) { hwChart.data.datasets[0].data = data.charts.heatwave; hwChart.update(); }
+                        if (rskChart) { rskChart.data.datasets[0].data = data.charts.risk; rskChart.update(); }
+
+                        // Update Summary & Timeline
+                        document.getElementById('ai-summary-text').innerHTML = data.summary;
+                        
+                        const timelineContainer = document.getElementById('timeline-container');
+                        timelineContainer.innerHTML = '';
+                        data.timeline.forEach(item => {
+                            timelineContainer.innerHTML += `
+                                <div class="timeline-item" style="border-left-color: ${item.color};">
+                                    <i class="fa-solid ${item.icon}" style="color: ${item.color}; margin-right: 8px;"></i> 
+                                    ${item.text} (${item.time})
+                                </div>
+                            `;
+                        });
+
+                        // UPDATE WHITE MAP & MARKERS
+                        if (map && markerLayerGroup && data.coords) {
+                            markerLayerGroup.clearLayers();
+                            map.setView([data.coords[0], data.coords[1]], 8, { animate: true, duration: 1.5 });
+                            
+                            data.map_markers.forEach(mk => {
+                                L.circleMarker([mk.lat, mk.lng], {
+                                    color: mk.color, radius: 12, fillOpacity: 0.6, weight: 2
+                                }).addTo(markerLayerGroup).bindPopup(`<b>${data.city} Alert:</b><br>${mk.desc}`);
+                            });
+                        }
+                    } else {
+                        if (response.status === 401) {
+                            alert("Bhai, tera login expire ho gaya hai. Ek baar wapas login kar le!");
+                        } else {
+                            alert("Bhai, is location ka data backend se nahi mila!");
+                        }
+                    }
+                } catch (error) {
+                    console.error("API Error:", error);
+                    alert("Network error. Backend check kar.");
+                } finally {
+                    searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                }
             }
 
-            // Flood Chart (Line)
-            if (document.getElementById("floodChart")) {
-                new Chart(document.getElementById("floodChart"), {
-                    type: "line",
-                    data: {
-                        labels: ["12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM"],
-                        datasets: [{ label: "Water Level (cm)", data: [120, 135, 180, 210, 205, 190], borderColor: "#38BDF8", backgroundColor: "rgba(56,189,248,0.2)", fill: true, tension: 0.4 }]
-                    }, options: commonOptions
-                });
-            }
-
-            // Heatwave Chart (Line)
-            if (document.getElementById("heatwaveChart")) {
-                new Chart(document.getElementById("heatwaveChart"), {
-                    type: "line",
-                    data: {
-                        labels: ["12 AM", "4 AM", "8 AM", "12 PM", "4 PM", "8 PM"],
-                        datasets: [{ label: "Temperature (°C)", data: [28, 26, 32, 42, 44, 38], borderColor: "#FB923C", backgroundColor: "rgba(251,146,60,0.2)", fill: true, tension: 0.4 }]
-                    }, options: commonOptions
-                });
-            }
-
-            // Risk Distribution Chart (Doughnut)
-            if (document.getElementById("riskChart")) {
-                new Chart(document.getElementById("riskChart"), {
-                    type: "doughnut",
-                    data: {
-                        labels: ["Critical", "Severe", "Moderate", "Safe"],
-                        datasets: [{ data: [15, 25, 40, 20], backgroundColor: ["#F87171", "#FB923C", "#FACC15", "#4ADE80"], borderWidth: 0 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: {color: '#E2E8F0', font: {family: 'Poppins'}} } }, cutout: '70%' }
-                });
-            }
+            if (searchBtn) searchBtn.addEventListener('click', triggerEmergencySearch);
+            if (searchInput) searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') triggerEmergencySearch(); });
         });
     </script>
 </body>

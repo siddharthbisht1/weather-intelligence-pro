@@ -12,6 +12,9 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
         /* =========================================
            BASE & UTILITIES
@@ -211,7 +214,7 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <i class="fas fa-search" style="color: #94A3B8;"></i>
-                <input id="search-input" type="text" placeholder="Search exports & files..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <input id="search-input" type="text" placeholder="Enter city to generate export..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
                 <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
             </div>
             <div class="top-actions" style="display: flex; gap: 15px;">
@@ -227,7 +230,7 @@
 
         <header class="glass" style="margin-bottom: 30px; padding: 30px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #38BDF8;">
             <div>
-                <h1 style="font-size: 32px; font-weight: 700; color: white; margin: 0;">Data Export Hub</h1>
+                <h1 id="export-header-title" style="font-size: 32px; font-weight: 700; color: white; margin: 0;">Data Export Hub</h1>
                 <p style="color: #94A3B8; margin-top: 5px; margin-bottom: 0;">PDF • Excel • CSV • JSON • Charts</p>
             </div>
             <i class="fa-solid fa-cloud-arrow-down" style="font-size: 48px; color: #38BDF8;"></i>
@@ -236,19 +239,19 @@
         <section class="stats-grid">
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-red-glow"><i class="fa-solid fa-file-pdf"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">126</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">PDF Reports</p></div>
+                <div><h3 id="pdf-count" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">126</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">PDF Reports</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-green-glow"><i class="fa-solid fa-file-excel"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">84</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Excel Files</p></div>
+                <div><h3 id="excel-count" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">84</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Excel Files</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-blue-glow"><i class="fa-solid fa-file-csv"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">67</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">CSV Exports</p></div>
+                <div><h3 id="csv-count" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">67</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">CSV Exports</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-purple-glow"><i class="fa-solid fa-database"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">32</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">JSON Files</p></div>
+                <div><h3 id="json-count" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">32</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">JSON Files</p></div>
             </div>
         </section>
 
@@ -260,22 +263,22 @@
                     <div class="glass export-card hover-card">
                         <i class="fa-solid fa-file-pdf" style="color: #F87171;"></i>
                         <h2>PDF Report</h2>
-                        <button class="export-btn">Download</button>
+                        <button class="export-btn generate-pdf">Download</button>
                     </div>
                     <div class="glass export-card hover-card">
                         <i class="fa-solid fa-file-excel" style="color: #4ADE80;"></i>
                         <h2>Excel Report</h2>
-                        <button class="export-btn" style="background: #4ADE80; color: #0B1120;">Download</button>
+                        <button class="export-btn generate-excel" style="background: #4ADE80; color: #0B1120;">Download</button>
                     </div>
                     <div class="glass export-card hover-card">
                         <i class="fa-solid fa-file-csv" style="color: #38BDF8;"></i>
                         <h2>CSV File</h2>
-                        <button class="export-btn">Download</button>
+                        <button class="export-btn generate-csv">Download</button>
                     </div>
                     <div class="glass export-card hover-card">
                         <i class="fa-solid fa-code" style="color: #A855F7;"></i>
                         <h2>JSON Data</h2>
-                        <button class="export-btn" style="background: #A855F7; color: white;">Download</button>
+                        <button class="export-btn generate-json" style="background: #A855F7; color: white;">Download</button>
                     </div>
                 </div>
 
@@ -293,9 +296,9 @@
                 <div class="glass section-card hover-card" style="background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2);">
                     <h2><i class="fas fa-robot" style="color: #38BDF8;"></i> AI Export Summary</h2>
                     <p style="color: #E2E8F0; font-size: 14px; line-height: 1.8; margin: 0;">
-                        The system has successfully exported weather, AQI, water quality and climate reports.
+                        The system has successfully generated the required weather & environmental reports.
                         Cloud synchronization remains healthy and backup operations are functioning normally.
-                        AI recommends generating weekly PDF summaries and maintaining monthly archive snapshots to optimize storage.
+                        Use the buttons above to extract your structured data.
                     </p>
                 </div>
 
@@ -327,11 +330,8 @@
 
                 <div class="glass section-card hover-card">
                     <h2><i class="fas fa-history" style="color: #4ADE80;"></i> Recent Activity</h2>
-                    <div>
-                        <div class="timeline-item">📄 PDF Weather Report Exported <br><span style="font-size: 12px; color: #94A3B8;">Today, 08:00 AM</span></div>
-                        <div class="timeline-item">📊 Excel AQI Report Generated <br><span style="font-size: 12px; color: #94A3B8;">Yesterday</span></div>
-                        <div class="timeline-item">💧 Water Quality CSV Downloaded <br><span style="font-size: 12px; color: #94A3B8;">2 Days Ago</span></div>
-                        <div class="timeline-item">🌍 Analytics JSON Synced <br><span style="font-size: 12px; color: #94A3B8;">3 Days Ago</span></div>
+                    <div id="recent-activity-container">
+                        <div class="timeline-item">📄 Ready for new export generation <br><span style="font-size: 12px; color: #94A3B8;">Awaiting user action</span></div>
                     </div>
                 </div>
 
@@ -410,7 +410,6 @@
             }
         }
 
-        // Sidebar Dropdown Toggle
         function toggleSidebarMenu(btn) {
             btn.classList.toggle("active");
             var dropdownContent = btn.nextElementSibling;
@@ -418,50 +417,148 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Theme Toggle
+            // Theme & Particles
             const themeBtn = document.getElementById("themeToggle");
-            if (themeBtn) {
-                themeBtn.addEventListener("click", () => { document.body.classList.toggle("light-mode"); });
-            }
-
-            // Particles.js
+            if (themeBtn) { themeBtn.addEventListener("click", () => { document.body.classList.toggle("light-mode"); }); }
             if (typeof particlesJS !== "undefined") {
-                particlesJS("particles-js", {
-                    particles: { number: { value: 50 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
-                });
+                particlesJS("particles-js", { particles: { number: { value: 50 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
             }
 
             // Chart Configurations
-            const commonOptions = {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } },
-                    x: { grid: { display: false }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } }
-                }
-            };
+            const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } }, x: { grid: { display: false }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } } } };
 
-            // Export Analytics Chart (Line)
+            let expChart, strgChart;
             if (document.getElementById("exportChart")) {
-                new Chart(document.getElementById("exportChart"), {
-                    type: "line",
-                    data: {
-                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                        datasets: [{ label: "Exports", data: [12, 18, 25, 20, 35, 40, 38], borderColor: "#38BDF8", backgroundColor: "rgba(56,189,248,0.1)", fill: true, tension: 0.4 }]
-                    }, options: commonOptions
-                });
+                expChart = new Chart(document.getElementById("exportChart"), { type: "line", data: { labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], datasets: [{ label: "Exports", data: [12, 18, 25, 20, 35, 40, 38], borderColor: "#38BDF8", backgroundColor: "rgba(56,189,248,0.1)", fill: true, tension: 0.4 }] }, options: commonOptions });
+            }
+            if (document.getElementById("storageChart")) {
+                strgChart = new Chart(document.getElementById("storageChart"), { type: "doughnut", data: { labels: ["PDF", "Excel", "CSV", "JSON"], datasets: [{ data: [45, 25, 20, 10], backgroundColor: ["#F87171", "#4ADE80", "#38BDF8", "#A855F7"], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#E2E8F0', font: {family: 'Poppins'} } } }, cutout: '70%' } });
             }
 
-            // Storage Usage Chart (Doughnut)
-            if (document.getElementById("storageChart")) {
-                new Chart(document.getElementById("storageChart"), {
-                    type: "doughnut",
-                    data: {
-                        labels: ["PDF", "Excel", "CSV", "JSON"],
-                        datasets: [{ data: [45, 25, 20, 10], backgroundColor: ["#F87171", "#4ADE80", "#38BDF8", "#A855F7"], borderWidth: 0 }]
-                    }, 
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#E2E8F0', font: {family: 'Poppins'} } } }, cutout: '70%' }
-                });
+            // ==========================================
+            // 🚀 EXPORT & DOWNLOAD LOGIC
+            // ==========================================
+            const searchBtn = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+            let currentData = null; // Backend se aaya hua data yahan store hoga
+
+            // Generate Export Data API Call
+            // Generate Export Data API Call
+            async function fetchExportData() {
+                const city = searchInput.value.trim();
+                if (!city) {
+                    alert("Bhai, pehle koi city toh search kar data lane ke liye!");
+                    return;
+                }
+                
+                searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                try {
+                    // 🚀 FIX: LocalStorage se token nikal kar headers mein bhej rahe hain
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/ai/export-data/${city}`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if(response.ok) {
+                        currentData = await response.json();
+                        
+                        document.getElementById('export-header-title').innerText = `Data Export Hub: ${currentData.city}`;
+                        
+                        // Fake number update for visual effect
+                        document.getElementById('pdf-count').innerText = Math.floor(Math.random() * (150 - 120 + 1)) + 120;
+                        document.getElementById('excel-count').innerText = Math.floor(Math.random() * (90 - 70 + 1)) + 70;
+                        
+                        // Update Recent Activity
+                        document.getElementById('recent-activity-container').innerHTML = `
+                            <div class="timeline-item">🌍 Data Fetched for ${currentData.city} <br><span style="font-size: 12px; color: #94A3B8;">Just Now</span></div>
+                            <div class="timeline-item">☁️ Ready for Export <br><span style="font-size: 12px; color: #94A3B8;">Select format to download</span></div>
+                        `;
+                    } else {
+                        // 🚀 FIX: 401 error aane par proper alert dikhayega
+                        if (response.status === 401) {
+                            alert("Bhai, tera login expire ho gaya hai. Ek baar wapas login kar le!");
+                        } else {
+                            alert("Data fetch failed. Backend check kar.");
+                        }
+                    }
+                } catch(e) {
+                    alert("Network Error!");
+                } finally {
+                    searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                }
+            }
+
+            if (searchBtn) searchBtn.addEventListener('click', fetchExportData);
+            if (searchInput) searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') fetchExportData(); });
+
+            // Helper to check if data exists
+            function checkData() {
+                if(!currentData) { alert("Pehle city search karke data fetch karo!"); return false; }
+                return true;
+            }
+
+            // 1. PDF DOWNLOAD
+            document.querySelector('.generate-pdf').addEventListener('click', () => {
+                if(!checkData()) return;
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFontSize(22);
+                doc.text(`Weather Report: ${currentData.city}`, 20, 20);
+                
+                doc.setFontSize(14);
+                doc.text(`Date: ${currentData.date}`, 20, 30);
+                doc.text(`Health Score: ${currentData.kpi.health_score}%`, 20, 45);
+                doc.text(`AQI Level: ${currentData.kpi.aqi}`, 20, 55);
+                doc.text(`Temperature: ${currentData.kpi.temperature} Celsius`, 20, 65);
+                doc.text(`Humidity: ${currentData.kpi.humidity}%`, 20, 75);
+                
+                doc.save(`${currentData.city}_Report.pdf`);
+                logActivity('📄 PDF Exported');
+            });
+
+            // 2. EXCEL DOWNLOAD
+            document.querySelector('.generate-excel').addEventListener('click', () => {
+                if(!checkData()) return;
+                const ws = XLSX.utils.json_to_sheet([currentData.kpi]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "KPI Data");
+                XLSX.writeFile(wb, `${currentData.city}_Report.xlsx`);
+                logActivity('📊 Excel File Generated');
+            });
+
+            // 3. CSV DOWNLOAD
+            document.querySelector('.generate-csv').addEventListener('click', () => {
+                if(!checkData()) return;
+                const csvData = `City,Date,Health Score,AQI,Temperature,Humidity\n${currentData.city},${currentData.date},${currentData.kpi.health_score},${currentData.kpi.aqi},${currentData.kpi.temperature},${currentData.kpi.humidity}`;
+                const blob = new Blob([csvData], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentData.city}_Report.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                logActivity('💧 CSV Downloaded');
+            });
+
+            // 4. JSON DOWNLOAD
+            document.querySelector('.generate-json').addEventListener('click', () => {
+                if(!checkData()) return;
+                const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${currentData.city}_Data.json`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                logActivity('🌍 JSON Synced & Downloaded');
+            });
+
+            function logActivity(message) {
+                const container = document.getElementById('recent-activity-container');
+                const newItem = `<div class="timeline-item">${message} <br><span style="font-size: 12px; color: #94A3B8;">Just Now</span></div>`;
+                container.innerHTML = newItem + container.innerHTML;
             }
         });
     </script>

@@ -622,27 +622,25 @@
                 });
             }
         });
-        // ==========================================
-// UPDATE 10-DAY FORECAST (Dynamic)
-// ==========================================
-const forecastContainer = document.querySelector('.forecast-list');
 
-// Maan lo backend se 'data.daily_forecast' array aa raha hai
-if (forecastContainer && data.daily_forecast) {
-    forecastContainer.innerHTML = ''; // Purana nakli data delete karo
-    
-    // Naya data loop karke daalo
-    data.daily_forecast.forEach(day => {
-        forecastContainer.innerHTML += `
-            <div class="forecast-row">
-                <span>${day.day_name}</span>
-                <i class="fas ${day.icon_class}"></i>
-                <span>${day.condition}</span>
-                <span>${day.temp_max}° / ${day.temp_min}°</span>
-            </div>
-        `;
-    });
-}
+        const forecastContainer = document.querySelector('.forecast-list');
+
+        // Maan lo backend se 'data.daily_forecast' array aa raha hai
+        if (forecastContainer && data.daily_forecast) {
+            forecastContainer.innerHTML = ''; // Purana nakli data delete karo
+            
+            // Naya data loop karke daalo
+            data.daily_forecast.forEach(day => {
+                forecastContainer.innerHTML += `
+                    <div class="forecast-row">
+                        <span>${day.day_name}</span>
+                        <i class="fas ${day.icon_class}"></i>
+                        <span>${day.condition}</span>
+                        <span>${day.temp_max}° / ${day.temp_min}°</span>
+                    </div>
+                `;
+            });
+        }
     </script>
 </body>
 </html>

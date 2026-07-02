@@ -126,14 +126,11 @@
 </head>
 <body>
 
-    <!-- PARTICLES -->
     <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
 
-    <!-- UNIVERSAL HIERARCHICAL SIDEBAR -->
     <aside id="mySidebar">
         <h1>WIP</h1>
         
-        <!-- MAIN SIDEBAR ITEMS -->
         <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
         <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
         <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
@@ -160,7 +157,6 @@
             <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
         </div>
         
-        <!-- ADVANCED FEATURES DROPDOWN (Active State for Eco Insights) -->
         <button class="sidebar-group-btn active" onclick="toggleSidebarMenu(this)">
             <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon" style="color: #38BDF8; transform: rotate(180deg);"></i>
         </button>
@@ -171,7 +167,6 @@
             <a href="climate-trends.html"><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
         </div>
 
-        <!-- OPERATIONS CENTER DROPDOWN -->
         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
@@ -180,8 +175,7 @@
             <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
         </div>
 
-        <!-- MORE DROPDOWN -->
-         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
+        <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
         <div class="sidebar-dropdown-container" style="display: none;">
@@ -191,7 +185,6 @@
             <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
         </div>
 
-        <!-- LEGAL DROPDOWN -->
         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
@@ -201,10 +194,8 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="main-content" id="myMainContent">
 
-        <!-- UNIFIED TOP NAVIGATION -->
         <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
                 <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
@@ -223,10 +214,8 @@
             </div>
         </nav>
 
-        <!-- Where the global API Data Will Appear -->
         <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
 
-        <!-- HEADER -->
         <header class="glass" style="margin-bottom: 30px; padding: 30px; display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <h1 style="font-size: 32px; font-weight: 700; color: white; margin: 0;">Eco Insights</h1>
@@ -235,7 +224,6 @@
             <i class="fas fa-leaf" style="font-size: 48px; color: #4ADE80; text-shadow: 0 0 20px rgba(74, 222, 128, 0.4);"></i>
         </header>
 
-        <!-- KPI STATS -->
         <section class="stats-grid">
             <div class="glass stat-card">
                 <div class="stat-icon green"><i class="fas fa-heart"></i></div>
@@ -255,10 +243,8 @@
             </div>
         </section>
 
-        <!-- MAIN GRID CONTENT -->
         <div class="eco-content-grid">
             
-            <!-- LEFT COLUMN -->
             <div style="display: flex; flex-direction: column;">
                 
                 <div class="glass section-card mb-30">
@@ -299,7 +285,6 @@
 
             </div>
 
-            <!-- RIGHT COLUMN -->
             <div style="display: flex; flex-direction: column;">
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 30px;">
@@ -350,7 +335,6 @@
             </div>
         </div>
 
-        <!-- FOOTER -->
         <footer class="glass footer" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px; margin-top: 40px;">
             <div>
                 <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
@@ -363,9 +347,10 @@
 
     <script src="js/api.js"></script>
 
-    <!-- INLINE SCRIPT: Sidebar Toggle, Particles & Charts -->
     <script>
-        // Premium Sidebar Toggle Logic
+        // ==========================================
+        // 1. SIDEBAR LOGIC
+        // ==========================================
         function brahmastraToggle() {
             var sidebar = document.getElementById("mySidebar");
             var main = document.getElementById("myMainContent");
@@ -382,13 +367,20 @@
             }
         }
 
-        // Sidebar Dropdown Toggle Logic
         function toggleSidebarMenu(btn) {
             btn.classList.toggle("active");
             var dropdownContent = btn.nextElementSibling;
             dropdownContent.style.display = (dropdownContent.style.display === "flex") ? "none" : "flex";
         }
 
+        // ==========================================
+        // 2. GLOBAL CHART VARIABLES
+        // ==========================================
+        let wellnessChartInstance, ecoChartInstance;
+
+        // ==========================================
+        // 3. INITIALIZATION & DYNAMIC SEARCH LOGIC
+        // ==========================================
         document.addEventListener("DOMContentLoaded", () => {
             // Particles setup
             if (typeof particlesJS !== "undefined") {
@@ -398,9 +390,9 @@
             // Common ChartJS Options
             const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } } };
 
-            // Wellness Chart
+            // Initialize Wellness Chart
             if(document.getElementById('wellnessChart')) {
-                new Chart(document.getElementById('wellnessChart').getContext('2d'), { 
+                wellnessChartInstance = new Chart(document.getElementById('wellnessChart').getContext('2d'), { 
                     type: 'line', 
                     data: { 
                         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], 
@@ -410,15 +402,107 @@
                 });
             }
 
-            // Environmental Eco Chart
+            // Initialize Environmental Eco Chart
             if(document.getElementById('ecoChart')) {
-                new Chart(document.getElementById('ecoChart').getContext('2d'), { 
+                ecoChartInstance = new Chart(document.getElementById('ecoChart').getContext('2d'), { 
                     type: 'bar', 
                     data: { 
                         labels: ['Air', 'Water', 'UV', 'Temp', 'Overall'], 
                         datasets: [{ data: [72, 96, 60, 85, 89], backgroundColor: ['#A855F7', '#38BDF8', '#FACC15', '#F87171', '#4ADE80'], borderRadius: 6 }] 
                     }, 
                     options: commonOptions 
+                });
+            }
+
+            // ==========================================
+            // 4. SEARCH FUNCTIONALITY
+            // ==========================================
+            // Yahan variables define kiye hain taaki error na aaye!
+            const searchBtn = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+
+            async function triggerSearch() {
+                const city = searchInput.value.trim();
+                if (!city) {
+                    alert("Bhai, pehle city ka naam daal!");
+                    return;
+                }
+
+                searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    // LocalStorage se token nikal kar headers mein bhej rahe hain
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/ai/eco-insights/${city}`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Update KPI Stats (Top 4 Boxes)
+                        const statBoxes = document.querySelectorAll('.stats-grid .stat-card h3');
+                        if (statBoxes.length >= 4) {
+                            statBoxes[0].innerText = data.kpi.health_score + "%";
+                            statBoxes[1].innerText = data.kpi.comfort_index + "°C";
+                            statBoxes[2].innerText = data.kpi.aqi;
+                            statBoxes[3].innerText = data.kpi.water_safety + "%";
+                        }
+
+                        // Update Focus Cards (Right Side)
+                        const focusCards = document.querySelectorAll('.focus-card h1');
+                        if (focusCards.length >= 4) {
+                            focusCards[0].innerText = data.focus.activity + "%";
+                            focusCards[1].innerHTML = `${data.focus.hydration}L <span style="font-size: 20px; color: #94A3B8;">/ 3.5L</span>`;
+                            
+                            // AQI Risk Logic
+                            let aqiRisk = "Low"; let aqiColor = "text-green";
+                            if(data.kpi.aqi > 150) { aqiRisk = "High"; aqiColor = "text-red"; }
+                            else if(data.kpi.aqi > 80) { aqiRisk = "Moderate"; aqiColor = "text-orange"; }
+                            
+                            focusCards[2].innerText = aqiRisk;
+                            focusCards[2].className = aqiColor; // Update color based on risk
+                            
+                            focusCards[3].innerText = data.focus.sleep + " Hours";
+                        }
+
+                        // Update Charts
+                        if (wellnessChartInstance && data.charts.wellness) { 
+                            wellnessChartInstance.data.datasets[0].data = data.charts.wellness; 
+                            wellnessChartInstance.update(); 
+                        }
+                        if (ecoChartInstance && data.charts.eco_score) { 
+                            ecoChartInstance.data.datasets[0].data = data.charts.eco_score; 
+                            ecoChartInstance.update(); 
+                        }
+                        
+                    } else {
+                        // Agar 401 aaye toh console mein error print hogi
+                        console.error("HTTP Error:", response.status);
+                        if (response.status === 401) {
+                            alert("Session expire ho gaya hai ya login nahi hai. Please login again.");
+                        } else {
+                            alert("Data nahi mila is city ka.");
+                        }
+                    }
+                } catch (error) {
+                    console.error("API Error:", error);
+                    alert("Backend server se connect nahi ho pa raha hai.");
+                } finally {
+                    searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                }
+            } // Bracket theek ho gaya!
+
+            // Click Event
+            if (searchBtn) searchBtn.addEventListener('click', triggerSearch);
+
+            // Enter Key Event
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        triggerSearch();
+                    }
                 });
             }
         });
