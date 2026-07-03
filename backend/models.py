@@ -31,11 +31,8 @@ class WeatherHistory(Base):
     temperature = Column(Float)
     humidity = Column(Float)
     wind_speed = Column(Float)
-    searched_at = Column(DateTime, default=datetime.utcnow) # Yeh line check karo!
+    searched_at = Column(DateTime, default=datetime.utcnow) 
 
-# ====================================
-# AQI History Table
-# ====================================
 
 class AQIHistory(Base):
     __tablename__ = "aqi_history"
@@ -45,10 +42,6 @@ class AQIHistory(Base):
     aqi = Column(Integer)
     searched_at = Column(DateTime, default=datetime.utcnow)
 
-
-# ====================================
-# Water Quality Table
-# ====================================
 
 class WaterQuality(Base):
     __tablename__ = "water_quality"
@@ -61,10 +54,6 @@ class WaterQuality(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# ====================================
-# Prediction Table
-# ====================================
-
 class Prediction(Base):
     __tablename__ = "predictions"
 
@@ -75,9 +64,7 @@ class Prediction(Base):
     prediction_date = Column(DateTime, default=datetime.utcnow)
 
 
-# ====================================
-# Notification Table
-# ====================================
+
 
 class Notification(Base):
     __tablename__ = "notifications"
@@ -88,9 +75,7 @@ class Notification(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# ====================================
-# Reports Table
-# ====================================
+
 
 class Report(Base):
     __tablename__ = "reports"
@@ -101,9 +86,7 @@ class Report(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# ====================================
-# Login Logs Table
-# ====================================
+
 
 class LoginLog(Base):
     __tablename__ = "login_logs"

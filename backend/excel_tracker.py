@@ -4,12 +4,9 @@ import pandas as pd
 
 EXCEL_FILE = "exports/activity_tracker.xlsx"
 
-# ==========================================
-# Create Excel File If Not Exists
-# ==========================================
 
 def initialize_excel():
-    # SAFETY CHECK: Ensure the 'exports' folder exists before saving!
+    
     os.makedirs(os.path.dirname(EXCEL_FILE), exist_ok=True)
 
     if not os.path.exists(EXCEL_FILE):
@@ -32,9 +29,7 @@ def initialize_excel():
             )
 
 
-# ==========================================
-# Add Activity
-# ==========================================
+
 
 def log_activity(username, activity, city="", details=""):
     initialize_excel()
@@ -82,9 +77,6 @@ def log_activity(username, activity, city="", details=""):
         )
 
 
-# ==========================================
-# Track Login
-# ==========================================
 
 def track_login(username):
     log_activity(
@@ -93,9 +85,6 @@ def track_login(username):
     )
 
 
-# ==========================================
-# Track Weather Search
-# ==========================================
 
 def track_weather_search(username, city):
     log_activity(
@@ -105,9 +94,6 @@ def track_weather_search(username, city):
     )
 
 
-# ==========================================
-# Track AQI Search
-# ==========================================
 
 def track_aqi_search(username, city):
     log_activity(
@@ -117,9 +103,6 @@ def track_aqi_search(username, city):
     )
 
 
-# ==========================================
-# Track Prediction
-# ==========================================
 
 def track_prediction(username, city):
     log_activity(
@@ -129,9 +112,6 @@ def track_prediction(username, city):
     )
 
 
-# ==========================================
-# Track Water Quality Search
-# ==========================================
 
 def track_water_quality(username, city):
     log_activity(

@@ -445,9 +445,9 @@
 
     </main>
 
+    <!-- LEAVE HTML STRUCTURE EXACTLY AS IT IS. REPLACE ONLY THE SCRIPT AT THE BOTTOM -->
     <script src="js/api.js"></script>
 
-    <!-- INLINE SCRIPTS -->
     <script>
         // Premium Sidebar Toggle Logic
         function brahmastraToggle() {
@@ -479,12 +479,69 @@
                 particlesJS("particles-js", { particles: { number: { value: 40 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
             }
 
-            // Notification Actions Mock Logic
-            const markAllReadBtn = document.getElementById('markAllRead');
-            const clearAllBtn = document.getElementById('clearAll');
             const timeline = document.getElementById('notificationTimeline');
             const unreadCountEl = document.getElementById('unreadCount');
             const readCountEl = document.getElementById('readCount');
+            const totalCountEl = document.querySelector('.stats-card:nth-child(1) h1');
+
+            // 🚀 API INTEGRATION: Fetch Notifications
+            async function loadNotifications() {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/notifications/data`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Update Stats
+                        totalCountEl.innerText = data.stats.total;
+                        readCountEl.innerText = data.stats.read;
+                        unreadCountEl.innerText = data.stats.unread;
+
+                        // Render Timeline
+                        timeline.innerHTML = data.notifications.map(notif => `
+                            <div class="notif-item ${notif.is_read ? '' : 'unread'}">
+                                <div class="notif-icon ${notif.color_class}"><i class="fas ${notif.icon}"></i></div>
+                                <div class="notif-content">
+                                    <div class="notif-header">
+                                        <h3>${notif.title}</h3>
+                                        <span class="time">${notif.time}</span>
+                                    </div>
+                                    <p>${notif.message}</p>
+                                </div>
+                                ${notif.is_read ? '' : '<div class="unread-dot"></div>'}
+                            </div>
+                        `).join('');
+
+                        // Render Priorities
+                        const priorityList = document.querySelector('.priority-list');
+                        if (priorityList && data.active_priorities) {
+                            priorityList.innerHTML = data.active_priorities.map(p => `
+                                <div class="priority-item">
+                                    <div class="p-icon" style="color: ${p.color};"><i class="fas fa-circle"></i></div>
+                                    <div>
+                                        <h4>${p.level.charAt(0).toUpperCase() + p.level.slice(1)} Priority</h4>
+                                        <p>${p.text}</p>
+                                    </div>
+                                </div>
+                            `).join('');
+                        }
+
+                    } else {
+                        if(response.status === 401) alert("Session expired. Please login again.");
+                        else timeline.innerHTML = '<div style="text-align: center; color: #F87171; padding: 40px;">Failed to load notifications.</div>';
+                    }
+                } catch (e) {
+                    console.error("Notification Fetch Error:", e);
+                    timeline.innerHTML = '<div style="text-align: center; color: #F87171; padding: 40px;">Network Error. Check backend.</div>';
+                }
+            }
+
+            // Client-side actions
+            const markAllReadBtn = document.getElementById('markAllRead');
+            const clearAllBtn = document.getElementById('clearAll');
 
             markAllReadBtn.addEventListener('click', () => {
                 const unreadItems = timeline.querySelectorAll('.notif-item.unread');
@@ -493,7 +550,7 @@
                     const dot = item.querySelector('.unread-dot');
                     if(dot) dot.remove();
                 });
-                // Update numbers (mock update)
+                
                 let currentUnread = parseInt(unreadCountEl.innerText);
                 let currentRead = parseInt(readCountEl.innerText);
                 readCountEl.innerText = currentRead + currentUnread;
@@ -504,7 +561,11 @@
                 timeline.innerHTML = '<div style="text-align: center; color: #94A3B8; padding: 40px;">No new notifications</div>';
                 unreadCountEl.innerText = "0";
                 readCountEl.innerText = "0";
+                totalCountEl.innerText = "0";
             });
+
+            // Initial Load
+            loadNotifications();
         });
     </script>
 </body>

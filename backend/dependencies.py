@@ -1,8 +1,5 @@
 from backend.database import SessionLocal
 
-# ==========================================
-# Database Dependency
-# ==========================================
 def get_db():
     db = SessionLocal()
     try:

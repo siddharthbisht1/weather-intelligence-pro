@@ -2,9 +2,6 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
 
-# ====================================
-# User Schemas
-# ====================================
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
@@ -25,9 +22,7 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
-# ====================================
-# Weather Schemas
-# ====================================
+
 class WeatherBase(BaseModel):
     city: str
     temperature: float
@@ -35,23 +30,21 @@ class WeatherBase(BaseModel):
     wind_speed: float
 
 class WeatherCreate(WeatherBase):
-    pass  # Input ke time bas base fields chahiye
+    pass  
 
 class WeatherResponse(WeatherBase):
     id: int
-    searched_at: datetime  # Database se timestamp tracking ke liye
+    searched_at: datetime  
 
     class Config:
         from_attributes = True
 
 
-# ====================================
-# AQI Schemas
-# ====================================
+
 class AQIBase(BaseModel):
     city: str
     aqi: int
-    pm25: Optional[float] = None  # Extra monitoring data ke liye
+    pm25: Optional[float] = None  
     pm10: Optional[float] = None
 
 class AQICreate(AQIBase):
@@ -65,9 +58,6 @@ class AQIResponse(AQIBase):
         from_attributes = True
 
 
-# ====================================
-# Water Quality Schemas
-# ====================================
 class WaterBase(BaseModel):
     city: str
     ph: float
@@ -84,10 +74,6 @@ class WaterResponse(WaterBase):
     class Config:
         from_attributes = True
 
-
-# ====================================
-# Prediction Schemas
-# ====================================
 class PredictionBase(BaseModel):
     city: str
     predicted_aqi: float
@@ -105,15 +91,12 @@ class PredictionResponse(PredictionBase):
         from_attributes = True
 
 
-# ====================================
-# Notification Schemas
-# ====================================
 class NotificationBase(BaseModel):
     title: str
     message: str
 
 class NotificationCreate(NotificationBase):
-    user_id: Optional[int] = None  # Agar specific user ko bhejni ho, nahi toh broadcast
+    user_id: Optional[int] = None  
 
 class NotificationResponse(NotificationBase):
     id: int
@@ -123,15 +106,13 @@ class NotificationResponse(NotificationBase):
         from_attributes = True
 
 
-# ====================================
-# Report Schemas
-# ====================================
+
 class ReportBase(BaseModel):
     report_name: str
-    report_type: str  # e.g., 'PDF', 'CSV'
+    report_type: str  
 
 class ReportCreate(ReportBase):
-    generated_by: int  # Admin ki ID tracking ke liye
+    generated_by: int  
 
 class ReportResponse(ReportBase):
     id: int
@@ -141,14 +122,11 @@ class ReportResponse(ReportBase):
         from_attributes = True
 
 
-# ====================================
-# Login Log Schemas (Sirf Response/Read-only hota hai system ke liye)
-# ====================================
 class LoginLogResponse(BaseModel):
     id: int
     username: str
     login_time: datetime
-    ip_address: Optional[str] = None  # Security auditing ke liye mast feature hai
+    ip_address: Optional[str] = None  
 
     class Config:
         from_attributes = True

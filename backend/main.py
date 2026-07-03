@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 
-from backend.config import settings  # Use the settings object!
+from backend.config import settings  
 from backend.database import Base, engine
 
 from backend.middleware.logging_middleware import LoggingMiddleware
@@ -31,7 +31,6 @@ from backend.routes import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # This runs when the server starts up
     Base.metadata.create_all(bind=engine)
     print(f"🚀 {settings.APP_NAME} v{settings.VERSION} is now ONLINE.")
     yield 
@@ -87,9 +86,9 @@ app.add_middleware(LoggingMiddleware)
 app.add_middleware(AuthMiddleware)
 
 origins = [
-    "http://127.0.0.1:5500",  # VS Code Live Server
+    "http://127.0.0.1:5500",  
     "http://localhost:5500",
-    "http://127.0.0.1:8000",  # Swagger UI
+    "http://127.0.0.1:8000",  
     "http://localhost:8000",
 ]
 

@@ -1,18 +1,13 @@
 import logging
 import os
 
-# ==========================================
-# Create Logs Folder
-# ==========================================
+
 
 LOG_DIR = "logs"
 os.makedirs(LOG_DIR, exist_ok=True)
 
 LOG_FILE = os.path.join(LOG_DIR, "weather_intelligence.log")
 
-# ==========================================
-# Configure Logging
-# ==========================================
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,16 +18,10 @@ logging.basicConfig(
     ]
 )
 
-# ==========================================
-# Create Logger
-# ==========================================
 
 logger = logging.getLogger("WeatherIntelligencePro")
 
 
-# ==========================================
-# Helper Functions
-# ==========================================
 
 def log_info(message):
     logger.info(message)
