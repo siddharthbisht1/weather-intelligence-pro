@@ -235,3 +235,22 @@ def get_forecast_data(city: str):
             "humidity": [random.randint(40,90) for _ in range(6)]
         }
     }
+@router.post("/help/query")
+def get_help_response(query: dict):
+    user_query = query.get("text", "").lower()
+    
+    # Simple logic matching
+    responses = {
+        "search": "City search karne ke liye Dashboard pe jaao aur top search bar mein naam type karo.",
+        "export": "Export karne ke liye Export Center mein jaao, wahan PDF/Excel buttons par click karo.",
+        "login": "Agar login mein problem hai, toh credentials check karo ya 'Forgot Password' use karo.",
+        "default": "Humein feedback form ke zariye batao, hamari support team 24 ghante mein contact karegi!"
+    }
+    
+    answer = responses.get("default")
+    for key in responses:
+        if key in user_query:
+            answer = responses[key]
+            break
+            
+    return {"response": answer}

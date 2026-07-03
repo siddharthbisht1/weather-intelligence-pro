@@ -387,8 +387,7 @@
     </main>
 
     <script src="js/api.js"></script>
-
-    <!-- JS SCRIPTS -->
+    
     <script>
         // Premium Sidebar Toggle Logic
         function brahmastraToggle() {
@@ -420,18 +419,20 @@
                 particlesJS("particles-js", { particles: { number: { value: 50 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
             }
 
-            // Chart Configurations
+            // Global Chart Variables for dynamic updating
+            let searchTrendChart, cityDistChart;
+
             const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } } };
 
-            // 1. Search Trend Chart (Line)
+            // Initialize Charts
             if(document.getElementById('trendChart')) {
-                new Chart(document.getElementById('trendChart').getContext('2d'), {
+                searchTrendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
                         datasets: [{
                             label: "Searches",
-                            data: [12, 19, 15, 25, 22, 30, 28],
+                            data: [0, 0, 0, 0, 0, 0, 0], // Starts empty
                             borderColor: "#FACC15",
                             backgroundColor: "rgba(250, 204, 21, 0.1)",
                             fill: true,
@@ -442,14 +443,13 @@
                 });
             }
 
-            // 2. City Distribution Chart (Doughnut)
             if(document.getElementById('cityChart')) {
-                new Chart(document.getElementById('cityChart').getContext('2d'), {
+                cityDistChart = new Chart(document.getElementById('cityChart').getContext('2d'), {
                     type: 'doughnut',
                     data: {
                         labels: ["Delhi", "Mumbai", "Dehradun", "Others"],
                         datasets: [{
-                            data: [42, 30, 18, 10],
+                            data: [0, 0, 0, 0], // Starts empty
                             backgroundColor: ["#38BDF8", "#A855F7", "#4ADE80", "rgba(255,255,255,0.1)"],
                             borderWidth: 0
                         }]
@@ -461,8 +461,84 @@
                     }
                 });
             }
+
+            // 🚀 The API Integration Logic
+            async function loadHistoryData(city = "all") {
+                const searchBtn = document.getElementById('search-button');
+                searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/history/dashboard/${city}`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if(response.ok) {
+                        const data = await response.json();
+
+                        // 1. Update KPI Cards (Targeting by layout order since HTML structural IDs aren't present)
+                        const kpiElements = document.querySelectorAll('.history-grid .history-card h1');
+                        if(kpiElements.length >= 4) {
+                            kpiElements[0].innerText = data.kpis.total_searches;
+                            kpiElements[1].innerText = data.kpis.most_searched;
+                            kpiElements[2].innerText = data.kpis.avg_temp;
+                            kpiElements[3].innerText = data.kpis.avg_aqi;
+                        }
+
+                        // 2. Update Charts
+                        if(searchTrendChart) {
+                            searchTrendChart.data.datasets[0].data = data.charts.trend;
+                            searchTrendChart.update();
+                        }
+                        if(cityDistChart) {
+                            cityDistChart.data.datasets[0].data = data.charts.city_dist;
+                            cityDistChart.update();
+                        }
+
+                        // 3. Update Table
+                        const tbody = document.getElementById('historyTable');
+                        tbody.innerHTML = data.table.map(row => `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 15px;">${row.date}</td>
+                                <td style="padding: 15px; font-weight: 600;">${row.city}</td>
+                                <td style="padding: 15px;">${row.temp}</td>
+                                <td style="padding: 15px; color: #FACC15;">${row.aqi}</td>
+                                <td style="padding: 15px; color: #4ADE80;">${row.water_quality}</td>
+                                <td style="padding: 15px;">${row.prediction}</td>
+                            </tr>
+                        `).join('');
+
+                    } else {
+                        if(response.status === 401) alert("Your session has expired. Please login again.");
+                        else alert("Failed to fetch search history.");
+                    }
+                } catch(e) {
+                    console.error("Fetch Error:", e);
+                    alert("Network Error. Check if backend is running.");
+                } finally {
+                    searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                }
+            }
+
+            // Event Listeners
+            const searchBtn = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+            const applyFilterBtn = document.querySelector('.apply-btn');
+
+            searchBtn.addEventListener('click', () => loadHistoryData(searchInput.value.trim() || 'all'));
+            searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') loadHistoryData(searchInput.value.trim() || 'all'); });
+            
+            if(applyFilterBtn) {
+                applyFilterBtn.addEventListener('click', () => {
+                    const selectValue = document.querySelector('.glass-select').value;
+                    const city = selectValue === "All Cities" ? "all" : selectValue;
+                    loadHistoryData(city);
+                });
+            }
+
+            // Initial load
+            loadHistoryData('all');
         });
     </script>
-
 </body>
 </html>
