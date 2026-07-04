@@ -25,7 +25,7 @@ from backend.routes import (
     auth_routes, weather_routes, aqi_routes, water_routes,
     analytics_routes, report_routes, history_routes, 
     notification_routes, admin_routes, forecast_routes, websocket_routes,
-    prediction_routes , map_routes
+    prediction_routes , map_routes, observability_routes , legal_routes
 )
 
 
@@ -114,6 +114,8 @@ app.include_router(websocket_routes.router)
 app.include_router(prediction_routes.router)
 app.include_router(ai_routes.router)
 app.include_router(map_routes.router)
+app.include_router(observability_routes.router)
+app.include_router(legal_routes.router)
 
 @app.get("/", tags=["Health & Status"])
 def home():

@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <script src="https://cdn.chartjs.org/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
@@ -115,6 +115,7 @@
         <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
         <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
         <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        <a href="satellite-dashboard.html" ><i class="fa-solid fa-satellite"></i> Satellite Data</a>
         <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
         <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
         <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
@@ -349,14 +350,12 @@
             }
         }
 
-        // Sidebar Dropdown Toggle Logic
         function toggleSidebarMenu(btn) {
             btn.classList.toggle("active");
             var dropdownContent = btn.nextElementSibling;
             dropdownContent.style.display = (dropdownContent.style.display === "flex") ? "none" : "flex";
         }
 
-        // Initialize Charts and Particles
         document.addEventListener("DOMContentLoaded", function() {
             
             // Particles Init
@@ -371,60 +370,125 @@
                 return;
             }
 
-            // Common Chart Options
             const commonOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
                 scales: {
                     x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { family: 'Poppins' } } },
                     y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94A3B8', font: { family: 'Poppins' } } }
                 }
             };
 
-            // 1. CPU Usage Chart
+            // Global Chart Variables
+            let cpuChart, memoryChart, networkChart, apiChart;
+            const timeLabels = ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'];
+
             if (document.getElementById('cpuChart')) {
-                new Chart(document.getElementById('cpuChart').getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'],
-                        datasets: [{ data: [32, 38, 35, 45, 42, 55, 48], borderColor: '#38BDF8', backgroundColor: 'rgba(56, 189, 248, 0.1)', borderWidth: 2, fill: true, tension: 0.4 }]
-                    }, options: commonOptions
+                cpuChart = new Chart(document.getElementById('cpuChart').getContext('2d'), {
+                    type: 'line', data: { labels: timeLabels, datasets: [{ data: [0,0,0,0,0,0,0], borderColor: '#38BDF8', backgroundColor: 'rgba(56, 189, 248, 0.1)', borderWidth: 2, fill: true, tension: 0.4 }] }, options: commonOptions
                 });
             }
-
-            // 2. Memory Usage Chart
             if (document.getElementById('memoryChart')) {
-                new Chart(document.getElementById('memoryChart').getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'],
-                        datasets: [{ data: [55, 58, 62, 60, 68, 72, 62], borderColor: '#A855F7', backgroundColor: 'rgba(168, 85, 247, 0.1)', borderWidth: 2, fill: true, tension: 0.4 }]
-                    }, options: commonOptions
+                memoryChart = new Chart(document.getElementById('memoryChart').getContext('2d'), {
+                    type: 'line', data: { labels: timeLabels, datasets: [{ data: [0,0,0,0,0,0,0], borderColor: '#A855F7', backgroundColor: 'rgba(168, 85, 247, 0.1)', borderWidth: 2, fill: true, tension: 0.4 }] }, options: commonOptions
                 });
             }
-
-            // 3. Network Traffic Chart
             if (document.getElementById('networkChart')) {
-                new Chart(document.getElementById('networkChart').getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'],
-                        datasets: [{ data: [12, 19, 15, 25, 22, 30, 28], borderColor: '#4ADE80', backgroundColor: 'rgba(74, 222, 128, 0.1)', borderWidth: 2, fill: true, tension: 0.4 }]
-                    }, options: commonOptions
+                networkChart = new Chart(document.getElementById('networkChart').getContext('2d'), {
+                    type: 'line', data: { labels: timeLabels, datasets: [{ data: [0,0,0,0,0,0,0], borderColor: '#4ADE80', backgroundColor: 'rgba(74, 222, 128, 0.1)', borderWidth: 2, fill: true, tension: 0.4 }] }, options: commonOptions
+                });
+            }
+            if (document.getElementById('apiChart')) {
+                apiChart = new Chart(document.getElementById('apiChart').getContext('2d'), {
+                    type: 'bar', data: { labels: timeLabels, datasets: [{ data: [0,0,0,0,0,0,0], backgroundColor: '#FACC15', borderRadius: 4 }] }, options: commonOptions
                 });
             }
 
-            // 4. API Requests Chart
-            if (document.getElementById('apiChart')) {
-                new Chart(document.getElementById('apiChart').getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'],
-                        datasets: [{ data: [120, 150, 180, 140, 190, 220, 200], backgroundColor: '#FACC15', borderRadius: 4 }]
-                    }, options: commonOptions
-                });
+            // 🚀 REAL-TIME DATA FETCHING LOGIC
+            async function fetchObservabilityData() {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/observability/metrics`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        // 1. Update Top KPIs
+                        const statCards = document.querySelectorAll('.stat-card h2');
+                        if(statCards.length >= 6) {
+                            statCards[0].innerText = data.kpis.uptime;
+                            statCards[1].innerText = data.kpis.active_services;
+                            statCards[2].innerText = data.kpis.response_time;
+                            statCards[3].innerText = data.kpis.requests_hr;
+                            statCards[4].innerText = data.kpis.data_processed;
+                            statCards[5].innerText = data.kpis.ai_accuracy;
+                        }
+
+                        // 2. Update Charts
+                        if(cpuChart) { cpuChart.data.datasets[0].data = data.charts.cpu; cpuChart.update(); }
+                        if(memoryChart) { memoryChart.data.datasets[0].data = data.charts.memory; memoryChart.update(); }
+                        if(networkChart) { networkChart.data.datasets[0].data = data.charts.network; networkChart.update(); }
+                        if(apiChart) { apiChart.data.datasets[0].data = data.charts.api; apiChart.update(); }
+
+                        // 3. Update Services Status Cards
+                        const serviceContainer = document.querySelector('.service-card').parentNode;
+                        serviceContainer.innerHTML = data.services_status.map(s => `
+                            <div class="glass service-card" style="border: 1px solid ${s.color}33;">
+                                <i class="fa-solid ${s.icon}" style="font-size: 24px; color: ${s.color};"></i>
+                                <div><h3 style="color:white; font-size: 14px; margin:0;">${s.name}</h3><p style="color:${s.color}; font-size:12px; margin:0;">${s.status} (${s.uptime})</p></div>
+                            </div>
+                        `).join('');
+
+                        // 4. Update Resource Table
+                        const table = document.querySelector('table');
+                        table.innerHTML = `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #94A3B8;">
+                                <th style="padding: 12px; font-weight: 500;">Service</th><th style="padding: 12px; font-weight: 500;">CPU</th><th style="padding: 12px; font-weight: 500;">Memory</th><th style="padding: 12px; font-weight: 500;">Status</th>
+                            </tr>
+                            ${data.resource_table.map(r => `
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 12px;">${r.name}</td><td style="padding: 12px;">${r.cpu}</td><td style="padding: 12px;">${r.mem}</td><td style="padding: 12px; color: ${r.color};">${r.status}</td>
+                                </tr>
+                            `).join('')}
+                        `;
+
+                        // 5. Update Alerts (Targeting by looking for the icon inside)
+                        const alertsContainer = document.querySelectorAll('.section-card')[5]; // 6th card in DOM flow
+                        alertsContainer.innerHTML = `
+                            <h2 style="color: white; margin-bottom: 20px; display:flex; align-items:center; gap:8px; font-size: 16px; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation" style="color: #F87171;"></i> Alerts Center</h2>
+                            ${data.alerts.map(a => `
+                                <div style="padding: 12px; background: ${a.bg}; border: 1px solid ${a.color}33; border-radius: 12px; color: ${a.color}; margin-bottom: 10px; font-size: 13px;"><i class="fa-solid ${a.icon}" style="margin-right: 8px;"></i> ${a.msg}</div>
+                            `).join('')}
+                        `;
+
+                        // 6. Update System Logs
+                        const logsContainer = document.querySelectorAll('.section-card')[6]; // 7th card
+                        logsContainer.innerHTML = `
+                            <h2 style="color: white; margin-bottom: 20px; display:flex; align-items:center; gap:8px; font-size: 16px; font-weight: 600;"><i class="fa-solid fa-terminal" style="color: #A855F7;"></i> System Logs</h2>
+                            <div style="font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; color: #E2E8F0; display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto;">
+                                ${data.logs.map(l => `<div><span style="color: #94A3B8;">${l.time}</span> <span style="color: ${l.color};">${l.level}</span> ${l.msg}</div>`).join('')}
+                            </div>
+                        `;
+
+                        // 7. Update Realtime Metrics
+                        const rtContainer = document.querySelectorAll('.section-card')[7]; // 8th card
+                        rtContainer.innerHTML = `
+                            <h2 style="color: white; margin-bottom: 20px; display:flex; align-items:center; gap:8px; font-size: 16px; font-weight: 600;"><i class="fa-solid fa-wave-square" style="color: #38BDF8;"></i> Realtime Metrics</h2>
+                            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); color: #E2E8F0; font-size: 14px;"><span>Current CPU</span> <span style="color: #38BDF8; font-weight: 600;">${data.realtime.current_cpu}</span></div>
+                            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); color: #E2E8F0; font-size: 14px;"><span>Requests / Min</span> <span style="color: #A855F7; font-weight: 600;">${data.realtime.requests_min}</span></div>
+                            <div style="display: flex; justify-content: space-between; padding: 12px 0; color: #E2E8F0; font-size: 14px;"><span>Active Sensors</span> <span style="color: #4ADE80; font-weight: 600;">${data.realtime.active_sensors}</span></div>
+                        `;
+
+                    }
+                } catch (e) { console.error("Observability Fetch Error:", e); }
             }
+
+            // Initial fetch
+            fetchObservabilityData();
+
+            // Refresh data every 5 seconds for a "LIVE" feel
+            setInterval(fetchObservabilityData, 5000);
         });
     </script>
 </body>

@@ -112,6 +112,7 @@
         <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
         <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
         <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        <a href="satellite-dashboard.html" ><i class="fa-solid fa-satellite"></i> Satellite Data</a>
         <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
         <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
         <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
@@ -242,6 +243,7 @@
                 sidebar.style.transform = (sidebar.style.transform === "translateX(-110%)" || sidebar.style.transform === "") ? "translateX(0px)" : "translateX(-110%)";
             }
         }
+        
         function toggleSidebarMenu(btn) {
             btn.classList.toggle("active");
             var dropdownContent = btn.nextElementSibling;
@@ -249,18 +251,69 @@
         }
         
         document.addEventListener("DOMContentLoaded", () => {
-            // Theme Toggle
-            const themeBtn = document.getElementById("themeToggle");
-            if (themeBtn) {
-                themeBtn.addEventListener("click", () => {
-                    document.body.classList.toggle("light-mode");
-                });
-            }
-            
             // Particles
             if (typeof particlesJS !== "undefined") {
                 particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
             }
+
+            // 🚀 API INTEGRATION: Fetch Legal Content
+            async function loadPrivacyPolicy() {
+                const container = document.getElementById('dynamic-legal-content');
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/legal/privacy-policy`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        let htmlContent = `
+                            <section class="glass hero-card hover-card">
+                                <h1><i class="fas fa-shield-halved" style="color: #38BDF8;"></i> ${data.hero.title}</h1>
+                                <p>${data.hero.subtitle} | Last Updated: ${data.last_updated}</p>
+                            </section>
+                        `;
+
+                        // Render Sections dynamically
+                        data.sections.forEach(sec => {
+                            htmlContent += `
+                                <section class="glass policy-card hover-card">
+                                    <h2>${sec.title}</h2>
+                                    <div>${sec.content}</div>
+                                </section>
+                            `;
+                        });
+
+                        // Render Stats dynamically
+                        htmlContent += `<section class="stats-grid">`;
+                        data.stats.forEach(stat => {
+                            htmlContent += `<div class="glass stat-card hover-card"><h2>${stat.value}</h2><p>${stat.label}</p></div>`;
+                        });
+                        htmlContent += `</section>`;
+
+                        // Render Contact Info dynamically
+                        htmlContent += `
+                            <section class="glass policy-card hover-card">
+                                <h2>${data.contact.title}</h2>
+                                <div class="contact-item"><i class="fas fa-envelope" style="margin-right: 10px; color: #38BDF8;"></i> ${data.contact.email}</div>
+                                <div class="contact-item"><i class="fas fa-phone" style="margin-right: 10px; color: #4ADE80;"></i> ${data.contact.phone}</div>
+                                <div class="contact-item"><i class="fas fa-location-dot" style="margin-right: 10px; color: #F87171;"></i> ${data.contact.address}</div>
+                            </section>
+                        `;
+
+                        container.innerHTML = htmlContent;
+
+                    } else {
+                        container.innerHTML = `<div style="text-align:center; color:#F87171; padding:30px;">Failed to load policy document.</div>`;
+                    }
+                } catch (error) {
+                    console.error("Error fetching policy:", error);
+                    container.innerHTML = `<div style="text-align:center; color:#F87171; padding:30px;">Network error. Cannot reach legal API.</div>`;
+                }
+            }
+
+            // Load data on page load
+            loadPrivacyPolicy();
         });
     </script>
 </body>

@@ -156,6 +156,7 @@
         <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
         <a href="prediction.html" class="active"><i class="fas fa-brain"></i> AI Prediction</a>
         <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
+        <a href="satellite-dashboard.html" ><i class="fa-solid fa-satellite"></i> Satellite Data</a>
         <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
         <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
         <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
@@ -428,31 +429,84 @@
                 }
             };
 
-            // Forecast Chart
+            // Global Chart Instances
+            let forecastChartInstance = null;
+            let historyChartInstance = null;
+
+            // Forecast Chart Init
             const forecastCtx = document.getElementById("forecastChart");
             if (forecastCtx) {
-                new Chart(forecastCtx, {
+                forecastChartInstance = new Chart(forecastCtx, {
                     type: "line",
                     data: {
                         labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"],
-                        datasets: [{ label: "Predicted AQI", data: [82, 84, 88, 92, 97], borderColor: "#38BDF8", backgroundColor: "rgba(56,189,248,0.2)", fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: "#38BDF8" }]
+                        datasets: [{ label: "Predicted AQI", data: [0, 0, 0, 0, 0], borderColor: "#38BDF8", backgroundColor: "rgba(56,189,248,0.2)", fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: "#38BDF8" }]
                     },
                     options: commonOptions
                 });
             }
 
-            // History Bar Chart
+            // History Bar Chart Init
             const historyCtx = document.getElementById("historyChart");
             if (historyCtx) {
-                new Chart(historyCtx, {
+                historyChartInstance = new Chart(historyCtx, {
                     type: "bar",
                     data: {
                         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                        datasets: [{ label: "Accuracy %", data: [88, 90, 91, 93, 94, 95], backgroundColor: "#A855F7", borderRadius: 6 }]
+                        datasets: [{ label: "Accuracy %", data: [0, 0, 0, 0, 0, 0], backgroundColor: "#A855F7", borderRadius: 6 }]
                     },
                     options: commonOptions
                 });
             }
+
+            // 🚀 API INTEGRATION: Fetch AI Prediction Data
+            async function fetchPredictionData(city) {
+                const searchBtn = document.getElementById('search-button');
+                if(searchBtn) searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/ai/forecast/${city}`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        // 1. Update Charts
+                        if (forecastChartInstance) {
+                            forecastChartInstance.data.datasets[0].data = data.charts.forecast_trend;
+                            forecastChartInstance.update();
+                        }
+                        if (historyChartInstance) {
+                            historyChartInstance.data.datasets[0].data = data.charts.accuracy_history;
+                            historyChartInstance.update();
+                        }
+
+                        // Note: If you have specific HTML IDs for your KPIs (like id="pred-aqi"), 
+                        // you can map data.kpis.predicted_aqi to them here, just like in previous dashboards!
+
+                    } else {
+                        if(response.status === 401) alert("Session expired. Please login again.");
+                        else console.error("Data not found for city.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching AI data:", error);
+                } finally {
+                    if(searchBtn) searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                }
+            }
+
+            // Bind Search Event if search bar exists on this page
+            const searchBtn = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => { if(searchInput.value) fetchPredictionData(searchInput.value.trim()); });
+                searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter' && searchInput.value) fetchPredictionData(searchInput.value.trim()); });
+            }
+
+            // Load default data on startup
+            fetchPredictionData('Dehradun');
         });
     </script>
 </body>
