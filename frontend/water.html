@@ -102,7 +102,7 @@
         .analytics-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
         .analytics-card { padding: 25px; border-radius: 20px; }
         .card-top { display: flex; align-items: center; gap: 10px; color: #38BDF8; margin-bottom: 15px; }
-        .analytics-card h1 { font-size: 32px; font-weight: 700; margin: 0; }
+        .analytics-card h1 { font-size: 32px; font-weight: 700; margin: 0; transition: 0.3s; }
         .analytics-card p { color: #94A3B8; font-size: 14px; }
 
         .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 20px; }
@@ -204,11 +204,11 @@
 
         <section class="hero-water glass hover-card">
             <div>
-                <h1 style="font-size: 60px; font-weight: 700; margin: 0;">94%</h1>
-                <h2 style="font-size: 24px; color: #4ADE80; font-weight: 600; margin: 10px 0;">Excellent</h2>
+                <h1 id="wqi-score" style="font-size: 60px; font-weight: 700; margin: 0;">--%</h1>
+                <h2 id="status-text" style="font-size: 24px; color: #4ADE80; font-weight: 600; margin: 10px 0;">Loading...</h2>
                 <p style="color: #94A3B8;">Overall Water Quality Index</p>
             </div>
-            <div class="water-circle"><h1 style="font-size: 50px;">94%</h1></div>
+            <div class="water-circle"><h1 id="wqi-circle-score" style="font-size: 50px;">--%</h1></div>
         </section>
 
         <section class="status-grid">
@@ -221,19 +221,19 @@
         <section class="analytics-section">
             <div class="analytics-card glass hover-card">
                 <div class="card-top"><i class="fas fa-vial"></i><span>pH Level</span></div>
-                <h1>7.2</h1><p>Balanced</p>
+                <h1 id="ph-val">--</h1><p>Balanced</p>
             </div>
             <div class="analytics-card glass hover-card">
                 <div class="card-top"><i class="fas fa-water"></i><span>TDS</span></div>
-                <h1>220</h1><p>ppm</p>
+                <h1 id="tds-val">--</h1><p>ppm</p>
             </div>
             <div class="analytics-card glass hover-card">
                 <div class="card-top"><i class="fas fa-wave-square"></i><span>Turbidity</span></div>
-                <h1>1.5</h1><p>NTU</p>
+                <h1 id="turb-val">--</h1><p>NTU</p>
             </div>
             <div class="analytics-card glass hover-card">
                 <div class="card-top"><i class="fas fa-flask"></i><span>Chlorine</span></div>
-                <h1>0.8</h1><p>mg/L</p>
+                <h1 id="cl-val">0.8</h1><p>mg/L</p>
             </div>
         </section>
 
@@ -260,7 +260,7 @@
         </footer>
     </main>
 
-    <script src="js/api.js"></script>
+   <script src="js/api.js"></script>
 
     <script>
         function brahmastraToggle() {
@@ -284,58 +284,119 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Theme Toggle
+            // Theme & Particles
             const themeBtn = document.getElementById("themeToggle");
-            if (themeBtn) {
-                themeBtn.addEventListener("click", () => { document.body.classList.toggle("light-mode"); });
-            }
+            if (themeBtn) themeBtn.addEventListener("click", () => document.body.classList.toggle("light-mode"));
 
-            // Particles
             if (typeof particlesJS !== "undefined") {
                 particlesJS("particles-js", { particles: { number: { value: 50 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
             }
 
+            // ==========================================
+            // CHART & MAP INITIALIZATION
+            // ==========================================
+            let waterMap, markerLayer;
+            let waterChartInstance, paramChartInstance;
+
             // Leaflet Map Init
-            if(document.getElementById('waterMap')) {
-                const map = L.map('waterMap').setView([30.3165, 78.0322], 10);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
-                L.marker([30.3165, 78.0322]).addTo(map).bindPopup("Quality Station: Alpha");
+            if(document.getElementById('waterMap') && typeof L !== "undefined") {
+                waterMap = L.map('waterMap').setView([20.5937, 78.9629], 5); // Default to India
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(waterMap);
+                markerLayer = L.layerGroup().addTo(waterMap);
             }
 
-            // Simple Charts Init
+            // Charts Init
             const common = { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { legend: { display: false } }, 
-                scales: { 
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, 
-                    x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } 
-                } 
+                responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, 
+                scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } } 
             };
 
             const waterCtx = document.getElementById('waterChart');
             if (waterCtx) {
-                new Chart(waterCtx, { 
-                    type: 'line', 
-                    data: { 
-                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], 
-                        datasets: [{ data: [92, 93, 91, 94, 94], borderColor: '#38BDF8', fill: true, tension: 0.4, backgroundColor: 'rgba(56,189,248,0.1)' }] 
-                    }, 
-                    options: common 
-                });
+                waterChartInstance = new Chart(waterCtx, { type: 'line', data: { labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Today'], datasets: [{ data: [], borderColor: '#38BDF8', fill: true, tension: 0.4, backgroundColor: 'rgba(56,189,248,0.1)' }] }, options: common });
             }
 
             const paramCtx = document.getElementById('parameterChart');
             if (paramCtx) {
-                new Chart(paramCtx, { 
-                    type: 'bar', 
-                    data: { 
-                        labels: ['pH', 'TDS', 'Turb', 'Cl'], 
-                        datasets: [{ data: [7.2, 220, 1.5, 0.8], backgroundColor: ['#38BDF8', '#4ADE80', '#FACC15', '#A855F7'], borderRadius: 4 }] 
-                    }, 
-                    options: common 
-                });
+                paramChartInstance = new Chart(paramCtx, { type: 'bar', data: { labels: ['pH', 'TDS (x100)', 'Turb', 'Cl'], datasets: [{ data: [], backgroundColor: ['#38BDF8', '#4ADE80', '#FACC15', '#A855F7'], borderRadius: 4 }] }, options: common });
             }
+
+            // ==========================================
+            // API INTEGRATION
+            // ==========================================
+            async function fetchWaterData(city) {
+                const searchBtn = document.getElementById('search-button');
+                if(searchBtn) searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/water/data/${encodeURIComponent(city)}`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        // 1. UPDATE KPI CARDS (Dynamic Values via IDs)
+                        const wqiDisplay = data.kpis.wqi + "%";
+                        const wqiEl = document.getElementById('wqi-score');
+                        const wqiCircleEl = document.getElementById('wqi-circle-score');
+                        const statusText = document.getElementById('status-text');
+                        
+                        if (wqiEl) wqiEl.innerText = wqiDisplay;
+                        if (wqiCircleEl) wqiCircleEl.innerText = wqiDisplay;
+                        if (statusText) {
+                            statusText.innerText = data.kpis.status;
+                            statusText.style.color = data.kpis.status_color;
+                        }
+
+                        const phVal = document.getElementById('ph-val');
+                        const tdsVal = document.getElementById('tds-val');
+                        const turbVal = document.getElementById('turb-val');
+                        
+                        if (phVal) phVal.innerText = data.kpis.ph;
+                        if (tdsVal) tdsVal.innerText = data.kpis.tds;
+                        if (turbVal) turbVal.innerText = data.kpis.turbidity;
+
+                        // 2. Fly Map to Location & Add Marker
+                        if(waterMap && data.map_center) {
+                            waterMap.flyTo([data.map_center.lat, data.map_center.lng], 10, { animate: true, duration: 1.5 });
+                            markerLayer.clearLayers();
+                            L.marker([data.map_center.lat, data.map_center.lng]).addTo(markerLayer)
+                             .bindPopup(`<b>${data.city} Water Station</b><br>Status: ${data.kpis.status}`).openPopup();
+                        }
+
+                        // 3. Update Charts
+                        if(waterChartInstance) { 
+                            waterChartInstance.data.datasets[0].data = data.charts.wqi_trend; 
+                            waterChartInstance.update(); 
+                        }
+                        if(paramChartInstance) { 
+                            paramChartInstance.data.datasets[0].data = data.charts.parameters; 
+                            paramChartInstance.update(); 
+                        }
+
+                    } else {
+                        if(response.status === 401) alert("Session expired.");
+                        else console.error("Data not found.");
+                    }
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                } finally {
+                    if(searchBtn) searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                }
+            }
+
+            // Bind Search Events
+            const searchBtn = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => { if(searchInput.value) fetchWaterData(searchInput.value.trim()); });
+                searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter' && searchInput.value) fetchWaterData(searchInput.value.trim()); });
+            }
+
+            // Load initial data
+            fetchWaterData('Dehradun');
         });
     </script>
 </body>

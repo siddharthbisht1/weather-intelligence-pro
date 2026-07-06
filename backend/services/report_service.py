@@ -1,95 +1,36 @@
-from datetime import datetime
+# backend/services/report_service.py
+import random
+from datetime import datetime, timedelta
 
-# ==========================================
-# Temporary Report Storage
-# ==========================================
-
-reports = [
-    {
-        "id": 1,
-        "report_name": "Delhi Weather Report",
-        "report_type": "PDF",
-        "created_at": datetime.now()
-    },
-    {
-        "id": 2,
-        "report_name": "AQI Analysis Report",
-        "report_type": "Excel",
-        "created_at": datetime.now()
-    }
-]
-
-
-# ==========================================
-# Get All Reports
-# ==========================================
-
-def get_all_reports():
-    return reports
-
-
-# ==========================================
-# Get Report By ID
-# ==========================================
-
-def get_report_by_id(report_id: int):
-    for report in reports:
-        if report["id"] == report_id:
-            return report
-    return None
-
-
-# ==========================================
-# Create Report
-# ==========================================
-
-def create_report(report_name: str, report_type: str):
-    new_report = {
-        "id": len(reports) + 1,
-        "report_name": report_name,
-        "report_type": report_type,
-        "created_at": datetime.now()
-    }
-    reports.append(new_report)
-    return new_report
-
-
-# ==========================================
-# Delete Report
-# ==========================================
-
-def delete_report(report_id: int):
-    global reports
-    initial_length = len(reports)
+def fetch_report_dashboard_data():
+    """
+    Simulates fetching report generation metrics and history from the database.
+    """
+    # Simulate data for the last 6 months
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+    trend_data = [random.randint(15, 90) for _ in range(6)]
     
-    reports = [
-        report
-        for report in reports
-        if report["id"] != report_id
+    # Total sum of generated reports
+    total_generated = sum(trend_data)
+
+    # Mock list of recent reports
+    recent_reports = [
+        {"id": "REP-1042", "name": "Monthly AQI Summary", "format": "PDF", "date": "Today, 10:00 AM", "status": "Ready", "color": "#F87171"},
+        {"id": "REP-1043", "name": "Weekly Weather Data", "format": "Excel", "date": "Yesterday, 2:30 PM", "status": "Ready", "color": "#4ADE80"},
+        {"id": "REP-1044", "name": "Water Quality Analysis", "format": "CSV", "date": "02 Jul 2026", "status": "Processing", "color": "#38BDF8"},
+        {"id": "REP-1045", "name": "AI Prediction Logs", "format": "JSON", "date": "01 Jul 2026", "status": "Ready", "color": "#A855F7"}
     ]
-    
-    # Check if the report was actually found and deleted
-    if len(reports) == initial_length:
-        return None
 
     return {
-        "message": "Report deleted successfully"
-    }
-
-
-# ==========================================
-# Export Report
-# ==========================================
-
-def export_report(report_id: int):
-    report = get_report_by_id(report_id)
-
-    if report is None:
-        return {
-            "error": "Report not found"
-        }
-
-    return {
-        "message": "Report exported successfully",
-        "report": report
+        "kpis": {
+            "total_reports": total_generated,
+            "pdf_count": int(total_generated * 0.45),
+            "excel_count": int(total_generated * 0.35),
+            "scheduled": random.randint(5, 12)
+        },
+        "chart": {
+            "labels": months,
+            "data": trend_data
+        },
+        "recent_reports": recent_reports
     }

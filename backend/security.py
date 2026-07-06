@@ -2,14 +2,11 @@ import os
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-
-# 1. Initialize CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# 2. JWT Configuration (Loads from .env in production)
 SECRET_KEY = os.getenv("SECRET_KEY", "weather_intelligence_secret_key")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 240
 
 
 def hash_password(password: str) -> str:

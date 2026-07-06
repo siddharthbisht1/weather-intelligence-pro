@@ -1,5 +1,4 @@
-// api.js
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://weather-intelligence-pro.onrender.com";
 
 async function secureFetch(endpoint, method = 'GET', body = null) {
     const token = localStorage.getItem('token');

@@ -427,16 +427,19 @@
                 });
             }
 
-            // Report Generation Trend Chart (Line)
+            // Global Chart Instance
+            let reportChartInstance = null;
+
+            // Initialize Chart with empty data first
             const ctx = document.getElementById("reportChart");
             if (ctx) {
-                new Chart(ctx, {
+                reportChartInstance = new Chart(ctx, {
                     type: "line",
                     data: {
                         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
                         datasets: [{ 
                             label: "Reports Generated", 
-                            data: [15, 22, 35, 48, 65, 85], 
+                            data: [0, 0, 0, 0, 0, 0], 
                             borderColor: "#38BDF8", 
                             backgroundColor: "rgba(56,189,248,.1)", 
                             fill: true, 
@@ -456,6 +459,58 @@
                     }
                 });
             }
+
+            // 🚀 API INTEGRATION: Fetch Report Data
+            async function fetchReportData() {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/reports/dashboard-data`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        // 1. Update Chart Data
+                        if (reportChartInstance) {
+                            reportChartInstance.data.labels = data.chart.labels;
+                            reportChartInstance.data.datasets[0].data = data.chart.data;
+                            reportChartInstance.update();
+                        }
+
+                        // 2. Update KPIs (Assuming you have elements with these IDs/Classes in your HTML)
+                        // Note: Ensure these IDs match your actual HTML structure. If you don't have IDs, add them!
+                        const totalReportsEl = document.getElementById('total-reports-kpi');
+                        if(totalReportsEl) totalReportsEl.innerText = data.kpis.total_reports;
+
+                        // 3. Update Recent Reports Table/List (Example structure)
+                        const recentReportsContainer = document.getElementById('recent-reports-list');
+                        if(recentReportsContainer && data.recent_reports) {
+                            recentReportsContainer.innerHTML = data.recent_reports.map(rep => `
+                                <div style="display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <div>
+                                        <h4 style="margin: 0; color: white; font-weight: 500;">${rep.name}</h4>
+                                        <small style="color: #94A3B8;">${rep.id} • ${rep.date}</small>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="background: ${rep.color}22; color: ${rep.color}; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">${rep.format}</span>
+                                        <div style="font-size: 12px; color: ${rep.status === 'Ready' ? '#4ADE80' : '#FACC15'}; margin-top: 5px;">${rep.status}</div>
+                                    </div>
+                                </div>
+                            `).join('');
+                        }
+
+                    } else {
+                        if(response.status === 401) alert("Session expired. Please login again.");
+                        else console.error("Failed to load reports data.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching reports data:", error);
+                }
+            }
+
+            // Load data on page startup
+            fetchReportData();
         });
     </script>
 </body>

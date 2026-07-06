@@ -1,83 +1,60 @@
 # ==========================================
-# FastAPI Backend
+# Core API Framework & Server
 # ==========================================
-fastapi
-uvicorn
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+pydantic
+gunicorn
 
 # ==========================================
-# Database
+# Database & ORM
 # ==========================================
-sqlalchemy
+SQLAlchemy==2.0.29
 
 # ==========================================
-# Authentication & Security
+# Security, Authentication & Validation
 # ==========================================
-python-jose[cryptography]
-passlib[bcrypt]
-python-multipart
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+bcrypt==4.1.2
 email-validator
 
 # ==========================================
-# API Requests
+# Network, API Requests & WebSockets
 # ==========================================
-requests
+requests==2.31.0
+websockets==12.0
 
 # ==========================================
-# Data Analysis & Excel
+# AI, Machine Learning & Analytics
 # ==========================================
-pandas
-openpyxl
+google-generativeai==0.4.1
+scikit-learn
+numpy
+pandas==2.2.1
 
 # ==========================================
-# Scheduling
+# Visualization & File Exports
 # ==========================================
+matplotlib
+openpyxl==3.1.2
+
+# ==========================================
+# Background Tasks & Scheduling
+# ==========================================
+APScheduler==3.10.4
 schedule
 
 # ==========================================
-# Environment Variables
+# Environment, Logging & Utilities
 # ==========================================
-python-dotenv
-
-# ==========================================
-# AI & Machine Learning
-# ==========================================
-numpy
-scikit-learn
-
-# ==========================================
-# Visualization
-# ==========================================
-matplotlib
-
-# ==========================================
-# Email Support
-# ==========================================
-secure-smtplib
-
-# ==========================================
-# WebSocket Support
-# ==========================================
-websockets
-
-# ==========================================
-# Date & Time Utilities
-# ==========================================
-python-dateutil
-
-# ==========================================
-# Logging
-# ==========================================
+python-dotenv==1.0.1
 loguru
+python-dateutil
+secure-smtplib
 
 # ==========================================
 # Testing
 # ==========================================
 pytest
-
-# ==========================================
-# ASGI Server
-# ==========================================
-gunicorn
-fastapi
-uvicorn
-pydantic

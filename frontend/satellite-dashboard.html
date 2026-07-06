@@ -391,7 +391,6 @@
             var sidebar = document.getElementById("mySidebar");
             var main = document.getElementById("myMainContent");
             var isDesktop = window.innerWidth > 1024;
-
             if (isDesktop) {
                 if (sidebar.style.transform === "translateX(0px)" || sidebar.style.transform === "") {
                     sidebar.style.transform = "translateX(-110%)"; main.style.marginLeft = "0px"; main.style.width = "100%";
@@ -403,108 +402,102 @@
             }
         }
 
-        // Sidebar Dropdown Toggle Logic
         function toggleSidebarMenu(btn) {
             btn.classList.toggle("active");
             var dropdownContent = btn.nextElementSibling;
             dropdownContent.style.display = (dropdownContent.style.display === "flex") ? "none" : "flex";
         }
 
-        // Float Animation for Header Icon
-        const styleSheet = document.createElement("style");
-        styleSheet.innerText = `@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }`;
-        document.head.appendChild(styleSheet);
-
         document.addEventListener("DOMContentLoaded", () => {
-            // Theme Toggle
             const themeBtn = document.getElementById("themeToggle");
-            if (themeBtn) {
-                themeBtn.addEventListener("click", () => { document.body.classList.toggle("light-mode"); });
-            }
+            if (themeBtn) themeBtn.addEventListener("click", () => document.body.classList.toggle("light-mode"));
 
-            // Particles.js
             if (typeof particlesJS !== "undefined") {
-                particlesJS("particles-js", {
-                    particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
-                });
+                particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
             }
 
-            // Leaflet Map Initialization (Dark Mode Satellite feel)
-            if(typeof L !== "undefined") {
-                const map = L.map('satelliteMap').setView([22.5937, 78.9629], 4); 
-                // Using Esri World Imagery for Satellite View
+            // ==========================================
+            // CHART & MAP INITIALIZATION
+            // ==========================================
+            let ndviChart, cloudChart, thermalChart, rainfallChart, forestChart;
+            let satelliteMap, markerLayerGroup;
+
+            if(typeof L !== "undefined" && document.getElementById('satelliteMap')) {
+                satelliteMap = L.map('satelliteMap').setView([20.5937, 78.9629], 5); // Default India
                 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-                }).addTo(map);
-
-                L.circleMarker([28.7041, 77.1025], { color: '#F87171', radius: 10, fillOpacity: 0.6 }).addTo(map).bindPopup("High Thermal Anomaly");
-                L.circleMarker([19.0760, 72.8777], { color: '#38BDF8', radius: 15, fillOpacity: 0.6 }).addTo(map).bindPopup("Dense Cloud Cover");
+                    attribution: 'Tiles &copy; Esri &mdash; Source: Esri'
+                }).addTo(satelliteMap);
+                markerLayerGroup = L.layerGroup().addTo(satelliteMap);
             }
 
-            // Chart Configurations
             const commonOptions = {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } },
-                    x: { grid: { display: false }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } }
-                }
+                responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                scales: { y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } }, x: { grid: { display: false }, ticks: { color: "#94A3B8", font: {family: 'Poppins'} } } }
             };
 
-            // NDVI Chart (Line)
-            if (document.getElementById("ndviChart")) {
-                new Chart(document.getElementById("ndviChart"), {
-                    type: "line",
-                    data: {
-                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                        datasets: [{ label: "NDVI Score", data: [0.45, 0.50, 0.65, 0.80, 0.88, 0.91], borderColor: "#4ADE80", backgroundColor: "rgba(74,222,128,0.1)", fill: true, tension: 0.4 }]
-                    }, options: commonOptions
-                });
+            if (document.getElementById("ndviChart")) ndviChart = new Chart(document.getElementById("ndviChart"), { type: "line", data: { labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"], datasets: [{ label: "NDVI", data: [], borderColor: "#4ADE80", backgroundColor: "rgba(74,222,128,0.1)", fill: true, tension: 0.4 }] }, options: commonOptions });
+            if (document.getElementById("cloudChart")) cloudChart = new Chart(document.getElementById("cloudChart"), { type: "bar", data: { labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Today"], datasets: [{ label: "Cloud %", data: [], backgroundColor: "#A855F7", borderRadius: 4 }] }, options: commonOptions });
+            if (document.getElementById("thermalChart")) thermalChart = new Chart(document.getElementById("thermalChart"), { type: "line", data: { labels: ["Week 1", "Week 2", "Week 3", "This Week"], datasets: [{ label: "Avg Temp (°C)", data: [], borderColor: "#F87171", backgroundColor: "rgba(248,113,113,0.1)", fill: true, tension: 0.4 }] }, options: commonOptions });
+            if (document.getElementById("rainfallChart")) rainfallChart = new Chart(document.getElementById("rainfallChart"), { type: "bar", data: { labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Today"], datasets: [{ label: "Rainfall (mm)", data: [], backgroundColor: "#38BDF8", borderRadius: 4 }] }, options: commonOptions });
+            if (document.getElementById("forestChart")) forestChart = new Chart(document.getElementById("forestChart"), { type: "line", data: { labels: ["2021", "2022", "2023", "2024", "2025", "2026"], datasets: [{ label: "Forest Cover", data: [], borderColor: "#FB923C", backgroundColor: "rgba(251,146,60,0.1)", fill: true, tension: 0.3 }] }, options: commonOptions });
+
+            // ==========================================
+            // ASLI REAL-TIME API CALL
+            // ==========================================
+            async function fetchSatelliteData(region) {
+                const searchBtn = document.getElementById('search-button');
+                if(searchBtn) searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/satellite/data/${encodeURIComponent(region)}`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        // 1. FLY MAP TO REAL LOCATION 🚀
+                        if(satelliteMap && data.map_center) {
+                            satelliteMap.flyTo([data.map_center.lat, data.map_center.lng], 9, {
+                                animate: true, duration: 1.5
+                            });
+                        }
+
+                        // 2. Plot REAL Anomalies
+                        if(markerLayerGroup) {
+                            markerLayerGroup.clearLayers();
+                            data.map_anomalies.forEach(anomaly => {
+                                L.circleMarker([anomaly.lat, anomaly.lng], { 
+                                    color: anomaly.color, radius: anomaly.radius, fillOpacity: 0.6 
+                                }).addTo(markerLayerGroup).bindPopup(`<b>${anomaly.type}</b><br>Source: OpenWeather Satellite`);
+                            });
+                        }
+
+                        // 3. Update Charts with live OWM endpoint data
+                        if(ndviChart) { ndviChart.data.datasets[0].data = data.charts.ndvi; ndviChart.update(); }
+                        if(cloudChart) { cloudChart.data.datasets[0].data = data.charts.cloud; cloudChart.update(); }
+                        if(thermalChart) { thermalChart.data.datasets[0].data = data.charts.thermal; thermalChart.update(); }
+                        if(rainfallChart) { rainfallChart.data.datasets[0].data = data.charts.rainfall; rainfallChart.update(); }
+                        if(forestChart) { forestChart.data.datasets[0].data = data.charts.forest; forestChart.update(); }
+
+                    }
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                } finally {
+                    if(searchBtn) searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                }
             }
 
-            // Cloud Coverage Chart (Bar)
-            if (document.getElementById("cloudChart")) {
-                new Chart(document.getElementById("cloudChart"), {
-                    type: "bar",
-                    data: {
-                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-                        datasets: [{ label: "Cloud %", data: [40, 60, 82, 55, 30, 20], backgroundColor: "#A855F7", borderRadius: 4 }]
-                    }, options: commonOptions
-                });
+            const searchBtn = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => { if(searchInput.value) fetchSatelliteData(searchInput.value.trim()); });
+                searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter' && searchInput.value) fetchSatelliteData(searchInput.value.trim()); });
             }
 
-            // Thermal Chart (Line)
-            if (document.getElementById("thermalChart")) {
-                new Chart(document.getElementById("thermalChart"), {
-                    type: "line",
-                    data: {
-                        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-                        datasets: [{ label: "Avg Temp (°C)", data: [28, 30, 35, 33], borderColor: "#F87171", backgroundColor: "rgba(248,113,113,0.1)", fill: true, tension: 0.4 }]
-                    }, options: commonOptions
-                });
-            }
-
-            // Rainfall Chart (Bar)
-            if (document.getElementById("rainfallChart")) {
-                new Chart(document.getElementById("rainfallChart"), {
-                    type: "bar",
-                    data: {
-                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-                        datasets: [{ label: "Rainfall (mm)", data: [12, 45, 80, 30, 5, 0], backgroundColor: "#38BDF8", borderRadius: 4 }]
-                    }, options: commonOptions
-                });
-            }
-
-            // Forest/Deforestation Chart (Line)
-            if (document.getElementById("forestChart")) {
-                new Chart(document.getElementById("forestChart"), {
-                    type: "line",
-                    data: {
-                        labels: ["2021", "2022", "2023", "2024", "2025", "2026"],
-                        datasets: [{ label: "Forest Cover (M ha)", data: [80, 79.5, 78.8, 78.0, 77.5, 77.1], borderColor: "#FB923C", backgroundColor: "rgba(251,146,60,0.1)", fill: true, tension: 0.3 }]
-                    }, options: commonOptions
-                });
-            }
+            // Default to Delhi on load
+            fetchSatelliteData('Delhi');
         });
     </script>
 </body>

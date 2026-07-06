@@ -25,7 +25,8 @@ from backend.routes import (
     auth_routes, weather_routes, aqi_routes, water_routes,
     analytics_routes, report_routes, history_routes, 
     notification_routes, admin_routes, forecast_routes, websocket_routes,
-    prediction_routes , map_routes, observability_routes , legal_routes
+    prediction_routes , map_routes, observability_routes , legal_routes,
+    satellite_routes, workflow_routes   
 )
 
 
@@ -85,11 +86,13 @@ app.add_middleware(RateLimitMiddleware)
 app.add_middleware(LoggingMiddleware)
 app.add_middleware(AuthMiddleware)
 
+
 origins = [
-    "http://127.0.0.1:5500",  
+    "http://127.0.0.1:5500",                   
     "http://localhost:5500",
-    "http://127.0.0.1:8000",  
+    "http://127.0.0.1:8000",
     "http://localhost:8000",
+    "https://weather-intelligence-pro.vercel.app"  # 🚀 Your live Vercel frontend
 ]
 
 app.add_middleware(
@@ -116,6 +119,8 @@ app.include_router(ai_routes.router)
 app.include_router(map_routes.router)
 app.include_router(observability_routes.router)
 app.include_router(legal_routes.router)
+app.include_router(satellite_routes.router)
+app.include_router(workflow_routes.router)
 
 @app.get("/", tags=["Health & Status"])
 def home():

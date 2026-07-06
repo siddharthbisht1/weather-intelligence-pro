@@ -7,10 +7,10 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-    <script src="https://cdn.chartjs.org/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
 
     <style>
         /* =========================================
@@ -195,12 +195,9 @@
     </aside>
 
     <main class="main-content" id="myMainContent">
-        
         <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; padding: 10px 20px; border-radius: 30px;">
-                <button onclick="brahmastraToggle()" style="background:transparent; border:none; color:white; cursor:pointer; font-size:20px; z-index:100000; padding:5px;">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <button onclick="brahmastraToggle()" style="background:transparent; border:none; color:white; cursor:pointer; font-size:20px; z-index:100000; padding:5px;"><i class="fas fa-bars"></i></button>
                 <i class="fas fa-search" style="color: #94A3B8;"></i>
                 <input id="search-input" type="text" placeholder="Search automation rules..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
                 <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
@@ -214,8 +211,6 @@
             </div>
         </nav>
 
-        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
-
         <header style="margin-bottom: 30px; background: rgba(15, 23, 42, 0.4); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <h1 style="font-size: 32px; font-weight: 700; color: white; margin: 0;">Workflow Automation Center</h1>
@@ -227,19 +222,19 @@
         <section class="stats-grid">
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-blue-glow"><i class="fa-solid fa-gears"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">24</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Active Workflows</p></div>
+                <div><h3 id="kpi-workflows" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">--</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Active Workflows</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-purple-glow"><i class="fa-solid fa-envelope"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">184</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Emails Sent</p></div>
+                <div><h3 id="kpi-emails" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">--</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Emails Sent</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-yellow-glow"><i class="fa-solid fa-bell"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">56</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Alerts Triggered</p></div>
+                <div><h3 id="kpi-alerts" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">--</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Alerts Triggered</p></div>
             </div>
             <div class="glass stat-card hover-card">
                 <div class="stat-icon bg-green-glow"><i class="fa-solid fa-circle-check"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">99.6%</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Success Rate</p></div>
+                <div><h3 id="kpi-success" style="font-size: 28px; font-weight: 700; color: white; margin: 0;">--%</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Success Rate</p></div>
             </div>
         </section>
 
@@ -272,11 +267,8 @@
                         <thead>
                             <tr><th>Workflow Name</th><th>Duration</th><th>Status</th></tr>
                         </thead>
-                        <tbody>
-                            <tr><td>Daily Weather Summary</td><td>2.1 sec</td><td style="color: #4ADE80;">Success</td></tr>
-                            <tr><td>AQI Alert Threshold</td><td>4.5 sec</td><td style="color: #4ADE80;">Success</td></tr>
-                            <tr><td>Email Service Batch</td><td>8.2 sec</td><td style="color: #FACC15;">Delayed</td></tr>
-                        </tbody>
+                        <tbody id="executions-table-body">
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -291,8 +283,8 @@
 
                 <div class="glass section-card hover-card">
                     <h2><i class="fas fa-triangle-exclamation" style="color: #FACC15;"></i> Recent Alerts</h2>
-                    <div class="alert-item" style="background: rgba(248,113,113,0.1); border-left: 3px solid #F87171; color: #F87171;">Error: Email Service Delay</div>
-                    <div class="alert-item" style="background: rgba(250,204,21,0.1); border-left: 3px solid #FACC15; color: #FACC15;">Warning: AQI Crossed 150</div>
+                    <div id="recent-alerts-container">
+                        </div>
                 </div>
             </div>
         </div>
@@ -302,7 +294,7 @@
                 <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
                 <p style="color: #94A3B8; margin: 0; font-size: 14px;">Workflow Automation Center</p>
             </div>
-            <div style="color: #4ADE80; font-weight: 600; font-size: 14px;"><i class="fa-solid fa-bolt"></i> All 24 Workflows Active</div>
+            <div style="color: #4ADE80; font-weight: 600; font-size: 14px;"><i class="fa-solid fa-bolt"></i> System Online</div>
         </footer>
     </main>
 
@@ -328,14 +320,91 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            const themeBtn = document.getElementById("themeToggle");
+            if (themeBtn) { themeBtn.addEventListener("click", () => { document.body.classList.toggle("light-mode"); }); }
+
             if (typeof particlesJS !== "undefined") {
                 particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: .4 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
             }
 
             const common = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } } };
             
-            new Chart(document.getElementById('workflowChart').getContext('2d'), { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ data: [98, 99, 99, 99, 98, 100, 99], borderColor: '#4ADE80', fill: true, tension: 0.4, backgroundColor: 'rgba(74,222,128,0.1)' }] }, options: common });
-            new Chart(document.getElementById('triggerChart').getContext('2d'), { type: 'bar', data: { labels: ['Weather', 'AQI', 'Water', 'Temp', 'Custom'], datasets: [{ data: [420, 150, 80, 110, 45], backgroundColor: '#FACC15', borderRadius: 6 }] }, options: common });
+            // Safe Chart Initialization
+            let workflowChart, triggerChart;
+            
+            const wfCtx = document.getElementById('workflowChart');
+            if(wfCtx) {
+                workflowChart = new Chart(wfCtx.getContext('2d'), { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ data: [], borderColor: '#4ADE80', fill: true, tension: 0.4, backgroundColor: 'rgba(74,222,128,0.1)' }] }, options: common });
+            }
+            
+            const trCtx = document.getElementById('triggerChart');
+            if(trCtx) {
+                triggerChart = new Chart(trCtx.getContext('2d'), { type: 'bar', data: { labels: ['Weather', 'AQI', 'Water', 'Temp', 'Custom'], datasets: [{ data: [], backgroundColor: '#FACC15', borderRadius: 6 }] }, options: common });
+            }
+
+            // 🚀 API INTEGRATION
+            async function fetchWorkflowData() {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`http://127.0.0.1:8000/workflow/dashboard-data`, {
+                        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    });
+
+                    if(response.ok) {
+                        const data = await response.json();
+
+                        // 1. Update KPIs
+                        const wflowEl = document.getElementById('kpi-workflows');
+                        const emailsEl = document.getElementById('kpi-emails');
+                        const alertsEl = document.getElementById('kpi-alerts');
+                        const successEl = document.getElementById('kpi-success');
+
+                        if(wflowEl) wflowEl.innerText = data.kpis.active_workflows;
+                        if(emailsEl) emailsEl.innerText = data.kpis.emails_sent;
+                        if(alertsEl) alertsEl.innerText = data.kpis.alerts_triggered;
+                        if(successEl) successEl.innerText = data.kpis.success_rate + "%";
+
+                        // 2. Update Charts
+                        if(workflowChart) {
+                            workflowChart.data.datasets[0].data = data.charts.success_trend;
+                            workflowChart.update();
+                        }
+                        
+                        if(triggerChart) {
+                            triggerChart.data.datasets[0].data = data.charts.trigger_distribution;
+                            triggerChart.update();
+                        }
+
+                        // 3. Update Table
+                        const tableBody = document.getElementById('executions-table-body');
+                        if(tableBody) {
+                            tableBody.innerHTML = data.recent_executions.map(exec => `
+                                <tr>
+                                    <td>${exec.name}</td>
+                                    <td>${exec.duration}</td>
+                                    <td style="color: ${exec.color};">${exec.status}</td>
+                                </tr>
+                            `).join('');
+                        }
+
+                        // 4. Update Alerts
+                        const alertsContainer = document.getElementById('recent-alerts-container');
+                        if(alertsContainer) {
+                            alertsContainer.innerHTML = data.recent_alerts.map(alert => `
+                                <div class="alert-item" style="background: ${alert.bg}; border-left: 3px solid ${alert.border}; color: ${alert.color};">
+                                    ${alert.msg}
+                                </div>
+                            `).join('');
+                        }
+                    }
+                } catch(error) {
+                    console.error("Error fetching workflow data:", error);
+                }
+            }
+
+            fetchWorkflowData();
+            // Refresh every 10 seconds for a "live" feel
+            setInterval(fetchWorkflowData, 10000); 
         });
     </script>
 </body>
