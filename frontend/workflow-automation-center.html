@@ -346,7 +346,7 @@
             async function fetchWorkflowData() {
                 try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch(`http://127.0.0.1:8000/workflow/dashboard-data`, {
+                    const response = await fetch(`https://weather-intelligence-pro.onrender.com/workflow/dashboard-data`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
 

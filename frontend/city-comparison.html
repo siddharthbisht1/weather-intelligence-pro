@@ -460,8 +460,8 @@
 
         try {
             const [res1, res2] = await Promise.all([
-                fetch(`http://127.0.0.1:8000/aqi/${city1}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(`http://127.0.0.1:8000/aqi/${city2}`, { headers: { 'Authorization': `Bearer ${token}` } })
+                fetch(`https://weather-intelligence-pro.onrender.com/aqi/${city1}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`https://weather-intelligence-pro.onrender.com/aqi/${city2}`, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
 
             const data1 = await res1.json();

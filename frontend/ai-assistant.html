@@ -245,69 +245,69 @@
         }
 
         async function handleChat() {
-    const messageText = chatInput.value.trim();
-    if (!messageText) return;
+            const messageText = chatInput.value.trim();
+            if (!messageText) return;
 
-    // 1. User ka message UI pe dikhao
-    appendMessage(messageText, 'user');
-    chatInput.value = ''; 
+            // 1. User ka message UI pe dikhao
+            appendMessage(messageText, 'user');
+            chatInput.value = ''; 
 
-    // 2. Loading State
-    const typingId = 'typing-' + Date.now();
-    const typingDiv = document.createElement('div');
-    typingDiv.id = typingId;
-    typingDiv.className = 'bot-message';
-    typingDiv.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
-    messagesContainer.appendChild(typingDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // 2. Loading State
+            const typingId = 'typing-' + Date.now();
+            const typingDiv = document.createElement('div');
+            typingDiv.id = typingId;
+            typingDiv.className = 'bot-message';
+            typingDiv.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    try {
-        const token = localStorage.getItem('token');
-        
-        console.log("Sending Request to Backend..."); // Debug log
+            try {
+                const token = localStorage.getItem('token');
+                
+                console.log("Sending Request to Backend..."); // Debug log
 
-        const response = await fetch('http://127.0.0.1:8000/ai/chat', { 
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
-            },
-            body: JSON.stringify({ user_message: messageText }) 
-        });
+                const response = await fetch('https://weather-intelligence-pro.onrender.com/ai/chat', { 
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ user_message: messageText }) 
+                });
 
-        const data = await response.json();
-        
-        // Remove loading state
-        const elementToRemove = document.getElementById(typingId);
-        if (elementToRemove) elementToRemove.remove();
+                const data = await response.json();
+                
+                // Remove loading state
+                const elementToRemove = document.getElementById(typingId);
+                if (elementToRemove) elementToRemove.remove();
 
-        if (!response.ok) {
-            throw new Error(data.detail || "Server error occurred");
+                if (!response.ok) {
+                    throw new Error(data.detail || "Server error occurred");
+                }
+
+                // 3. Bot ka response dikhao
+                appendMessage(data.reply, 'bot');
+
+            } catch (error) {
+                console.error("Chat Error:", error);
+                const elementToRemove = document.getElementById(typingId);
+                if (elementToRemove) elementToRemove.remove();
+                
+                appendMessage("⚠️ Backend connection issue! Console (F12) check karo.", 'bot');
+            }
         }
-
-        // 3. Bot ka response dikhao
-        appendMessage(data.reply, 'bot');
-
-    } catch (error) {
-        console.error("Chat Error:", error);
-        const elementToRemove = document.getElementById(typingId);
-        if (elementToRemove) elementToRemove.remove();
-        
-        appendMessage("⚠️ Backend connection issue! Console (F12) check karo.", 'bot');
-    }
-}
-        sendBtn.addEventListener('click', handleChat);
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); handleChat(); }
-        });
+                sendBtn.addEventListener('click', handleChat);
+                chatInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); handleChat(); }
+                });
 
         // 🚀 FEATURE 3: Live Daily Insights Fetcher
         async function loadDailyInsights() {
             try {
                 const token = localStorage.getItem('token'); // 🔑 ID Card nikalo
                 
-                const response = await fetch('http://127.0.0.1:8000/ai/insights/Haldwani', {
+                const response = await fetch('https://weather-intelligence-pro.onrender.com/ai/insights/Haldwani', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}` // 🚀 Bouncer ko dikhao

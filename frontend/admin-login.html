@@ -190,40 +190,35 @@
                 const adminPass = document.getElementById('adminPass').value;
                 const btn = document.getElementById('adminSubmitBtn');
                 
-                btn.innerHTML = 'Verifying Credentials... <i class="fas fa-circle-notch fa-spin"></i>';
+                btn.innerHTML = 'Verifying... <i class="fas fa-circle-notch fa-spin"></i>';
                 btn.style.opacity = '0.8';
+                btn.style.pointerEvents = 'none';
 
                 try {
-
-                    const response = await fetch('http://localhost:8000/api/admin/login', {
+                    // BASE_URL ko api.js se lo
+                    const response = await fetch(`${BASE_URL}/api/admin/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ admin_id: adminId, password: adminPass })
                     });
+                    
                     const data = await response.json();
                     
-                    if(data.success && data.role === 'admin') {
+                    if(response.ok && data.success && data.role === 'admin') {
                         sessionStorage.setItem('adminToken', data.token);
                         window.location.href = 'master-dashboard.html';
                     } else {
-                        alert("Access Denied. Invalid Admin Credentials.");
-                        btn.innerHTML = 'Authorize Entry <i class="fas fa-fingerprint"></i>';
-                        btn.style.opacity = '1';
+                        throw new Error(data.detail || "Access Denied");
                     }
- 
-
-                   // MOCK REDIRECT (For testing frontend flow)
-                   setTimeout(() => {
-                        window.location.href = 'master-dashboard.html';
-                   }, 1200);
-
                 } catch(err) {
                     console.error(err);
-                    alert("Command Center Offline.");
+                    alert("Command Center Offline or Unauthorized: " + err.message);
                     btn.innerHTML = 'Authorize Entry <i class="fas fa-fingerprint"></i>';
                     btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
                 }
             });
+
         });
     </script>
 </body>

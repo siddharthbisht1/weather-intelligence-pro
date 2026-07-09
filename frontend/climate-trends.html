@@ -426,7 +426,7 @@
                     
                     console.log(`Bhai backend se ${city} ka data mangwa raha hoon...`); // Console mein check karne ke liye
                     
-                    const response = await fetch(`http://127.0.0.1:8000/analytics/climate-data/${city}`, {
+                    const response = await fetch(`https://weather-intelligence-pro.onrender.com/analytics/climate-data/${city}`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
 

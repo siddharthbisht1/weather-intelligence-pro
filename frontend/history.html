@@ -470,7 +470,7 @@
 
                 try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch(`http://127.0.0.1:8000/history/dashboard/${city}`, {
+                    const response = await fetch(`https://weather-intelligence-pro.onrender.com/history/dashboard/${city}`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
 

@@ -434,7 +434,7 @@
                 try {
                     // LocalStorage se token nikal kar headers mein bhej rahe hain
                     const token = localStorage.getItem('token');
-                    const response = await fetch(`http://127.0.0.1:8000/ai/eco-insights/${city}`, {
+                    const response = await fetch(`https://weather-intelligence-pro.onrender.com/ai/eco-insights/${city}`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
                     

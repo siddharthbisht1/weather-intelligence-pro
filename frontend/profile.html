@@ -442,7 +442,7 @@
                 if(securitySection) securitySection.style.display = 'none';
                 if(activitySection) activitySection.style.display = 'none';
             } else {
-                fetch('http://127.0.0.1:8000/auth/me', {
+                fetch('https://weather-intelligence-pro.onrender.com/auth/me', {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 })
