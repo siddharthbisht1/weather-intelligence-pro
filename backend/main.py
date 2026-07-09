@@ -3,8 +3,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
-Base.metadata.create_all(bind=engine)
-
 from backend.config import settings  
 from backend.database import Base, engine
 
@@ -90,7 +88,7 @@ app.add_middleware(AuthMiddleware)
 origins = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
-    "https://weather-intelligence-pro.vercel.app"  
+    "https://weather-intelligence-pro.vercel.app"  # 🚀 TERI VERCEL LINK
 ]
 
 app.add_middleware(

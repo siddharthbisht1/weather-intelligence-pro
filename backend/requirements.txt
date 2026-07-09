@@ -58,5 +58,3 @@ secure-smtplib
 # Testing
 # ==========================================
 pytest
-psycopg2-binary
-python-dotenv
