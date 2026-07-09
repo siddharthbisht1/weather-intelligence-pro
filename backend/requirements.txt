@@ -29,7 +29,7 @@ websockets>=13.0
 # ==========================================
 # AI, Machine Learning & Analytics
 # ==========================================
-google-generativeai
+google-genai
 scikit-learn
 numpy
 pandas==2.2.1

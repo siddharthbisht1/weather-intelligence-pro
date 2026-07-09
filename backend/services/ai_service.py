@@ -1,7 +1,6 @@
 import os
 import random
-import google.generativeai as genai
-# Note: Agar phir bhi error de, toh try karo:
+from google import genai
 from google.genai import client
 from dotenv import load_dotenv
 
