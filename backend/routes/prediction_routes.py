@@ -1,18 +1,11 @@
+# File: backend/routes/prediction_routes.py
 from fastapi import APIRouter, HTTPException
 from backend.services.prediction_service import generate_ai_prediction
-
-# ==========================================
-# Router Setup
-# ==========================================
 
 router = APIRouter(
     prefix="/ai",
     tags=["AI Predictions"]
 )
-
-# ==========================================
-# Unified AI Prediction Endpoint
-# ==========================================
 
 @router.get("/forecast/{city}")
 def get_dashboard_prediction(city: str):

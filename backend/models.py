@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
-from datetime import datetime
+from datetime import datetime, timezone  # <--- timezone yahan import kiya
 
 from backend.database import Base
 
@@ -16,7 +16,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     role = Column(String, default="user")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # <-- FIX
 
 
 # ====================================
@@ -31,7 +31,7 @@ class WeatherHistory(Base):
     temperature = Column(Float)
     humidity = Column(Float)
     wind_speed = Column(Float)
-    searched_at = Column(DateTime, default=datetime.utcnow) 
+    searched_at = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # <-- FIX
 
 
 class AQIHistory(Base):
@@ -40,7 +40,7 @@ class AQIHistory(Base):
     id = Column(Integer, primary_key=True, index=True)
     city = Column(String)
     aqi = Column(Integer)
-    searched_at = Column(DateTime, default=datetime.utcnow)
+    searched_at = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # <-- FIX
 
 
 class WaterQuality(Base):
@@ -51,7 +51,7 @@ class WaterQuality(Base):
     ph = Column(Float)
     dissolved_oxygen = Column(Float)
     quality_status = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # <-- FIX
 
 
 class Prediction(Base):
@@ -61,9 +61,7 @@ class Prediction(Base):
     city = Column(String)
     predicted_aqi = Column(Float)
     predicted_temperature = Column(Float)
-    prediction_date = Column(DateTime, default=datetime.utcnow)
-
-
+    prediction_date = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # <-- FIX
 
 
 class Notification(Base):
@@ -72,9 +70,7 @@ class Notification(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     message = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # <-- FIX
 
 
 class Report(Base):
@@ -83,9 +79,7 @@ class Report(Base):
     id = Column(Integer, primary_key=True, index=True)
     report_name = Column(String)
     report_type = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # <-- FIX
 
 
 class LoginLog(Base):
@@ -93,4 +87,4 @@ class LoginLog(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String)
-    login_time = Column(DateTime, default=datetime.utcnow)
+    login_time = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # <-- FIX

@@ -1,9 +1,8 @@
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone  # <--- YAHAN timezone ADD KIYA HAI
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
-from datetime import datetime
 from backend.models import LoginLog
 # Notice we are importing from the root-level files here
 from backend.database import get_db
@@ -94,16 +93,16 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
     )
     try:
         new_login_log = LoginLog(
-            user_id=db_user.id,  # <--- YAHAN CHANGE KIYA HAI (db_user.id)
-            login_time=datetime.utcnow(),
-            status="Success",
-            ip_address="127.0.0.1" 
+            username=db_user.username,  
+            login_time=datetime.now(timezone.utc)
+            # Yahan se status aur ip_address hata diya hai
         )
         db.add(new_login_log)
         db.commit()
     except Exception as e:
         print(f"Login log save nahi hua: {e}")
         db.rollback()
+        
     # 4. JSON return karo
     return {
         "message": "Login Successful",

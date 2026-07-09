@@ -1,6 +1,6 @@
 import os
 import requests
-from datetime import datetime
+from datetime import datetime, timezone  # <--- FIX: timezone yahan top par add kiya
 from sqlalchemy.orm import Session
 from backend.models import WeatherHistory
 from backend.schemas import WeatherCreate
@@ -31,9 +31,9 @@ def get_and_save_weather(city: str, db: Session):
         db.commit()
         db.refresh(db_weather)
         
-        # Agar tumhe 'searched_at' update karna hai, toh wo yahan hoga
+        # FIX: Yahan ab direct call karenge kyunki import upar ho chuka hai
         if hasattr(db_weather, "searched_at"):
-            db_weather.searched_at = datetime.utcnow()
+            db_weather.searched_at = datetime.now(timezone.utc)
             db.commit()
             db.refresh(db_weather)
 
@@ -42,4 +42,3 @@ def get_and_save_weather(city: str, db: Session):
     except Exception as e:
         db.rollback()
         return {"error": f"Database insertion failed: {str(e)}"}
-    

@@ -1,4 +1,4 @@
-const BASE_URL = "https://weather-intelligence-pro.onrender.com";
+const BASE_URL = "https://weather-intelligence-pro.onrender.com"; 
 
 async function secureFetch(endpoint, method = 'GET', body = null) {
     const token = localStorage.getItem('token');

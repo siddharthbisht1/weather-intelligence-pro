@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from datetime import datetime
 from typing import Optional
 
@@ -7,6 +7,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     role: Optional[str] = "user"
+
 class UserLogin(BaseModel):
     username: str
     password: str
@@ -18,10 +19,7 @@ class UserResponse(BaseModel):
     role: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
-
+    model_config = ConfigDict(from_attributes=True)
 
 class WeatherBase(BaseModel):
     city: str
@@ -36,10 +34,7 @@ class WeatherResponse(WeatherBase):
     id: int
     searched_at: datetime  
 
-    class Config:
-        from_attributes = True
-
-
+    model_config = ConfigDict(from_attributes=True)
 
 class AQIBase(BaseModel):
     city: str
@@ -54,9 +49,7 @@ class AQIResponse(AQIBase):
     id: int
     recorded_at: datetime
 
-    class Config:
-        from_attributes = True
-
+    model_config = ConfigDict(from_attributes=True)
 
 class WaterBase(BaseModel):
     city: str
@@ -71,8 +64,7 @@ class WaterResponse(WaterBase):
     id: int
     recorded_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PredictionBase(BaseModel):
     city: str
@@ -87,9 +79,7 @@ class PredictionResponse(PredictionBase):
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
+    model_config = ConfigDict(from_attributes=True)
 
 class NotificationBase(BaseModel):
     title: str
@@ -102,10 +92,7 @@ class NotificationResponse(NotificationBase):
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
-
+    model_config = ConfigDict(from_attributes=True)
 
 class ReportBase(BaseModel):
     report_name: str
@@ -118,9 +105,7 @@ class ReportResponse(ReportBase):
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
+    model_config = ConfigDict(from_attributes=True)
 
 class LoginLogResponse(BaseModel):
     id: int
@@ -128,8 +113,8 @@ class LoginLogResponse(BaseModel):
     login_time: datetime
     ip_address: Optional[str] = None  
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 class ChatRequest(BaseModel):
     user_message: str
 
