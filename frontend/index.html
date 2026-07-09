@@ -5,19 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Intelligence Pro - Next Gen Forecasting</title>
 
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Tailwind & Particles JS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
-    <!-- Embedded Custom CSS -->
     <style>
         /* =========================================
            BASE & UTILITIES
            ========================================= */
+        html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; padding: 0; }
         
         #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
@@ -27,102 +25,115 @@
            ========================================= */
         .glass-nav {
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 20px 5vw; background: rgba(11, 17, 32, 0.7); 
-            backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100; 
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 20px 5vw; background: rgba(11, 17, 32, 0.6); 
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            position: sticky; top: 0; z-index: 100; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
         }
-        .glass-nav h1 { font-size: 22px; font-weight: 700; color: white; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .glass-nav h1 { font-size: 22px; font-weight: 700; color: white; margin: 0; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
         .glass-nav h1 i { color: #38BDF8; font-size: 26px; }
         
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .login-btn { color: white; text-decoration: none; font-weight: 500; transition: 0.3s; font-size: 15px; }
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .login-btn { color: #E2E8F0; text-decoration: none; font-weight: 500; transition: color 0.3s ease; font-size: 15px; }
         .login-btn:hover { color: #38BDF8; }
         
         .register-btn { 
-            background: #38BDF8; color: #0B1120; padding: 10px 25px; border-radius: 12px; 
-            font-weight: 600; text-decoration: none; transition: 0.3s; font-size: 15px;
+            background: #38BDF8; color: #0B1120; padding: 10px 28px; border-radius: 12px; 
+            font-weight: 600; text-decoration: none; transition: all 0.3s ease; font-size: 15px;
         }
-        .register-btn:hover { background: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(56,189,248,0.4); }
+        .register-btn:hover { 
+            background: #fff; transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3); 
+        }
 
         /* =========================================
            HERO SECTION
            ========================================= */
-        .hero { text-align: center; padding: 120px 20px 80px 20px; max-width: 900px; margin: 0 auto; position: relative; }
+        .hero { text-align: center; padding: 140px 20px 100px 20px; max-width: 900px; margin: 0 auto; position: relative; }
         .hero h1 { 
-            font-size: 64px; font-weight: 700; line-height: 1.1; margin-bottom: 25px; 
-            background: linear-gradient(to right, #ffffff, #38BDF8); 
+            font-size: 64px; font-weight: 700; line-height: 1.15; margin-bottom: 25px; 
+            background: linear-gradient(135deg, #ffffff 0%, #38BDF8 100%); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            letter-spacing: -1px;
         }
-        .hero p { font-size: 20px; color: #94A3B8; margin-bottom: 40px; line-height: 1.6; }
+        .hero p { font-size: 20px; color: #94A3B8; margin-bottom: 45px; line-height: 1.6; font-weight: 300; }
         
         .hero-buttons { display: flex; gap: 20px; justify-content: center; }
         .primary-btn { 
-            background: #38BDF8; color: #0B1120; padding: 15px 35px; border-radius: 15px; 
-            font-weight: 600; text-decoration: none; font-size: 16px; transition: 0.3s; 
+            background: #38BDF8; color: #0B1120; padding: 16px 40px; border-radius: 14px; 
+            font-weight: 600; text-decoration: none; font-size: 16px; transition: all 0.3s ease; 
         }
-        .primary-btn:hover { background: white; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(56,189,248,0.4); }
+        .primary-btn:hover { 
+            background: white; transform: translateY(-3px); 
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.4); 
+        }
         
         .secondary-btn { 
-            background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); 
-            padding: 15px 35px; border-radius: 15px; font-weight: 600; text-decoration: none; font-size: 16px; transition: 0.3s; 
+            background: rgba(255, 255, 255, 0.03); color: white; border: 1px solid rgba(255, 255, 255, 0.1); 
+            padding: 16px 40px; border-radius: 14px; font-weight: 500; text-decoration: none; font-size: 16px; transition: all 0.3s ease; 
         }
-        .secondary-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); border-color: rgba(255,255,255,0.3); }
+        .secondary-btn:hover { 
+            background: rgba(255, 255, 255, 0.08); transform: translateY(-3px); 
+            border-color: rgba(255, 255, 255, 0.2); 
+        }
 
         /* =========================================
            GLOBAL LAYOUT & GLASS CARDS
            ========================================= */
         section { padding: 80px 5vw; max-width: 1400px; margin: 0 auto; }
-        .section-title { text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 10px; color: white; }
-        .section-subtitle { text-align: center; font-size: 16px; color: #94A3B8; margin-bottom: 50px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+        .section-title { text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 15px; color: white; letter-spacing: -0.5px; }
+        .section-subtitle { text-align: center; font-size: 16px; color: #94A3B8; margin-bottom: 60px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; font-weight: 300; }
 
         .glass-card {
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; transition: all 0.3s ease-in-out;
+            background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; transition: all 0.3s ease;
         }
         .glass-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-6px);
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.05);
         }
 
         /* GRIDS */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; }
-        .stat-card { padding: 40px 20px; text-align: center; }
-        .stat-card h2 { font-size: 48px; font-weight: 700; color: white; margin: 0; }
-        .stat-card p { color: #94A3B8; margin: 10px 0 0 0; font-size: 16px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;}
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+        .stat-card { padding: 35px 20px; text-align: center; }
+        .stat-card h2 { font-size: 44px; font-weight: 700; color: white; margin: 0; line-height: 1.2; }
+        .stat-card p { color: #94A3B8; margin: 8px 0 0 0; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px;}
 
-        .features-grid, .ai-grid, .metrics-grid, .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .features-grid, .ai-grid, .metrics-grid, .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
         
         .feature-card { padding: 40px; text-align: left; }
-        .feature-card i { font-size: 40px; margin-bottom: 25px; }
-        .feature-card h3 { font-size: 22px; font-weight: 600; margin: 0 0 15px 0; color: white; }
-        .feature-card p { font-size: 15px; color: #94A3B8; line-height: 1.7; margin: 0; }
+        .feature-card i { font-size: 36px; margin-bottom: 20px; display: inline-block; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 16px; }
+        .feature-card h3 { font-size: 22px; font-weight: 600; margin: 0 0 12px 0; color: white; }
+        .feature-card p { font-size: 15px; color: #94A3B8; line-height: 1.7; margin: 0; font-weight: 300; }
 
         .testimonial-card { padding: 35px; }
-        .testimonial-card h3 { font-size: 18px; color: #38BDF8; margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px; }
-        .testimonial-card p { font-size: 16px; color: #E2E8F0; font-style: italic; line-height: 1.7; margin: 0; }
+        .testimonial-card h3 { font-size: 18px; color: #38BDF8; margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        .testimonial-card p { font-size: 16px; color: #E2E8F0; font-style: italic; line-height: 1.7; margin: 0; font-weight: 300; }
 
         /* FOOTER */
-        footer { text-align: center; padding: 60px 20px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px; background: rgba(11,17,32,0.8); backdrop-filter: blur(10px); }
-        footer h2 { color: #38BDF8; font-size: 24px; margin: 0 0 10px 0; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        footer p { margin: 0; color: #94A3B8; font-size: 14px; }
+        footer { text-align: center; padding: 50px 20px; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 40px; background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(10px); }
+        footer h2 { color: #38BDF8; font-size: 22px; margin: 0 0 10px 0; display: flex; justify-content: center; align-items: center; gap: 10px; font-weight: 600; }
+        footer p { margin: 0; color: #94A3B8; font-size: 14px; font-weight: 300; }
 
         /* RESPONSIVENESS */
         @media (max-width: 768px) {
-            .glass-nav { flex-direction: column; gap: 15px; padding: 20px; }
-            .hero h1 { font-size: 44px; }
-            .hero p { font-size: 16px; }
-            .hero-buttons { flex-direction: column; }
+            .glass-nav { flex-direction: column; gap: 15px; padding: 15px; }
+            .hero { padding: 100px 20px 60px 20px; }
+            .hero h1 { font-size: 40px; }
+            .hero p { font-size: 16px; margin-bottom: 30px; }
+            .hero-buttons { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; }
             .section-title { font-size: 28px; }
+            .stat-card h2 { font-size: 36px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- PARTICLES BACKGROUND -->
     <div id="particles-js"></div>
 
-    <!-- NAVIGATION -->
     <nav class="glass-nav">
         <h1><i class="fas fa-cloud-sun"></i> Weather Intelligence Pro</h1>
         <div class="nav-links" id="auth-nav-container">
@@ -131,7 +142,6 @@
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
     <section class="hero">
         <h1>Next Generation Weather<br>Intelligence Platform</h1>
         <p>AI-powered weather, AQI, water quality, and environmental intelligence platform built for modern cities, enterprises, and researchers.</p>
@@ -141,7 +151,6 @@
         </div>
     </section>
 
-    <!-- STATS HIGHLIGHTS -->
     <section style="padding-top: 0;">
         <div class="stats-grid">
             <div class="glass-card stat-card">
@@ -159,7 +168,6 @@
         </div>
     </section>
 
-    <!-- PLATFORM FEATURES -->
     <section id="features">
         <h1 class="section-title">Platform Features</h1>
         <p class="section-subtitle">Comprehensive environmental tracking engineered into a single, unified dashboard.</p>
@@ -187,7 +195,6 @@
         </div>
     </section>
 
-    <!-- AI SECTION -->
     <section class="ai-section">
         <h1 class="section-title">AI Weather Assistant</h1>
         <p class="section-subtitle">Ask questions about weather, air quality, water quality, and environmental intelligence using advanced Natural Language Processing.</p>
@@ -210,7 +217,6 @@
         </div>
     </section>
 
-    <!-- LIVE METRICS -->
     <section class="metrics">
         <h1 class="section-title">Platform Scale</h1>
         <p class="section-subtitle">Processing millions of data points securely and reliably.</p>
@@ -227,7 +233,6 @@
         </div>
     </section>
 
-    <!-- TESTIMONIALS -->
     <section class="testimonials">
         <h1 class="section-title">What Users Say</h1>
         <div class="testimonials-grid">
@@ -246,17 +251,14 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
     <footer>
         <h2><i class="fas fa-cloud-sun"></i> Weather Intelligence Pro</h2>
         <p>AI • Weather • AQI • Water • Sustainability</p>
         <p style="margin-top: 15px; opacity: 0.5;">© 2026 Weather Intelligence Pro. Developed for B.Tech Project.</p>
     </footer>
 
-    <!-- Global App Link (for backend logic) -->
     <script src="app.js"></script>
 
-    <!-- Custom JavaScript -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
@@ -302,7 +304,6 @@
             animateValue("eventsCounter", 0, 2450000, 2500, "+");
 
             // 3. Dynamic Auth Check
-            // If the user has a token, change the header to show "Go to Dashboard"
             const authContainer = document.getElementById("auth-nav-container");
             const token = localStorage.getItem("token");
             
