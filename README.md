@@ -15,9 +15,3 @@ An AI-Powered Environmental Intelligence Platform built with FastAPI, Machine Le
 * **DevOps:** Docker, Uvicorn
 * **Security:** Passlib, Bcrypt, JWT
 
-## ⚙️ Local Setup
-
-1. **Clone the repository**
-```bash
-git clone [https://github.com/yourusername/weather-intelligence-pro.git](https://github.com/yourusername/weather-intelligence-pro.git)
-cd weather-intelligence-pro/backend
