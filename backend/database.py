@@ -1,11 +1,14 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = os.path.join(BASE_DIR, "database")
+os.makedirs(DB_DIR, exist_ok=True)
 
-os.makedirs("./backend/database", exist_ok=True)
+DB_PATH = os.path.join(DB_DIR, "users.db")
+DATABASE_URL = f"sqlite:///{DB_PATH}"
 
-DATABASE_URL = "sqlite:///./backend/database/users.db"
-
+# 5. Engine aur Session setup (Tera code)
 engine = create_engine(
     DATABASE_URL,
     connect_args={"check_same_thread": False} 
@@ -29,3 +32,5 @@ def get_db():
         yield db
     finally:
         db.close()
+def init_db():
+    Base.metadata.create_all(bind=engine)

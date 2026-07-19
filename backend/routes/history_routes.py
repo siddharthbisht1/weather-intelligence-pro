@@ -15,9 +15,6 @@ router = APIRouter(
     tags=["History"]
 )
 
-# ==========================================
-# 1. Raw Data Endpoints (For General API Use)
-# ==========================================
 
 @router.get("/weather")
 def fetch_weather_history(db: Session = Depends(get_db)):

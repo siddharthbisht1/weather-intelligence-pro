@@ -84,6 +84,7 @@ app.add_middleware(RateLimitMiddleware)
 app.add_middleware(LoggingMiddleware)
 app.add_middleware(AuthMiddleware)
 
+
 # CORS Middleware Setup
 origins = [
     "http://localhost:5500",
