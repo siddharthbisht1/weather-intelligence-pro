@@ -32,11 +32,6 @@ def get_user_by_id(user_id: int, db: Session):
         .first()
     )
 
-
-# ==========================================
-# Delete User
-# ==========================================
-
 def delete_user(user_id: int, db: Session):
     user = (
         db.query(User)
@@ -57,10 +52,6 @@ def delete_user(user_id: int, db: Session):
     }
 
 
-# ==========================================
-# Get Login Logs
-# ==========================================
-
 def get_login_logs(db: Session, limit: int = 100):
     return (
         db.query(LoginLog)
@@ -70,17 +61,9 @@ def get_login_logs(db: Session, limit: int = 100):
     )
 
 
-# ==========================================
-# Total Users
-# ==========================================
-
 def get_total_users(db: Session):
     return db.query(User).count()
 
-
-# ==========================================
-# Total Weather Searches
-# ==========================================
 
 def get_total_weather_searches(db: Session):
     return db.query(WeatherHistory).count()

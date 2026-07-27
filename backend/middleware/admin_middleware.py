@@ -52,5 +52,4 @@ class AdminMiddleware(BaseHTTPMiddleware):
             # Always close the DB session to prevent memory leaks!
             db.close()
 
-        # 6. Allow the verified admin to proceed
         return await call_next(request)
