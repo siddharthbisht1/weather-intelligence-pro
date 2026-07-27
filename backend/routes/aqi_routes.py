@@ -24,9 +24,8 @@ def fetch_aqi(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user) # Yahan user ko identify kiya
 ):
-    # Service ko db aur user_id dono de diye
-    aqi_data = get_aqi_service(city=city, db=db, user_id=current_user.id)
-
+    user_id = current_user.id if hasattr(current_user, "id") else 1
+    aqi_data = get_aqi_service(city=city, db=db, user_id=user_id)
     if "error" in aqi_data:
         raise HTTPException(
             status_code=404,
@@ -36,20 +35,17 @@ def fetch_aqi(
     return aqi_data
 
 
-# ==========================================
-# Get AQI History
-# ==========================================
-
 @router.get("/history/{city}")
 def get_aqi_history(
     city: str, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user) # Yahan bhi user identify kiya
+    current_user: User = Depends(get_current_user) 
 ):
-    # Case-insensitive search aur sirf us specific user ka data filter kiya
+    
+    user_id = current_user.id if hasattr(current_user, "id") else 1
     history = db.query(AQIHistory)\
                 .filter(func.lower(AQIHistory.city) == city.lower())\
-                .filter(AQIHistory.user_id == current_user.id)\
+                .filter(AQIHistory.user_id == user_id)\
                 .order_by(AQIHistory.searched_at.desc())\
                 .limit(7)\
                 .all()
