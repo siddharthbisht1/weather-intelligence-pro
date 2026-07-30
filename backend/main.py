@@ -2,11 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from backend.database import init_db
 
-init_db()
 from backend.config import settings  
-from backend.database import Base, engine
+from backend.database import Base, engine, init_db
 
 from backend.middleware.logging_middleware import LoggingMiddleware
 from backend.middleware.auth_middleware import AuthMiddleware
@@ -21,6 +19,7 @@ from backend.exceptions.custom_exceptions import (
     WeatherNotFoundException,
     AQINotFoundException
 )
+
 from backend.routes import ai_routes
 from backend.routes import (
     auth_routes, weather_routes, aqi_routes, water_routes,
@@ -32,7 +31,7 @@ from backend.routes import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    init_db()
     print(f"🚀 {settings.APP_NAME} v{settings.VERSION} is now ONLINE.")
     yield 
 
@@ -73,21 +72,17 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
-# Exception Handlers
 app.add_exception_handler(UserNotFoundException, unified_exception_handler)
 app.add_exception_handler(InvalidCredentialsException, unified_exception_handler)
 app.add_exception_handler(UnauthorizedException, unified_exception_handler)
 app.add_exception_handler(WeatherNotFoundException, unified_exception_handler)
 app.add_exception_handler(AQINotFoundException, unified_exception_handler)
 
-# Custom Middlewares
 app.add_middleware(AdminMiddleware)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(LoggingMiddleware)
 app.add_middleware(AuthMiddleware)
 
-
-# CORS Middleware Setup
 origins = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
@@ -102,13 +97,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ==========================================
-# API ROUTERS 
-# ==========================================
 app.include_router(auth_routes.router)
 app.include_router(weather_routes.router)
 app.include_router(aqi_routes.router)
-app.include_router(water_routes.router)  # <--- FIX: Ye ab baaki sab jaisa clean hai!
+app.include_router(water_routes.router)  
 app.include_router(analytics_routes.router)
 app.include_router(report_routes.router)
 app.include_router(history_routes.router)
@@ -124,9 +116,6 @@ app.include_router(legal_routes.router)
 app.include_router(satellite_routes.router)
 app.include_router(workflow_routes.router)
 
-# ==========================================
-# HEALTH CHECKS
-# ==========================================
 @app.get("/", tags=["Health & Status"])
 def home():
     return {"message": f"{settings.APP_NAME} API Running 🚀", "version": settings.VERSION}
