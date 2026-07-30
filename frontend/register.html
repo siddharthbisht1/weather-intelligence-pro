@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Weather Intelligence Pro</title>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
     <style>
-        /* Base Styling */
         body { 
             font-family: 'Poppins', sans-serif; 
             background: #0B1120; 
@@ -25,11 +23,9 @@
             justify-content: center;
             overflow-x: hidden;
         }
-
-        /* Particle Background */
         #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-        /* THE MAGIC CARD (Same as Login) */
+        
         .auth-card {
             background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(20px);
@@ -37,18 +33,27 @@
             border-radius: 24px;
             padding: 40px;
             width: 100%;
-            max-width: 450px; /* Ye form ko failne se rokega */
+            max-width: 450px; 
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             z-index: 10;
         }
 
-        /* Header Text */
         .auth-header { text-align: center; margin-bottom: 30px; }
-        .auth-header i { font-size: 40px; color: #38BDF8; margin-bottom: 15px; }
+        .auth-header i { font-size: 40px; color: #38BDF8; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(56,189,248,0.3)); }
         .auth-header h1 { font-size: 24px; font-weight: 700; margin: 0; }
         .auth-header p { color: #94A3B8; font-size: 14px; margin-top: 5px; }
+        .error-msg {
+            display: none;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #FCA5A5;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-        /* Input Fields Container */
         .input-group { position: relative; margin-bottom: 20px; }
         .input-group i { 
             position: absolute; left: 15px; top: 50%; transform: translateY(-50%); 
@@ -65,23 +70,20 @@
             font-size: 14px;
             outline: none;
             transition: all 0.3s ease;
+            box-sizing: border-box;
         }
-        .auth-input:focus { border-color: #38BDF8; box-shadow: 0 0 10px rgba(56,189,248,0.2); }
+        .auth-input:focus { border-color: #38BDF8; box-shadow: 0 0 10px rgba(56,189,248,0.2); background: rgba(56, 189, 248, 0.05); }
         .auth-input::placeholder { color: #64748B; }
-
-        /* Eye Icon for Password */
         .toggle-password {
             position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            left: auto !important;
             color: #64748B; cursor: pointer;
         }
-
-        /* Terms & Checkbox */
+        .toggle-password:hover { color: #38BDF8; }
         .terms-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 13px; color: #94A3B8; }
         .terms-row input[type="checkbox"] { accent-color: #38BDF8; cursor: pointer; }
         .terms-row a { color: #38BDF8; text-decoration: none; font-weight: 500; }
         .terms-row a:hover { text-decoration: underline; }
-
-        /* Submit Button */
         .auth-btn {
             width: 100%;
             background: linear-gradient(135deg, #38BDF8, #0284C7);
@@ -96,23 +98,15 @@
             display: flex; justify-content: center; align-items: center; gap: 10px;
         }
         .auth-btn:hover { box-shadow: 0 10px 20px rgba(56,189,248,0.4); transform: translateY(-2px); }
-
-        /* Footer Links */
         .auth-footer { text-align: center; margin-top: 25px; font-size: 13px; color: #94A3B8; }
         .auth-footer a { color: #38BDF8; text-decoration: none; font-weight: 600; }
         .auth-footer a:hover { text-decoration: underline; }
-
-        /* Password Strength Bar (Optional) */
-        .strength-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-        .strength-fill { height: 100%; width: 0%; transition: 0.3s; }
     </style>
 </head>
 <body>
 
-    <!-- Particle Background -->
     <div id="particles-js"></div>
 
-    <!-- Centered Card Container (Crucial for the Login-like look) -->
     <div class="auth-card">
         
         <div class="auth-header">
@@ -121,29 +115,30 @@
             <p>Create your premium account</p>
         </div>
 
-        <form action="login.html" id="registerForm">
+        <div id="errorBox" class="error-msg"></div>
+
+        <form id="registerForm">
             
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" class="auth-input" placeholder="Full Name" required>
+                <input type="text" class="auth-input" id="regFullName" placeholder="Full Name" required autocomplete="off">
             </div>
 
             <div class="input-group">
                 <i class="fas fa-envelope"></i>
-                <input type="email" class="auth-input" placeholder="Email Address" required>
+                <input type="email" class="auth-input" id="regEmail" placeholder="Email Address" required autocomplete="off">
             </div>
 
             <div class="input-group">
                 <i class="fas fa-user-circle"></i>
-                <input type="text" class="auth-input" placeholder="Username" required>
+                <input type="text" class="auth-input" id="regUsername" placeholder="Username" required autocomplete="off">
             </div>
 
             <div class="input-group">
                 <i class="fas fa-lock"></i>
                 <input type="password" class="auth-input" id="regPassword" placeholder="Password" required>
-                <i class="fas fa-eye toggle-password" onclick="togglePass('regPassword')"></i>
+                <i class="fas fa-eye toggle-password" onclick="togglePass('regPassword', this)"></i>
             </div>
-            <!-- Optional Strength Indicator -->
             <div style="font-size: 11px; color: #64748B; margin: -10px 0 15px 5px;">Password Strength</div>
 
             <div class="input-group">
@@ -156,7 +151,7 @@
                 <label for="termsCheck">I agree to the <a href="#">Terms & Conditions</a></label>
             </div>
 
-            <button type="submit" class="auth-btn">
+            <button type="submit" id="submitBtn" class="auth-btn">
                 Create Account <i class="fas fa-arrow-right"></i>
             </button>
 
@@ -167,13 +162,10 @@
         </div>
 
     </div>
-    <script src="js/api.js"></script>
-    <!-- Scripts -->
+
     <script>
-        // Password Visibility Toggle
-        function togglePass(inputId) {
+        function togglePass(inputId, icon) {
             const input = document.getElementById(inputId);
-            const icon = input.nextElementSibling;
             if (input.type === "password") {
                 input.type = "text";
                 icon.classList.remove('fa-eye');
@@ -185,12 +177,70 @@
             }
         }
 
-        // Particle.js Init
         document.addEventListener("DOMContentLoaded", () => {
             if (typeof particlesJS !== "undefined") {
                 particlesJS("particles-js", {
                     particles: { number: { value: 50 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
                 });
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+
+            const fullName = document.getElementById('regFullName').value;
+            const email = document.getElementById('regEmail').value;
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            
+            const btn = document.getElementById('submitBtn');
+            const errorBox = document.getElementById('errorBox');
+            
+            if (password !== confirmPassword) {
+                errorBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Passwords do not match!';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            errorBox.style.display = 'none';
+            btn.innerHTML = 'Creating Account... <i class="fas fa-spinner fa-spin"></i>';
+            btn.style.opacity = '0.8';
+            btn.style.pointerEvents = 'none';
+
+            try {
+                const response = await fetch('https://weather-intelligence-pro.onrender.com/auth/register', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({
+                        full_name: fullName,
+                        email: email,
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if(response.ok) {
+                    window.location.href = 'login.html';
+                } else {
+                    errorBox.innerHTML = `<i class="fas fa-circle-exclamation"></i> Registration Failed: ${data.detail || "User already exists"}`;
+                    errorBox.style.display = 'block';
+                    btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+            } catch(err) {
+                console.error(err);
+                errorBox.innerHTML = `<i class="fas fa-server"></i> Server connection failed!`;
+                errorBox.style.display = 'block';
+                
+                btn.innerHTML = 'Create Account <i class="fas fa-arrow-right"></i>';
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
             }
         });
     </script>

@@ -253,7 +253,8 @@
         </div>
     </div>
 
-    <script src="js/api.js"></script>
+    <!-- Agar tujhe external API logic rakhna hai toh script un-comment kar lena -->
+    <!-- <script src="js/api.js"></script> -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
@@ -290,7 +291,7 @@
                 });
             }
 
-            // Backend Connectivity Logic
+            // Backend Connectivity Logic - UPDATED FOR FASTAPI OAUTH2
             document.getElementById('userLoginForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -307,17 +308,22 @@
                 btn.style.pointerEvents = 'none';
 
                 try {
+                    // 🚀 FIX: FastAPI ko Form Data chahiye hota hai login ke liye, JSON nahi.
+                    const formData = new URLSearchParams();
+                    formData.append('username', username);
+                    formData.append('password', pass);
+
                     const response = await fetch('https://weather-intelligence-pro.onrender.com/auth/login', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            username: username, 
-                            password: pass 
-                        })
+                        headers: { 
+                            'Content-Type': 'application/x-www-form-urlencoded' 
+                        },
+                        body: formData
                     });
                     
                     const data = await response.json();
                     console.log("Backend Response:", data);
+                    
                     if(response.ok) {
                         localStorage.setItem('token', data.access_token);
                         window.location.href = 'dashboard.html';
