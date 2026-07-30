@@ -6,7 +6,7 @@ uvicorn[standard]==0.29.0
 python-multipart==0.0.9
 pydantic
 gunicorn
-
+psycopg2-binary
 # ==========================================
 # Database & ORM
 # ==========================================
