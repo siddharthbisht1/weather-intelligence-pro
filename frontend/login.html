@@ -299,16 +299,15 @@
                 btn.style.pointerEvents = 'none';
 
                 try {
-                    const formData = new URLSearchParams();
-                    formData.append('username', username);
-                    formData.append('password', pass);
-
                     const response = await fetch('https://weather-intelligence-pro.onrender.com/auth/login', {
                         method: 'POST',
                         headers: { 
-                            'Content-Type': 'application/x-www-form-urlencoded' 
+                            'Content-Type': 'application/json' 
                         },
-                        body: formData
+                        body: JSON.stringify({
+                            username: username,
+                            password: pass
+                        })
                     });
                     
                     const data = await response.json();
@@ -318,15 +317,19 @@
                         localStorage.setItem('token', data.access_token);
                         window.location.href = 'dashboard.html';
                     } else {
+                        // Smart Error Parsing
                         let errorMsg = "Invalid Credentials";
                         if (data.detail) {
                             if (Array.isArray(data.detail)) {
-                                errorMsg = data.detail[0].msg; 
+                                // Agar kisi specific field mein error hai (jaise password missing)
+                                const fieldName = data.detail[0].loc[data.detail[0].loc.length - 1];
+                                errorMsg = `${fieldName}: ${data.detail[0].msg}`;
                             } else {
                                 errorMsg = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
                             }
                         }
 
+                        // Show Custom Error UI
                         errorBox.innerHTML = `<i class="fas fa-circle-exclamation"></i> Login Failed: ${errorMsg}`;
                         errorBox.style.display = 'block';
                         
