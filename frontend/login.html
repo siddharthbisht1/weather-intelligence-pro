@@ -253,12 +253,8 @@
         </div>
     </div>
 
-    <!-- Agar tujhe external API logic rakhna hai toh script un-comment kar lena -->
-    <!-- <script src="js/api.js"></script> -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            
-            // Particles.js Initialization
             if (typeof particlesJS !== "undefined") {
                 particlesJS("particles-js", {
                     particles: {
@@ -279,7 +275,6 @@
                 });
             }
 
-            // Password Visibility Toggle
             const togglePassword = document.getElementById('togglePassword');
             const password = document.getElementById('password');
 
@@ -290,8 +285,6 @@
                     this.classList.toggle('fa-eye-slash');
                 });
             }
-
-            // Backend Connectivity Logic - UPDATED FOR FASTAPI OAUTH2
             document.getElementById('userLoginForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -299,8 +292,6 @@
                 const pass = document.getElementById('password').value;
                 const btn = document.getElementById('submitBtn');
                 const errorBox = document.getElementById('errorBox');
-                
-                // Reset UI state
                 errorBox.style.display = 'none';
                 errorBox.innerText = '';
                 btn.innerHTML = 'Authenticating... <i class="fas fa-spinner fa-spin"></i>';
@@ -308,7 +299,6 @@
                 btn.style.pointerEvents = 'none';
 
                 try {
-                    // 🚀 FIX: FastAPI ko Form Data chahiye hota hai login ke liye, JSON nahi.
                     const formData = new URLSearchParams();
                     formData.append('username', username);
                     formData.append('password', pass);
@@ -328,8 +318,16 @@
                         localStorage.setItem('token', data.access_token);
                         window.location.href = 'dashboard.html';
                     } else {
-                        // Show Custom Error UI
-                        errorBox.innerHTML = `<i class="fas fa-circle-exclamation"></i> Login Failed: ${data.detail || "Invalid Credentials"}`;
+                        let errorMsg = "Invalid Credentials";
+                        if (data.detail) {
+                            if (Array.isArray(data.detail)) {
+                                errorMsg = data.detail[0].msg; 
+                            } else {
+                                errorMsg = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+                            }
+                        }
+
+                        errorBox.innerHTML = `<i class="fas fa-circle-exclamation"></i> Login Failed: ${errorMsg}`;
                         errorBox.style.display = 'block';
                         
                         btn.innerHTML = 'Secure Login <i class="fas fa-arrow-right"></i>';
@@ -346,7 +344,8 @@
                     btn.style.pointerEvents = 'auto';
                 }
             });
-        });
+
+        }); 
     </script>
 </body>
 </html>
