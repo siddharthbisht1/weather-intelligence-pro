@@ -14,14 +14,8 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
     <style>
-        /* =========================================
-           BASE & UTILITIES
-           ========================================= */
         body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; padding: 0; transition: background 0.4s ease, color 0.4s ease; }
         
-        /* =========================================
-           PREMIUM UNIFIED SIDEBAR STYLING
-           ========================================= */
         aside#mySidebar {
             position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
             z-index: 99999; transition: transform 0.3s ease-in-out, background 0.4s ease !important; overflow-y: auto;
@@ -50,7 +44,6 @@
         aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
         aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
 
-        /* Sidebar Dropdown Styling */
         .sidebar-group-btn {
             display: flex; align-items: center; justify-content: space-between;
             padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
@@ -77,10 +70,6 @@
             aside#mySidebar { transform: translateX(-110%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
             #myMainContent { margin-left: 0; width: 100%; padding: 15px; }
         }
-
-        /* =========================================
-           GLASS CARDS & HOVER EFFECTS
-           ========================================= */
         .glass {
             background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px;
@@ -92,10 +81,6 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2) !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
         }
-
-        /* =========================================
-           PROFILE SPECIFIC STYLING
-           ========================================= */
         .profile-hero { display: flex; align-items: center; gap: 40px; padding: 40px; margin-bottom: 30px; flex-wrap: wrap; }
         .avatar-container { position: relative; width: 150px; height: 150px; border-radius: 50%; overflow: hidden; border: 4px solid #38BDF8; box-shadow: 0 0 20px rgba(56,189,248,0.3); flex-shrink: 0; cursor: pointer; }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
@@ -152,9 +137,6 @@
         input:checked + .slider { background-color: rgba(56,189,248,0.2); border-color: #38BDF8; }
         input:checked + .slider:before { transform: translateX(20px); background-color: #38BDF8; box-shadow: 0 0 10px rgba(56,189,248,0.8); }
 
-        /* =========================================
-           🚀 1. EDIT PROFILE MODAL STYLING
-           ========================================= */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
@@ -177,9 +159,6 @@
         }
         .modal-body .auth-input:focus { border-color: #38BDF8; box-shadow: 0 0 10px rgba(56,189,248,0.2); background: rgba(56, 189, 248, 0.05); }
 
-        /* =========================================
-           🚀 2. REAL LIGHT MODE STYLES
-           ========================================= */
         body.light-mode { background: #f1f5f9; color: #1e293b; }
         body.light-mode aside#mySidebar { background: #ffffff !important; border-right: 1px solid #e2e8f0; }
         body.light-mode aside#mySidebar a, body.light-mode aside#mySidebar .sidebar-group-btn { color: #475569; }
@@ -207,10 +186,8 @@
 </head>
 <body>
 
-    <!-- BACKGROUND PARTICLES -->
     <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
 
-    <!-- UNIVERSAL HIERARCHICAL SIDEBAR -->
     <aside id="mySidebar">
         <h1>WIP</h1>
         <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
@@ -238,7 +215,6 @@
             <a href="register.html"><i class="fas fa-user-plus"></i> Create Account</a>
         </div>
         
-        <!-- ADVANCED FEATURES DROPDOWN -->
         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>Advanced Features</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
@@ -249,7 +225,6 @@
             <a href="climate-trends.html"><i class="fa-solid fa-earth-americas"></i> Climate Trends</a>
         </div>
 
-        <!-- OPERATIONS CENTER DROPDOWN -->
         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>Operations Center</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
@@ -268,7 +243,6 @@
             <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
         </div>
 
-        <!-- LEGAL DROPDOWN -->
         <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>Legal</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
@@ -278,10 +252,7 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT WRAPPER -->
     <main class="main-content" id="myMainContent">
-
-        <!-- UNIFIED TOP NAVIGATION -->
         <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
                 <button onclick="brahmastraToggle()" style="color: #94A3B8; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
@@ -292,7 +263,7 @@
                 <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
             </div>
             <div class="top-actions" style="display: flex; gap: 15px;">
-                <!-- 🚀 UPDATE: Added ID and default Moon icon for Theme Toggle -->
+                
                 <button class="action-btn glass theme-toggle" id="themeToggleBtn" style="width: 45px; height: 45px; border-radius: 50%; border: none; cursor:pointer;">
                     <i class="fas fa-moon" style="color: white; font-size: 18px; transition: color 0.3s;"></i>
                 </button>
@@ -305,7 +276,6 @@
 
         <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
 
-        <!-- PAGE HEADER -->
         <header style="margin-bottom: 30px;">
             <h1 style="font-size: 32px; font-weight: 700; margin: 0;">
                 <i class="fas fa-id-badge" style="color: #38BDF8; margin-right: 10px;"></i> My Profile
@@ -313,7 +283,6 @@
             <p style="color: #94A3B8; margin-top: 5px;">Manage your personal information and view your platform activity.</p>
         </header>
 
-        <!-- PROFILE HERO -->
         <section class="glass profile-hero hover-card">
             <div class="avatar-container" onclick="document.getElementById('profileUpload').click()">
                 <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=250&h=250&fit=crop" alt="Profile" class="avatar-img" id="profileImage">
@@ -334,7 +303,6 @@
             </div>
         </section>
 
-        <!-- INFO STATS GRID -->
         <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 30px;">
             <div class="glass mini-card">
                 <i class="fas fa-envelope" style="color: #38BDF8;"></i>
@@ -366,13 +334,10 @@
             </div>
         </div>
 
-        <!-- MAIN LAYOUT GRID -->
         <div class="profile-content-grid">
             
-            <!-- LEFT COLUMN -->
             <div class="left-col" id="activitySection">
                 
-                <!-- Activity Stats -->
                 <div class="glass section-card hover-card" style="margin-bottom: 30px;">
                     <h2><i class="fas fa-chart-simple" style="color: #38BDF8;"></i> Activity Overview</h2>
                     <div class="stats-row">
@@ -391,7 +356,6 @@
                     </div>
                 </div>
 
-                <!-- Recent Activity Timeline -->
                 <div class="glass section-card hover-card">
                     <h2><i class="fas fa-clock-rotate-left" style="color: #FACC15;"></i> Recent Activity</h2>
                     <div class="timeline">
@@ -420,10 +384,8 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN -->
             <div class="right-col">
                 
-                <!-- Account Security -->
                 <div class="glass section-card hover-card" id="securitySection" style="margin-bottom: 30px;">
                     <h2><i class="fas fa-shield-halved" style="color: #F87171;"></i> Security Settings</h2>
                     <div class="setting-row">
@@ -449,10 +411,9 @@
                     </div>
                 </div>
 
-                <!-- Quick Preferences -->
                 <div class="glass section-card hover-card">
                     <h2><i class="fas fa-sliders" style="color: #A855F7;"></i> Quick Preferences</h2>
-                    <!-- Toggle tied to dark mode logic via CSS/JS -->
+                    
                     <div class="setting-row">
                         <span class="setting-label">Dark Mode Experience</span>
                         <label class="switch"><input type="checkbox" id="darkModeSwitch" checked><span class="slider"></span></label>
@@ -470,7 +431,6 @@
             </div>
         </div>
 
-        <!-- FOOTER -->
         <footer class="glass footer" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px; margin-top: 40px;">
             <div>
                 <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
@@ -483,7 +443,6 @@
 
     </main>
 
-    <!-- 🚀 NEW: EDIT PROFILE MODAL -->
     <div id="editProfileModal" class="modal-overlay">
         <div class="modal-content glass">
             <div class="modal-header">
@@ -510,17 +469,11 @@
         </div>
     </div>
 
-    <!-- <script src="js/api.js"></script> -->
-    
-    <!-- INLINE SCRIPTS -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
-            // ==========================================
-            // 🚀 THEME TOGGLE LOGIC (Real Light/Dark Mode)
-            // ==========================================
             const themeToggleBtn = document.getElementById("themeToggleBtn");
-            const darkModeSwitch = document.getElementById("darkModeSwitch"); // The switch inside settings
+            const darkModeSwitch = document.getElementById("darkModeSwitch"); 
             const icon = themeToggleBtn.querySelector("i");
 
             function toggleTheme() {
@@ -529,60 +482,49 @@
                 
                 if (isLightMode) {
                     icon.classList.replace("fa-moon", "fa-sun");
-                    icon.style.color = "#F59E0B"; // Sun Color
-                    if(darkModeSwitch) darkModeSwitch.checked = false; // Sync internal switch
+                    icon.style.color = "#F59E0B"; 
+                    if(darkModeSwitch) darkModeSwitch.checked = false; 
                 } else {
                     icon.classList.replace("fa-sun", "fa-moon");
-                    icon.style.color = "white"; // Moon Color
-                    if(darkModeSwitch) darkModeSwitch.checked = true; // Sync internal switch
+                    icon.style.color = "white"; 
+                    if(darkModeSwitch) darkModeSwitch.checked = true; 
                 }
             }
 
             if (themeToggleBtn) themeToggleBtn.addEventListener("click", toggleTheme);
             if (darkModeSwitch) darkModeSwitch.addEventListener("change", toggleTheme);
 
-
-            // ==========================================
-            // 🚀 EDIT PROFILE MODAL LOGIC
-            // ==========================================
             const editBtn = document.getElementById('primaryActionBtn');
             const modal = document.getElementById('editProfileModal');
             const closeBtn = document.getElementById('closeModalBtn');
             const saveBtn = document.getElementById('saveProfileBtn');
 
             if(editBtn && modal) {
-                // Open Modal
                 editBtn.addEventListener('click', () => {
                     modal.classList.add('active');
                 });
                 
-                // Close Modal via X button
                 closeBtn.addEventListener('click', () => {
                     modal.classList.remove('active');
                 });
                 
-                // Close Modal if clicked outside the box
                 modal.addEventListener('click', (e) => {
                     if(e.target === modal) modal.classList.remove('active');
                 });
                 
-                // Save Profile Data
                 saveBtn.addEventListener('click', () => {
                     const newName = document.getElementById('editName').value;
                     const newPhone = document.getElementById('editPhone').value;
                     const newLoc = document.getElementById('editLocation').value;
                     
-                    // Update the UI
                     document.getElementById('profileNameDisplay').innerText = newName;
                     document.getElementById('profilePhoneDisplay').innerText = newPhone;
                     document.getElementById('profileLocationDisplay').innerText = newLoc;
                     
-                    // Show success state on button
                     const originalText = saveBtn.innerHTML;
                     saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
                     saveBtn.style.background = "#4ADE80"; // Green color
                     
-                    // Close after 1 second and reset button
                     setTimeout(() => {
                         modal.classList.remove('active');
                         saveBtn.innerHTML = originalText;
@@ -591,36 +533,24 @@
                 });
             }
 
-
-            // ==========================================
-            // PARTICLES.JS INIT
-            // ==========================================
             if (typeof particlesJS !== "undefined") {
                 particlesJS("particles-js", { 
                     particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } }
                 });
             }
 
-            // ==========================================
-            // AUTH & BACKEND LOGIC (Same as your original code)
-            // ==========================================
             const token = localStorage.getItem('token');
             const nameEl = document.getElementById('profileNameDisplay');
             const emailEl = document.getElementById('profileEmailDisplay');
             const securitySection = document.getElementById('securitySection');
             const activitySection = document.getElementById('activitySection');
 
-            // Using dummy frontend logic here since backend handles API calls via api.js usually
-            // Just leaving your auth check structure intact:
             if (!token) {
                 // In a real flow, this redirects to login
                 // if(nameEl) nameEl.textContent = "Guest Explorer";
             }
         });
 
-        // ==========================================
-        // UI UTILITY FUNCTIONS (Global Scope)
-        // ==========================================
         function brahmastraToggle() {
             var sidebar = document.getElementById("mySidebar");
             var main = document.getElementById("myMainContent");
