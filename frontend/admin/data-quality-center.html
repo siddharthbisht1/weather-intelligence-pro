@@ -9,7 +9,7 @@
         document.documentElement.style.display = 'none';
         window.location.replace('admin-login.html');
     }
-</script>
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -35,6 +35,7 @@
         .glass {
             background: var(--glass-bg); backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border); border-radius: 16px;
+            transition: all 0.3s ease;
         }
 
         /* Sidebar Layout (Exact Match) */
@@ -61,28 +62,29 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
-        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(52, 211, 153, 0.1); }
-        .stats-card i { font-size: 2rem; color: var(--accent-emerald); margin-bottom: 1rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; cursor: default; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(52, 211, 153, 0.1); border-color: var(--accent-emerald); }
+        .stats-card i { font-size: 2rem; color: var(--accent-emerald); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.4)); }
         .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .stats-card h1 { font-size: 2.5rem; margin-top: 0.5rem; font-weight: 700; }
 
         /* Health Score Gauge */
         .health-score-container { display: flex; align-items: center; justify-content: center; position: relative; height: 200px;}
-        .health-score-text { position: absolute; text-align: center; }
-        .health-score-text h1 { font-size: 3rem; color: var(--accent-emerald); margin: 0; line-height: 1;}
-        .health-score-text p { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
+        .health-score-text { position: absolute; text-align: center; margin-top: 20px; }
+        .health-score-text h1 { font-size: 3.5rem; color: var(--accent-emerald); margin: 0; line-height: 1; font-weight: 700;}
+        .health-score-text p { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
 
         /* Tables & Charts layout */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
         .full-width { grid-column: span 2; }
         @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
         .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
-        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-emerald); display: flex; align-items: center; gap: 8px;}
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-emerald); display: flex; align-items: center; gap: 8px; font-weight: 600;}
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th, td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
         .badge-fixed { background: rgba(52, 211, 153, 0.1); color: var(--accent-emerald); border: 1px solid rgba(52, 211, 153, 0.3); }
@@ -90,9 +92,21 @@
         .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
 
         canvas { max-height: 250px; width: 100%; }
+
+        /* Action Buttons & Toasts */
+        .action-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; font-weight: 500; }
+        .action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .action-btn.emerald:hover { border-color: var(--accent-emerald); color: var(--accent-emerald); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-emerald); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
+    <div id="toast-container"></div>
 
     <div class="sidebar glass" id="adminSidebar">
         <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -107,9 +121,8 @@
         
         <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
         <a href="data-governance-center.html"><i class="fas fa-database"></i> Data Governance</a>
-    
         
-        <a href="data-quality-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+        <a href="data-quality-center.html" class="active" style="background: rgba(52, 211, 153, 0.15); color: #fff; border-left: 3px solid var(--accent-emerald); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(52, 211, 153, 0.1);">
             <i class="fas fa-heart-pulse"></i> Data Quality
         </a>
         
@@ -129,7 +142,9 @@
     <main class="main">
         <div class="header">
             <h1><i class="fas fa-heart-pulse"></i> Data Quality & Cleansing Center</h1>
-            <button class="glass" style="padding: 10px 20px; color: var(--accent-emerald); border-radius: 8px; cursor:pointer; font-weight:600;"><i class="fas fa-broom"></i> Force Auto-Cleanse</button>
+            <button class="glass action-btn emerald" onclick="forceCleanse(this)" style="padding: 10px 20px; color: var(--accent-emerald); border-radius: 8px; font-weight:600; font-size: 1rem;">
+                <i class="fas fa-broom"></i> Force Auto-Cleanse
+            </button>
         </div>
 
         <section class="stats-grid">
@@ -161,7 +176,7 @@
                 <div class="health-score-container">
                     <canvas id="healthGaugeChart"></canvas>
                     <div class="health-score-text">
-                        <h1>98.5</h1>
+                        <h1 id="healthScoreDisplay">98.5</h1>
                         <p>Excellent</p>
                     </div>
                 </div>
@@ -219,7 +234,7 @@
     </main>
 <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // FIXED: Gatekeeper Check ab localStorage se check karega
+            // Gatekeeper Check
             if (localStorage.getItem('userRole') !== 'admin') {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
                 setTimeout(() => window.location.href = 'admin-login.html', 1500);
@@ -228,6 +243,7 @@
 
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
 
             // Health Gauge Chart (Doughnut Half)
             const gaugeCanvas = document.getElementById('healthGaugeChart');
@@ -276,7 +292,7 @@
                             r: { 
                                 angleLines: { color: 'rgba(255,255,255,0.05)' }, 
                                 grid: { color: 'rgba(255,255,255,0.05)' }, 
-                                pointLabels: { color: '#94a3b8' }, 
+                                pointLabels: { color: '#94a3b8', font: { size: 11, family: "'Poppins', sans-serif" } }, 
                                 ticks: { display: false } 
                             } 
                         },
@@ -285,6 +301,64 @@
                 });
             }
         });
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-info-circle" style="color: var(--accent-blue);"></i>';
+            if (type === 'success') icon = '<i class="fas fa-check-circle" style="color: var(--accent-emerald);"></i>';
+            if (type === 'warn') icon = '<i class="fas fa-exclamation-triangle" style="color: var(--accent-warning);"></i>';
+            
+            if (type === 'warn') toast.style.borderLeftColor = 'var(--accent-warning)';
+            if (type === 'success') toast.style.borderLeftColor = 'var(--accent-emerald)';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- Action Handlers ---
+        function forceCleanse(btnElement) {
+            btnElement.disabled = true;
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initializing Engine...';
+            
+            showToast('Starting Machine Learning Imputation Engine...', 'warn');
+            
+            setTimeout(() => {
+                btnElement.innerHTML = '<i class="fas fa-check"></i> Cleansing Complete';
+                btnElement.style.color = '#fff';
+                btnElement.style.background = 'var(--accent-emerald)';
+                btnElement.style.borderColor = 'var(--accent-emerald)';
+                
+                showToast('Database cleansed. 142 Nulls imputed, 22 duplicates dropped.', 'success');
+                
+                // Update score dynamically for effect
+                document.getElementById('healthScoreDisplay').innerText = '99.1';
+                
+                setTimeout(() => {
+                    btnElement.innerHTML = originalText;
+                    btnElement.disabled = false;
+                    btnElement.style.color = 'var(--accent-emerald)';
+                    btnElement.style.background = 'transparent';
+                    btnElement.style.borderColor = 'var(--glass-border)';
+                }, 3000);
+            }, 2500);
+        }
+
+        // --- Logout Function Fixed ---
+        function logoutAdmin() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('adminToken');
+            window.location.replace('admin-login.html');
+        }
     </script>
 </body>
 </html>

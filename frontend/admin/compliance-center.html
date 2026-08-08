@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compliance Center - Admin</title>
-    <>
+    
     <script>
         if (localStorage.getItem('userRole') !== 'admin') {
             document.documentElement.style.display = 'none'; // Page dikhna turant band
@@ -34,7 +34,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; transition: all 0.3s ease; }
 
         /* Sidebar Layout (Perfect Match) */
         .sidebar {
@@ -60,11 +60,11 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
-        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(250, 204, 21, 0.1); }
-        .stats-card i { font-size: 2rem; color: var(--accent-gold); margin-bottom: 1rem; }
-        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; cursor: default; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(250, 204, 21, 0.1); border-color: var(--accent-gold); }
+        .stats-card i { font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.4)); }
+        .stats-card h3 { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .stats-card h1 { font-size: 2.5rem; margin-top: 0.5rem; font-weight: 700; }
 
         /* Status Box */
         .status-box { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
@@ -79,20 +79,34 @@
         .full-width { grid-column: span 2; }
         @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
         .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
-        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-gold); display: flex; align-items: center; gap: 8px;}
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-gold); display: flex; align-items: center; gap: 8px; font-weight: 600;}
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th, td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
         .badge-active { background: rgba(56, 189, 248, 0.1); color: var(--accent-blue); }
 
         canvas { max-height: 280px; width: 100%; }
+
+        /* Action Buttons & Toasts */
+        .action-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; font-weight: 500; }
+        .action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .action-btn.gold:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-gold); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
-<div class="sidebar glass" id="adminSidebar">
+    <div id="toast-container"></div>
+
+    <div class="sidebar glass" id="adminSidebar">
         <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
             <i class="fas fa-meteor"></i> MASTER AI
         </div>
@@ -111,7 +125,7 @@
         <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Security & Cloud</div>
         <a href="cybersecurity-command-center.html"><i class="fas fa-shield-halved"></i> Cybersecurity</a>
         
-        <a href="compliance-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+        <a href="compliance-center.html" class="active" style="background: rgba(250, 204, 21, 0.15); color: #fff; border-left: 3px solid var(--accent-gold); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(250, 204, 21, 0.1);">
             <i class="fas fa-scale-balanced"></i> Compliance Center
         </a>
         
@@ -126,7 +140,7 @@
     <main class="main">
         <div class="header">
             <h1><i class="fas fa-gavel"></i> Regulatory & Compliance Hub</h1>
-            <button class="glass" style="padding: 10px 20px; color: #0B1120; background: var(--accent-gold); border-radius: 8px; cursor:pointer; font-weight: 600; border: none;">
+            <button id="generateBtn" class="glass" onclick="generateReport(this)" style="padding: 10px 20px; color: #0B1120; background: var(--accent-gold); border-radius: 8px; cursor:pointer; font-weight: 600; border: none; transition: 0.3s;">
                 <i class="fas fa-file-pdf"></i> Generate Audit Report
             </button>
         </div>
@@ -187,7 +201,10 @@
                         <h3 style="color: white; font-size: 1rem;">DPDP Act 2023 (India)</h3>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Data localization and consent management review.</p>
                     </div>
-                    <div class="audit-tag non-compliant"><i class="fas fa-times-circle"></i> ACTION REQUIRED</div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button class="action-btn gold" onclick="resolveCompliance(this)">Resolve</button>
+                        <div class="audit-tag non-compliant"><i class="fas fa-times-circle"></i> ACTION REQUIRED</div>
+                    </div>
                 </div>
             </div>
 
@@ -241,7 +258,7 @@
 
    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // FIXED Gatekeeper Check: sessionStorage ko localStorage mein badal diya
+            // FIXED Gatekeeper Check
             if (localStorage.getItem('userRole') !== 'admin') {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
                 setTimeout(() => window.location.href = 'admin-login.html', 1500);
@@ -251,6 +268,7 @@
             // Chart Configuration
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
 
             // Compliance Confidence Chart
             const ctx = document.getElementById('complianceChart').getContext('2d');
@@ -277,6 +295,66 @@
                 }
             });
         });
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-info-circle" style="color: var(--accent-blue);"></i>';
+            if (type === 'success') icon = '<i class="fas fa-check-circle" style="color: var(--accent-green);"></i>';
+            if (type === 'warn') icon = '<i class="fas fa-exclamation-triangle" style="color: var(--accent-gold);"></i>';
+            if (type === 'error') icon = '<i class="fas fa-times-circle" style="color: var(--accent-danger);"></i>';
+            
+            if (type === 'warn') toast.style.borderLeftColor = 'var(--accent-gold)';
+            if (type === 'error') toast.style.borderLeftColor = 'var(--accent-danger)';
+            if (type === 'success') toast.style.borderLeftColor = 'var(--accent-green)';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- Action Handlers ---
+        function generateReport(btnElement) {
+            btnElement.disabled = true;
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Compiling Data...';
+            
+            showToast('Aggregating global compliance metrics...', 'info');
+            
+            setTimeout(() => {
+                showToast('Audit Report #2026-Q3 Generated Successfully.', 'success');
+                btnElement.innerHTML = '<i class="fas fa-download"></i> Download Report';
+                btnElement.style.background = 'var(--accent-green)';
+                btnElement.disabled = false;
+            }, 2500);
+        }
+
+        function resolveCompliance(btnElement) {
+            btnElement.disabled = true;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            showToast('Applying policy updates for DPDP Act...', 'info');
+            
+            setTimeout(() => {
+                const parentDiv = btnElement.nextElementSibling;
+                parentDiv.className = 'audit-tag compliant';
+                parentDiv.innerHTML = '<i class="fas fa-check-circle"></i> VERIFIED';
+                btnElement.remove(); // Button gayab
+                showToast('Policy configurations updated globally.', 'success');
+            }, 2000);
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('adminToken');
+            window.location.replace('admin-login.html');
+        }
     </script>
 </body>
 </html>

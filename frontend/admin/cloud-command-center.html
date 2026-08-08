@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Command Center - Admin</title>
-    <>
+    
     <script>
         if (localStorage.getItem('userRole') !== 'admin') {
-            document.documentElement.style.display = 'none'; // Page dikhna turant band
-            window.location.replace('admin-login.html'); // Wapas phenk dega
+            document.documentElement.style.display = 'none';
+            window.location.replace('admin-login.html');
         }
     </script>
 
@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* CSS Reset & Admin Variables (Purple/Tech Theme) */
+        /* CSS Reset & Admin Variables */
         :root {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #09090b 100%);
             --glass-bg: rgba(255, 255, 255, 0.05);
@@ -37,6 +37,7 @@
         .glass {
             background: var(--glass-bg); backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border); border-radius: 16px;
+            transition: all 0.3s ease;
         }
 
         /* Sidebar Layout */
@@ -62,11 +63,11 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
-        .stats-card:hover { transform: translateY(-5px); border-color: var(--accent-blue); }
-        .stats-card i { font-size: 2rem; color: var(--accent-blue); margin-bottom: 1rem; }
-        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; cursor: default; }
+        .stats-card:hover { transform: translateY(-5px); border-color: var(--accent-blue); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.1); }
+        .stats-card i { font-size: 2.2rem; color: var(--accent-blue); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(56,189,248,0.4)); }
+        .stats-card h3 { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .stats-card h1 { font-size: 2.5rem; margin-top: 0.5rem; font-weight: 700; }
 
         /* Layout Grids */
         .content-grid { display: grid; grid-template-columns: 2fr 1.5fr; gap: 1.5rem; }
@@ -74,29 +75,53 @@
         @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
         
         .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
-        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-purple); display: flex; align-items: center; gap: 8px;}
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-purple); display: flex; align-items: center; gap: 8px; font-weight: 600;}
         
         /* Tables */
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th, td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
-        .server-status { display: flex; align-items: center; gap: 8px; }
+        .server-status { display: flex; align-items: center; gap: 8px; font-weight: 500; }
         .pulsing-dot { width: 10px; height: 10px; border-radius: 50%; }
         .pulse-green { background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); animation: pulse 2s infinite; }
         .pulse-yellow { background: var(--accent-yellow); box-shadow: 0 0 10px var(--accent-yellow); }
-        .pulse-red { background: var(--accent-danger); box-shadow: 0 0 10px var(--accent-danger); }
+        .pulse-red { background: var(--accent-danger); box-shadow: 0 0 10px var(--accent-danger); animation: pulse 1s infinite; }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
         canvas { max-height: 280px; width: 100%; }
 
         /* Progress Bars */
-        .resource-bar { width: 100%; background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; margin-top: 5px; overflow: hidden; }
-        .resource-fill { height: 100%; border-radius: 10px; }
+        .resource-bar { width: 100%; background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; margin-top: 8px; overflow: hidden; }
+        .resource-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
+
+        /* Action Buttons */
+        .action-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; font-weight: 500; }
+        .action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .action-btn.blue:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .action-btn.red:hover { border-color: var(--accent-danger); color: var(--accent-danger); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Live Terminal Styles */
+        .terminal-container { background: #000; border-radius: 12px; padding: 15px; height: 280px; overflow-y: hidden; position: relative; border: 1px solid rgba(255,255,255,0.1); font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .terminal-logs { display: flex; flex-direction: column; gap: 5px; color: #a3a3a3; }
+        .log-time { color: var(--accent-blue); margin-right: 10px; }
+        .log-info { color: var(--accent-green); }
+        .log-warn { color: var(--accent-yellow); }
+        .log-err { color: var(--accent-danger); }
+        
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-blue); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
 
     <div class="sidebar glass">
         <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -127,12 +152,13 @@
             <i class="fas fa-power-off"></i> Secure Logout
         </a>
     </div>
+    
     <main class="main">
         <div class="header">
             <h1><i class="fas fa-server"></i> Cloud Infrastructure & Node Command</h1>
-            <div style="display:flex; gap:10px;">
-                <button class="glass" style="padding: 10px 20px; color: var(--accent-danger); border-radius: 8px; cursor:pointer; font-weight: 600;"><i class="fas fa-rotate-right"></i> Reboot API Nodes</button>
-                <button class="glass" style="padding: 10px 20px; color: var(--accent-blue); border-radius: 8px; cursor:pointer; font-weight: 600;"><i class="fas fa-plus"></i> Scale Up Instance</button>
+            <div style="display:flex; gap:15px;">
+                <button class="glass" onclick="showToast('Global API Nodes Reboot Initiated', 'warn')" style="padding: 10px 20px; color: var(--accent-danger); border-radius: 8px; cursor:pointer; font-weight: 600; border-color: rgba(239, 68, 68, 0.3);"><i class="fas fa-rotate-right"></i> Reboot API Nodes</button>
+                <button class="glass" onclick="showToast('Auto-scaling triggered across all zones', 'success')" style="padding: 10px 20px; color: var(--accent-blue); border-radius: 8px; cursor:pointer; font-weight: 600; border-color: rgba(56, 189, 248, 0.3);"><i class="fas fa-plus"></i> Scale Up Instance</button>
             </div>
         </div>
 
@@ -154,7 +180,7 @@
             </div>
             <div class="stats-card glass">
                 <i class="fas fa-wallet"></i>
-                <h3>Current AWS Billing</h3>
+                <h3>Current Cloud Billing</h3>
                 <h1 style="color: var(--accent-danger);">$425.80</h1>
             </div>
         </section>
@@ -165,9 +191,14 @@
                 <canvas id="loadChart"></canvas>
             </div>
 
+            <!-- 🚀 Live Terminal Added Here -->
             <div class="section-card glass">
-                <h2><i class="fas fa-database"></i> Database & S3 Storage Allocation</h2>
-                <canvas id="storageChart"></canvas>
+                <h2><i class="fas fa-terminal"></i> Live Cloud Stream</h2>
+                <div class="terminal-container" id="terminal">
+                    <div class="terminal-logs" id="logOutput">
+                        <!-- Logs will be injected here via JS -->
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -187,45 +218,45 @@
                         <td><strong>FastAPI Main Core</strong> (api.wip.com)</td>
                         <td>ap-south-1 (Mumbai)</td>
                         <td>
-                            CPU: 65% | RAM: 4GB
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:3px;"><span>CPU: 65%</span> <span>RAM: 4GB</span></div>
                             <div class="resource-bar"><div class="resource-fill" style="width: 65%; background: var(--accent-blue);"></div></div>
                         </td>
                         <td>45d 12h</td>
                         <td><div class="server-status"><div class="pulsing-dot pulse-green"></div> Healthy</div></td>
-                        <td><button style="background:transparent; border:1px solid var(--glass-border); color:var(--accent-blue); padding:4px 8px; border-radius:4px; cursor:pointer;">Restart</button></td>
+                        <td><button class="action-btn blue" onclick="executeNodeAction(this, 'Restarting FastAPI Core')">Restart</button></td>
                     </tr>
                     <tr>
                         <td><strong>Python ML Worker</strong> (Scikit-learn)</td>
                         <td>us-east-1 (N. Virginia)</td>
                         <td>
-                            CPU: 88% | RAM: 12GB
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:3px;"><span>CPU: 88%</span> <span>RAM: 12GB</span></div>
                             <div class="resource-bar"><div class="resource-fill" style="width: 88%; background: var(--accent-yellow);"></div></div>
                         </td>
                         <td>12d 4h</td>
                         <td><div class="server-status"><div class="pulsing-dot pulse-yellow"></div> Heavy Load</div></td>
-                        <td><button style="background:transparent; border:1px solid var(--glass-border); color:var(--accent-blue); padding:4px 8px; border-radius:4px; cursor:pointer;">Restart</button></td>
+                        <td><button class="action-btn blue" onclick="executeNodeAction(this, 'Scaling Up ML Worker')">Scale</button></td>
                     </tr>
                     <tr>
                         <td><strong>React Frontend</strong> (Vercel Edge)</td>
                         <td>Global Edge Network</td>
                         <td>
-                            CPU: 12% | RAM: 1GB
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:3px;"><span>CPU: 12%</span> <span>RAM: 1GB</span></div>
                             <div class="resource-bar"><div class="resource-fill" style="width: 12%; background: var(--accent-green);"></div></div>
                         </td>
                         <td>120d 1h</td>
                         <td><div class="server-status"><div class="pulsing-dot pulse-green"></div> Optimal</div></td>
-                        <td><button style="background:transparent; border:1px solid var(--glass-border); color:var(--text-muted); padding:4px 8px; border-radius:4px; cursor:not-allowed;">Auto-managed</button></td>
+                        <td><button class="action-btn" disabled>Auto-managed</button></td>
                     </tr>
                     <tr>
                         <td><strong>PostgreSQL Database</strong> (RDS)</td>
                         <td>ap-south-1 (Mumbai)</td>
                         <td>
-                            CPU: 95% | RAM: 16GB
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:3px;"><span>CPU: 95%</span> <span>RAM: 16GB</span></div>
                             <div class="resource-bar"><div class="resource-fill" style="width: 95%; background: var(--accent-danger);"></div></div>
                         </td>
                         <td>45d 12h</td>
                         <td><div class="server-status"><div class="pulsing-dot pulse-red"></div> Critical</div></td>
-                        <td><button style="background:transparent; border:1px solid var(--glass-border); color:var(--accent-blue); padding:4px 8px; border-radius:4px; cursor:pointer;">Scale Up</button></td>
+                        <td><button class="action-btn red" onclick="executeNodeAction(this, 'Allocating Emergency DB Resources')">Scale Up</button></td>
                     </tr>
                 </table>
             </div>
@@ -236,21 +267,16 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         
-        // 1. FIXED: sessionStorage ki jagah localStorage use kiya gaya hai
+        // Gatekeeper Check
         const userRole = localStorage.getItem('userRole');
-
-        // Check Admin clearance (Gatekeeper)
-        if (userRole !== 'admin') {
-            document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
-            setTimeout(() => window.location.href = 'admin-login.html', 1500);
-            return; // Agar admin nahi hai toh aage ka chart code load hi nahi hoga
-        }
+        if (userRole !== 'admin') return;
 
         // Global Chart Defaults
         Chart.defaults.color = '#94a3b8';
         Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+        Chart.defaults.font.family = "'Poppins', sans-serif";
 
-        // 2. CPU & Memory Load Chart (Line)
+        // CPU & Memory Load Chart (Line)
         const loadCanvas = document.getElementById('loadChart');
         if (loadCanvas) {
             const loadCtx = loadCanvas.getContext('2d');
@@ -277,32 +303,94 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100 } }
+                    scales: { y: { beginAtZero: true, max: 100 } },
+                    interaction: { mode: 'index', intersect: false }
                 }
             });
         }
 
-        // 3. Storage Breakdown Chart (Pie)
-        const storageCanvas = document.getElementById('storageChart');
-        if (storageCanvas) {
-            const storageCtx = storageCanvas.getContext('2d');
-            new Chart(storageCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['AWS S3 (Images/Reports)', 'PostgreSQL (Users)', 'Redis (Cache)', 'Log Archives'],
-                    datasets: [{
-                        data: [55, 25, 10, 10],
-                        backgroundColor: ['#38bdf8', '#a855f7', '#4ade80', '#facc15'],
-                        borderWidth: 0, hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { position: 'right' } }
-                }
-            });
+        // --- Live Terminal Simulation ---
+        const logOutput = document.getElementById('logOutput');
+        const terminal = document.getElementById('terminal');
+        const dummyLogs = [
+            { type: 'info', msg: 'Syncing objects with AWS S3 Bucket...' },
+            { type: 'info', msg: 'DynamoDB Read Capacity at 45%' },
+            { type: 'warn', msg: 'Lambda Execution Time > 200ms on Auth Route' },
+            { type: 'info', msg: 'Node health check passed for ap-south-1' },
+            { type: 'err', msg: 'Connection timeout on worker node 04' },
+            { type: 'info', msg: 'Routing traffic through Edge Network...' }
+        ];
+
+        function addLog() {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            const randomLog = dummyLogs[Math.floor(Math.random() * dummyLogs.length)];
+            
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span class="log-time">[${timeStr}]</span> <span class="log-${randomLog.type}">[${randomLog.type.toUpperCase()}]</span> ${randomLog.msg}`;
+            
+            logOutput.appendChild(logEntry);
+            
+            // Auto scroll down
+            if (logOutput.childElementCount > 15) {
+                logOutput.removeChild(logOutput.firstChild);
+            }
+            terminal.scrollTop = terminal.scrollHeight;
+            
+            // Randomize next log time between 1 and 4 seconds
+            setTimeout(addLog, Math.random() * 3000 + 1000);
         }
+        
+        // Start the terminal
+        addLog();
     });
-</script>
+
+    // --- Toast Notification System ---
+    function showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        
+        let icon = '<i class="fas fa-info-circle" style="color: var(--accent-blue);"></i>';
+        if (type === 'success') icon = '<i class="fas fa-check-circle" style="color: var(--accent-green);"></i>';
+        if (type === 'warn') icon = '<i class="fas fa-exclamation-triangle" style="color: var(--accent-yellow);"></i>';
+        if (type === 'error') icon = '<i class="fas fa-times-circle" style="color: var(--accent-danger);"></i>';
+        
+        if (type === 'warn') toast.style.borderLeftColor = 'var(--accent-yellow)';
+        if (type === 'error') toast.style.borderLeftColor = 'var(--accent-danger)';
+        if (type === 'success') toast.style.borderLeftColor = 'var(--accent-green)';
+
+        toast.innerHTML = `${icon} <span>${message}</span>`;
+        toastContainer.appendChild(toast);
+
+        // Remove toast after 3 seconds
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Node Action Button Handler
+    function executeNodeAction(btnElement, actionMessage) {
+        btnElement.disabled = true;
+        const originalText = btnElement.innerText;
+        btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        
+        showToast(actionMessage + '...', 'info');
+        
+        // Simulate network delay
+        setTimeout(() => {
+            showToast('Action completed successfully.', 'success');
+            btnElement.innerHTML = originalText;
+            btnElement.disabled = false;
+        }, 2000);
+    }
+
+    function logoutAdmin() {
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('adminToken');
+        window.location.replace('admin-login.html');
+    }
+    </script>
 </body>
 </html>

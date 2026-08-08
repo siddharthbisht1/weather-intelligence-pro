@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cybersecurity Command - Admin</title>
-    <>
+    
     <script>
         if (localStorage.getItem('userRole') !== 'admin') {
             document.documentElement.style.display = 'none'; // Page dikhna turant band
@@ -21,7 +21,7 @@
         :root {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
             --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(239, 68, 68, 0.2); /* Red tint for security */
+            --glass-border: rgba(239, 68, 68, 0.2);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent-blue: #38bdf8;
@@ -32,11 +32,16 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; transition: background-color 0.3s ease; }
+        
+        /* Lockdown Animation applied to body */
+        body.lockdown-active { animation: emergencyFlash 1.5s infinite; }
+        @keyframes emergencyFlash { 0% { box-shadow: inset 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: inset 0 0 100px rgba(239,68,68,0.5); } 100% { box-shadow: inset 0 0 0 rgba(239,68,68,0); } }
 
         .glass {
             background: var(--glass-bg); backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border); border-radius: 16px;
+            transition: all 0.3s ease;
         }
 
         /* Sidebar Layout */
@@ -65,10 +70,11 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; position: relative; overflow: hidden; }
-        .stats-card i { font-size: 2rem; color: var(--accent-danger); margin-bottom: 1rem; }
+        .stats-card { padding: 1.5rem; text-align: center; position: relative; overflow: hidden; cursor: default;}
+        .stats-card:hover { transform: translateY(-5px); border-color: var(--accent-danger); }
+        .stats-card i { font-size: 2rem; color: var(--accent-danger); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4));}
         .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; font-weight: 700;}
 
         /* Warning Animation */
         .alert-bg { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.4); animation: flash 2s infinite; }
@@ -85,7 +91,8 @@
         /* Tables */
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th { color: var(--text-muted); font-weight: 500; text-transform: uppercase; font-size: 0.8rem;}
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
         .threat-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #fff; }
         .high-risk { background: var(--accent-danger); }
@@ -95,13 +102,25 @@
         canvas { max-height: 280px; width: 100%; }
 
         /* Terminal Feed */
-        .terminal { background: #000; padding: 15px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; height: 280px; overflow-y: auto; border: 1px solid #333; }
+        .terminal { background: #000; padding: 15px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; height: 280px; overflow-y: auto; border: 1px solid #333; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .terminal::-webkit-scrollbar { width: 4px; }
         .terminal::-webkit-scrollbar-thumb { background: var(--accent-danger); }
-        .t-red { color: #ef4444; } .t-green { color: #4ade80; } .t-blue { color: #38bdf8; } .t-yellow { color: #facc15; }
+        .t-red { color: #ef4444; font-weight: bold;} .t-green { color: #4ade80; font-weight: bold;} .t-blue { color: #38bdf8; } .t-yellow { color: #facc15; font-weight: bold;}
+
+        /* Action Buttons & Toasts */
+        .action-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; font-weight: 500; }
+        .action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .action-btn.red:hover { border-color: var(--accent-danger); color: var(--accent-danger); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-danger); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
+    <div id="toast-container"></div>
 
     <div class="sidebar glass" id="adminSidebar">
         <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -121,7 +140,7 @@
         
         <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Security & Cloud</div>
         
-        <a href="cybersecurity-command-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+        <a href="cybersecurity-command-center.html" class="active" style="background: rgba(239, 68, 68, 0.15); color: #fff; border-left: 3px solid var(--accent-danger); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);">
             <i class="fas fa-shield-halved"></i> Cybersecurity
         </a>
         
@@ -138,7 +157,9 @@
         <div class="header">
             <h1><i class="fas fa-shield-halved"></i> Cybersecurity & SIEM Hub</h1>
             <div style="display:flex; gap:10px;">
-                <button class="glass" style="padding: 10px 20px; color: var(--accent-danger); border-radius: 8px; cursor:pointer; font-weight: 600;"><i class="fas fa-ban"></i> Lockdown Mode</button>
+                <button id="lockdownBtn" class="glass" onclick="triggerLockdown(this)" style="padding: 10px 20px; color: var(--accent-danger); border-radius: 8px; cursor:pointer; font-weight: 600; border-color: rgba(239,68,68,0.4); transition: 0.3s;">
+                    <i class="fas fa-ban"></i> Enable Lockdown Mode
+                </button>
             </div>
         </div>
 
@@ -172,13 +193,9 @@
             </div>
 
             <div class="section-card glass">
-                <h2><i class="fas fa-terminal"></i> WAF Firewall Logs (Live)</h2>
+                <h2><i class="fas fa-terminal"></i> WAF & Infrastructure Logs (Live)</h2>
                 <div class="terminal" id="secTerminal">
-                    <div><span class="t-blue">[10:45:01]</span> <span class="t-green">INFO</span>: Normal traffic routed from AS15169 (Google).</div>
-                    <div><span class="t-blue">[10:45:04]</span> <span class="t-yellow">WARN</span>: Rate limit exceeded for IP 104.22.3.1. Throttling...</div>
-                    <div><span class="t-blue">[10:45:09]</span> <span class="t-red">CRITICAL</span>: SQL Injection attempt dropped. Payload: ' OR 1=1--</div>
-                    <div><span class="t-blue">[10:45:12]</span> <span class="t-red">CRITICAL</span>: Multiple failed logins (Admin). IP 45.12.33.1 banned.</div>
-                    <div><span class="t-blue">[10:45:20]</span> <span class="t-green">INFO</span>: SSL/TLS Handshake successful with client.</div>
+                    <!-- Logs injected via JS -->
                 </div>
             </div>
         </section>
@@ -193,7 +210,7 @@
                         <th>Source IP / Region</th>
                         <th>Target Endpoint</th>
                         <th>Severity</th>
-                        <th>Action Taken</th>
+                        <th>Action Required</th>
                     </tr>
                     <tr>
                         <td>#SEC-9012</td>
@@ -201,7 +218,7 @@
                         <td>Botnet (Russia/China)</td>
                         <td>/api/weather/live</td>
                         <td><span class="threat-badge high-risk">CRITICAL</span></td>
-                        <td>Traffic rerouted via Scrubbing Center</td>
+                        <td><button class="action-btn red" onclick="investigateIncident(this)">Investigate</button></td>
                     </tr>
                     <tr>
                         <td>#SEC-9011</td>
@@ -209,7 +226,7 @@
                         <td>192.168.1.10 (Local)</td>
                         <td>/api/users/login</td>
                         <td><span class="threat-badge high-risk">HIGH</span></td>
-                        <td>IP Blacklisted automatically</td>
+                        <td><button class="action-btn red" onclick="investigateIncident(this)">Investigate</button></td>
                     </tr>
                     <tr>
                         <td>#SEC-9010</td>
@@ -217,7 +234,7 @@
                         <td>AWS EC2 (US-East)</td>
                         <td>/api/data/export</td>
                         <td><span class="threat-badge med-risk">MEDIUM</span></td>
-                        <td>Rate Limited (429 Too Many Requests)</td>
+                        <td><button class="action-btn red" onclick="investigateIncident(this)">Investigate</button></td>
                     </tr>
                     <tr>
                         <td>#SEC-9009</td>
@@ -225,7 +242,7 @@
                         <td>45.22.11.9 (Unknown)</td>
                         <td>/admin/dashboard</td>
                         <td><span class="threat-badge low-risk">LOW</span></td>
-                        <td>Session Terminated</td>
+                        <td><button class="action-btn red" onclick="investigateIncident(this)">Investigate</button></td>
                     </tr>
                 </table>
             </div>
@@ -235,7 +252,7 @@
 
    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. FIXED: Gatekeeper Check ab localStorage use karega
+            // Gatekeeper Check
             if (localStorage.getItem('userRole') !== 'admin') {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
                 setTimeout(() => window.location.href = 'admin-login.html', 1500);
@@ -245,6 +262,7 @@
             // Chart Configuration
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
 
             // Attack Vector Chart (Doughnut)
             const attackCtx = document.getElementById('attackChart').getContext('2d');
@@ -266,27 +284,110 @@
                 }
             });
 
-            // Simulate Live Terminal Logging
+            // Simulate Live Terminal Logging with AWS/Infra specifics
             const terminal = document.getElementById('secTerminal');
             if (terminal) {
+                const logs = [
+                    `<span class="t-green">INFO</span>: Normal traffic routed from AS15169 (Google).`,
+                    `<span class="t-yellow">WARN</span>: Rate limit exceeded on AWS API Gateway. Throttling...`,
+                    `<span class="t-red">CRITICAL</span>: Unauthorized access attempt on AWS S3 Bucket [weather-intel-assets]. Blocked via IAM policy.`,
+                    `<span class="t-red">CRITICAL</span>: Multiple failed logins. IP 45.12.33.1 banned at WAF edge.`,
+                    `<span class="t-green">INFO</span>: SSL/TLS Handshake successful with React frontend client.`,
+                    `<span class="t-yellow">WARN</span>: DynamoDB provisioned read capacity nearing 80%. Auto-scaling triggered.`,
+                    `<span class="t-green">INFO</span>: AWS Lambda function (Env_Data_Processor) executed successfully in 210ms.`
+                ];
+                
+                let logIndex = 0;
+
+                // Initial logs
+                for(let i=0; i<3; i++) appendLog();
+
                 setInterval(() => {
+                    appendLog();
+                }, 3500);
+
+                function appendLog() {
                     const now = new Date();
-                    const timeStr = `[${now.getUTCHours()}:${now.getUTCMinutes()}:${now.getUTCSeconds()}]`;
-                    const logs = [
-                        `<span class="t-blue">${timeStr}</span> <span class="t-green">INFO</span>: Clean traffic from AS396982 (Google Cloud).`,
-                        `<span class="t-blue">${timeStr}</span> <span class="t-yellow">WARN</span>: Unusually high payload detected. Inspecting...`,
-                        `<span class="t-blue">${timeStr}</span> <span class="t-red">CRITICAL</span>: XSS attempt blocked on /profile update.`,
-                        `<span class="t-blue">${timeStr}</span> <span class="t-green">INFO</span>: Let's Encrypt SSL certificate auto-renewed.`
-                    ];
+                    const timeStr = `[${now.getUTCHours().toString().padStart(2,'0')}:${now.getUTCMinutes().toString().padStart(2,'0')}:${now.getUTCSeconds().toString().padStart(2,'0')}]`;
                     const msg = logs[Math.floor(Math.random() * logs.length)];
                     
                     const newLog = document.createElement('div');
-                    newLog.innerHTML = msg;
+                    newLog.style.marginBottom = '5px';
+                    newLog.innerHTML = `<span class="t-blue">${timeStr}</span> ${msg}`;
                     terminal.appendChild(newLog);
+                    
+                    if(terminal.children.length > 20) {
+                        terminal.removeChild(terminal.firstChild);
+                    }
                     terminal.scrollTop = terminal.scrollHeight; // Auto-scroll
-                }, 4500);
+                }
             }
         });
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-info-circle" style="color: var(--accent-blue);"></i>';
+            if (type === 'success') icon = '<i class="fas fa-check-circle" style="color: var(--accent-green);"></i>';
+            if (type === 'warn') icon = '<i class="fas fa-exclamation-triangle" style="color: var(--accent-orange);"></i>';
+            if (type === 'error') icon = '<i class="fas fa-skull-crossbones" style="color: var(--accent-danger);"></i>';
+            
+            if (type === 'warn') toast.style.borderLeftColor = 'var(--accent-orange)';
+            if (type === 'error') toast.style.borderLeftColor = 'var(--accent-danger)';
+            if (type === 'success') toast.style.borderLeftColor = 'var(--accent-green)';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // --- Action Handlers ---
+        let isLockdown = false;
+        function triggerLockdown(btnElement) {
+            isLockdown = !isLockdown;
+            const body = document.body;
+
+            if(isLockdown) {
+                btnElement.innerHTML = '<i class="fas fa-unlock"></i> Disengage Lockdown';
+                btnElement.style.background = 'var(--accent-danger)';
+                btnElement.style.color = '#fff';
+                body.classList.add('lockdown-active');
+                showToast('EMERGENCY PROTOCOL ENGAGED: All external API routes halted. VPN access only.', 'error');
+            } else {
+                btnElement.innerHTML = '<i class="fas fa-ban"></i> Enable Lockdown Mode';
+                btnElement.style.background = 'transparent';
+                btnElement.style.color = 'var(--accent-danger)';
+                body.classList.remove('lockdown-active');
+                showToast('Lockdown lifted. Normal traffic routing restored.', 'success');
+            }
+        }
+
+        function investigateIncident(btnElement) {
+            btnElement.disabled = true;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Patching...';
+            
+            showToast('Applying security patch & blacklisting source IPs...', 'warn');
+            
+            setTimeout(() => {
+                btnElement.innerHTML = '<i class="fas fa-check"></i> Resolved';
+                btnElement.style.borderColor = 'var(--accent-green)';
+                btnElement.style.color = 'var(--accent-green)';
+                showToast('Threat neutralized. Firewall rules updated successfully.', 'success');
+            }, 2500);
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('adminToken');
+            window.location.replace('admin-login.html');
+        }
     </script>
 </body>
 </html>

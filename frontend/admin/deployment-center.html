@@ -9,7 +9,7 @@
         document.documentElement.style.display = 'none';
         window.location.replace('admin-login.html');
     }
-</script>
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -33,7 +33,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; transition: all 0.3s ease;}
 
         /* Sidebar Layout (Matched Exactly) */
         .sidebar {
@@ -59,11 +59,11 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
-        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.1); }
-        .stats-card i { font-size: 2rem; color: var(--accent-indigo); margin-bottom: 1rem; }
-        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; cursor: default; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.1); border-color: var(--accent-indigo);}
+        .stats-card i { font-size: 2rem; color: var(--accent-indigo); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(99,102,241,0.4));}
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px;}
+        .stats-card h1 { font-size: 2.5rem; margin-top: 0.5rem; font-weight: 700; }
 
         /* CI/CD Pipeline Visualizer */
         .cicd-container { display: flex; justify-content: space-between; align-items: center; padding: 2rem; overflow-x: auto; }
@@ -72,28 +72,31 @@
             padding: 1.5rem; border-radius: 50%; width: 130px; height: 130px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; position: relative; z-index: 2; box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+            transition: all 0.5s ease;
         }
-        .cicd-node i { font-size: 1.8rem; margin-bottom: 8px; }
+        .cicd-node i { font-size: 1.8rem; margin-bottom: 8px; transition: color 0.5s ease;}
         .cicd-node h4 { font-size: 0.85rem; color: #fff; }
-        .cicd-node.active-node { border-color: var(--accent-green); box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); animation: pulse-node 2s infinite; }
+        .cicd-node.active-node { border-color: var(--accent-blue); box-shadow: 0 0 25px rgba(56, 189, 248, 0.5); animation: pulse-node 1.5s infinite; }
+        .cicd-node.success-node { border-color: var(--accent-green); box-shadow: 0 0 15px rgba(74, 222, 128, 0.3); }
         
-        @keyframes pulse-node { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes pulse-node { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 
         /* Progress Connector */
-        .connector { flex-grow: 1; height: 4px; background: rgba(99, 102, 241, 0.2); position: relative; z-index: 1; margin: 0 -15px; }
-        .connector-fill { height: 100%; width: 100%; background: var(--accent-green); }
-        .connector-partial { height: 100%; width: 50%; background: var(--accent-blue); animation: progress-load 2s infinite linear; }
-        @keyframes progress-load { 0% { background-position: 0 0; } 100% { background-position: 50px 0; } }
+        .connector { flex-grow: 1; height: 4px; background: rgba(99, 102, 241, 0.2); position: relative; z-index: 1; margin: 0 -15px; border-radius: 4px; overflow: hidden;}
+        .connector-fill { height: 100%; width: 0%; background: var(--accent-green); transition: width 1s linear; }
+        .connector-partial { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent-indigo) 0%, var(--accent-blue) 50%, var(--accent-indigo) 100%); background-size: 200% 100%; animation: progress-load 1.5s infinite linear; }
+        @keyframes progress-load { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
         /* Tables & Charts */
         .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
         @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } }
         .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
-        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-indigo); display: flex; align-items: center; gap: 8px;}
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-indigo); display: flex; align-items: center; gap: 8px; font-weight: 600;}
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th, td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
         .badge-success { background: rgba(74, 222, 128, 0.1); color: var(--accent-green); border: 1px solid rgba(74, 222, 128, 0.3); }
@@ -103,9 +106,20 @@
         .code-hash { font-family: 'Courier New', Courier, monospace; color: var(--accent-warning); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
 
         canvas { max-height: 280px; width: 100%; }
+
+        /* Action Buttons & Toasts */
+        .action-btn { background: var(--accent-indigo); border: 1px solid var(--accent-indigo); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 15px rgba(99,102,241,0.4); display: flex; align-items: center; gap: 8px;}
+        .action-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.6); }
+        .action-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-indigo); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
+    <div id="toast-container"></div>
 
     <!-- SECURE SIDEBAR -->
     <div class="sidebar glass" id="adminSidebar">
@@ -116,8 +130,8 @@
         <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Core Operations</div>
         <a href="master-dashboard.html"><i class="fas fa-home"></i> Global Dashboard</a>
         
-        <!-- ✅ YAHAN DEPLOYMENT CENTER ACTIVE HAI -->
-        <a href="deployment-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+        <!-- ✅ DEPLOYMENT CENTER ACTIVE -->
+        <a href="deployment-center.html" class="active" style="background: rgba(99, 102, 241, 0.15); color: #fff; border-left: 3px solid var(--accent-indigo); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(99,102,241,0.1);">
             <i class="fas fa-rocket"></i> Deployment Center
         </a>
         
@@ -126,7 +140,6 @@
         
         <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
         <a href="data-governance-center.html"><i class="fas fa-database"></i> Data Governance</a>
-       
         <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
         <a href="satellite-command.html"><i class="fas fa-satellite"></i> Satellite Command</a>
         
@@ -145,7 +158,7 @@
     <main class="main">
         <div class="header">
             <h1><i class="fas fa-code-branch"></i> Release & Deployment Control</h1>
-            <button class="glass" style="padding: 10px 20px; background: var(--accent-indigo); color: white; border-radius: 8px; cursor:pointer; border: none; font-weight: 600; box-shadow: 0 4px 15px rgba(99,102,241,0.4);">
+            <button class="action-btn" id="deployBtn" onclick="triggerDeploy(this)">
                 <i class="fas fa-upload"></i> Trigger Manual Deploy
             </button>
         </div>
@@ -154,7 +167,7 @@
             <div class="stats-card glass">
                 <i class="fas fa-code-commit"></i>
                 <h3>Current Version</h3>
-                <h1 style="color: var(--accent-indigo);">v2.4.1</h1>
+                <h1 style="color: var(--accent-indigo);" id="versionDisplay">v2.4.1</h1>
             </div>
             <div class="stats-card glass">
                 <i class="fas fa-check-circle"></i>
@@ -164,7 +177,7 @@
             <div class="stats-card glass">
                 <i class="fas fa-clock-rotate-left"></i>
                 <h3>Last Deployment</h3>
-                <h1 style="color: var(--accent-blue);">2h ago</h1>
+                <h1 style="color: var(--accent-blue);" id="timeDisplay">2h ago</h1>
             </div>
             <div class="stats-card glass">
                 <i class="fas fa-server"></i>
@@ -177,31 +190,31 @@
             <h2><i class="fas fa-random"></i> Live CI/CD Pipeline (Branch: main)</h2>
             <div class="cicd-container">
                 
-                <div class="cicd-node" style="border-color: var(--accent-green);">
-                    <i class="fab fa-github" style="color: var(--text-main);"></i>
+                <div class="cicd-node success-node" id="node-1">
+                    <i class="fab fa-github" style="color: var(--accent-green);"></i>
                     <h4>Code Commit</h4>
                 </div>
-                <div class="connector"><div class="connector-fill"></div></div>
+                <div class="connector"><div class="connector-fill" id="conn-1" style="width: 100%;"></div></div>
 
-                <div class="cicd-node" style="border-color: var(--accent-green);">
-                    <i class="fas fa-box-open" style="color: var(--accent-warning);"></i>
+                <div class="cicd-node" id="node-2">
+                    <i class="fas fa-box-open" style="color: var(--text-muted);"></i>
                     <h4>Build Assets</h4>
                 </div>
-                <div class="connector"><div class="connector-fill"></div></div>
+                <div class="connector"><div class="connector-fill" id="conn-2"></div></div>
 
-                <div class="cicd-node active-node">
-                    <i class="fas fa-vial" style="color: var(--accent-blue);"></i>
+                <div class="cicd-node" id="node-3">
+                    <i class="fas fa-vial" style="color: var(--text-muted);"></i>
                     <h4>Unit Tests</h4>
                 </div>
-                <div class="connector"><div class="connector-partial"></div></div>
+                <div class="connector"><div class="connector-fill" id="conn-3"></div></div>
 
-                <div class="cicd-node">
+                <div class="cicd-node" id="node-4">
                     <i class="fas fa-server" style="color: var(--text-muted);"></i>
                     <h4>Deploy Staging</h4>
                 </div>
-                <div class="connector"></div>
+                <div class="connector"><div class="connector-fill" id="conn-4"></div></div>
 
-                <div class="cicd-node">
+                <div class="cicd-node" id="node-5">
                     <i class="fas fa-rocket" style="color: var(--text-muted);"></i>
                     <h4>Production</h4>
                 </div>
@@ -214,41 +227,39 @@
             <div class="section-card glass">
                 <h2><i class="fas fa-history"></i> Recent Deployment History</h2>
                 <table>
-                    <tr>
-                        <th>Version</th>
-                        <th>Commit Hash</th>
-                        <th>Environment</th>
-                        <th>Triggered By</th>
-                        <th>Status</th>
-                    </tr>
-                    <tr>
-                        <td><strong>v2.4.1</strong></td>
-                        <td><span class="code-hash">a7f82b1</span></td>
-                        <td>Production</td>
-                        <td>GitHub Actions</td>
-                        <td><span class="badge badge-success">Success</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>v2.4.2-beta</strong></td>
-                        <td><span class="code-hash">c930d4e</span></td>
-                        <td>Staging</td>
-                        <td>Siddharth Bisht</td>
-                        <td><span class="badge badge-pending">Building...</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>v2.4.0</strong></td>
-                        <td><span class="code-hash">f12a89c</span></td>
-                        <td>Production</td>
-                        <td>GitHub Actions</td>
-                        <td><span class="badge badge-success">Success</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>v2.3.9</strong></td>
-                        <td><span class="code-hash">e44b10f</span></td>
-                        <td>Development</td>
-                        <td>Jenkins CI</td>
-                        <td><span class="badge badge-danger">Failed (Tests)</span></td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Commit Hash</th>
+                            <th>Environment</th>
+                            <th>Triggered By</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        <!-- New deployments will be prepended here via JS -->
+                        <tr>
+                            <td><strong>v2.4.1</strong></td>
+                            <td><span class="code-hash">a7f82b1</span></td>
+                            <td>Production</td>
+                            <td>GitHub Actions</td>
+                            <td><span class="badge badge-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>v2.4.0</strong></td>
+                            <td><span class="code-hash">f12a89c</span></td>
+                            <td>Production</td>
+                            <td>GitHub Actions</td>
+                            <td><span class="badge badge-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>v2.3.9</strong></td>
+                            <td><span class="code-hash">e44b10f</span></td>
+                            <td>Development</td>
+                            <td>Jenkins CI</td>
+                            <td><span class="badge badge-danger">Failed (Tests)</span></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
@@ -263,7 +274,7 @@
 
   <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            // Secure Gatekeeper
             if (localStorage.getItem('userRole') !== 'admin') {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
                 setTimeout(() => window.location.href = 'admin-login.html', 1500);
@@ -273,12 +284,13 @@
             // Chart Configuration
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
 
             // Build Duration Chart
             const buildCanvas = document.getElementById('buildChart');
             if (buildCanvas) {
                 const ctx = buildCanvas.getContext('2d');
-                new Chart(ctx, {
+                window.buildChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: ['v2.3.7', 'v2.3.8', 'v2.3.9', 'v2.4.0', 'v2.4.1'],
@@ -300,6 +312,131 @@
                 });
             }
         });
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-info-circle" style="color: var(--accent-blue);"></i>';
+            if (type === 'success') icon = '<i class="fas fa-check-circle" style="color: var(--accent-green);"></i>';
+            if (type === 'warn') icon = '<i class="fas fa-spinner fa-spin" style="color: var(--accent-blue);"></i>';
+            
+            if (type === 'success') toast.style.borderLeftColor = 'var(--accent-green)';
+            if (type === 'warn') toast.style.borderLeftColor = 'var(--accent-blue)';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // --- Interactive CI/CD Pipeline Simulator ---
+        function triggerDeploy(btnElement) {
+            btnElement.disabled = true;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deploying v2.4.2-beta...';
+            
+            showToast('Pipeline initiated for v2.4.2-beta...', 'warn');
+
+            // Reset pipeline UI visually
+            for(let i=2; i<=5; i++) {
+                document.getElementById(`node-${i}`).className = 'cicd-node';
+                document.getElementById(`node-${i}`).querySelector('i').style.color = 'var(--text-muted)';
+            }
+            for(let i=2; i<=4; i++) {
+                document.getElementById(`conn-${i}`).className = 'connector-fill';
+                document.getElementById(`conn-${i}`).style.width = '0%';
+            }
+
+            // Step 2: Build
+            setTimeout(() => {
+                updateNodeState(2, 'Building Assets...', 'fa-box-open', 'warn');
+                document.getElementById('conn-2').className = 'connector-partial';
+            }, 1000);
+
+            // Step 3: Tests
+            setTimeout(() => {
+                markNodeSuccess(2, 'fa-box-open');
+                document.getElementById('conn-2').className = 'connector-fill';
+                document.getElementById('conn-2').style.width = '100%';
+                
+                updateNodeState(3, 'Running Tests...', 'fa-vial', 'warn');
+                document.getElementById('conn-3').className = 'connector-partial';
+            }, 3500);
+
+            // Step 4: Staging
+            setTimeout(() => {
+                markNodeSuccess(3, 'fa-vial');
+                document.getElementById('conn-3').className = 'connector-fill';
+                document.getElementById('conn-3').style.width = '100%';
+                
+                updateNodeState(4, 'Deploying Staging...', 'fa-server', 'warn');
+                document.getElementById('conn-4').className = 'connector-partial';
+            }, 6000);
+
+            // Step 5: Production & Finish
+            setTimeout(() => {
+                markNodeSuccess(4, 'fa-server');
+                document.getElementById('conn-4').className = 'connector-fill';
+                document.getElementById('conn-4').style.width = '100%';
+                
+                markNodeSuccess(5, 'fa-rocket');
+                
+                // Finalize UI updates
+                btnElement.innerHTML = '<i class="fas fa-upload"></i> Trigger Manual Deploy';
+                btnElement.disabled = false;
+                showToast('Deployment v2.4.2-beta completed successfully!', 'success');
+                
+                document.getElementById('versionDisplay').innerText = 'v2.4.2-beta';
+                document.getElementById('timeDisplay').innerText = 'Just now';
+
+                // Add to history table
+                const newRow = `
+                    <tr>
+                        <td><strong>v2.4.2-beta</strong></td>
+                        <td><span class="code-hash">c930d4e</span></td>
+                        <td>Staging/Prod</td>
+                        <td>Admin Manual Trigger</td>
+                        <td><span class="badge badge-success">Success</span></td>
+                    </tr>
+                `;
+                document.getElementById('historyTable').insertAdjacentHTML('afterbegin', newRow);
+
+                // Update Chart slightly for effect
+                window.buildChartInstance.data.labels.push('v2.4.2');
+                window.buildChartInstance.data.datasets[0].data.push(5.2);
+                if(window.buildChartInstance.data.labels.length > 5) {
+                    window.buildChartInstance.data.labels.shift();
+                    window.buildChartInstance.data.datasets[0].data.shift();
+                }
+                window.buildChartInstance.update();
+
+            }, 8500);
+        }
+
+        function updateNodeState(nodeId, toastMsg, iconClass, type) {
+            const node = document.getElementById(`node-${nodeId}`);
+            node.className = 'cicd-node active-node';
+            node.querySelector('i').style.color = 'var(--accent-blue)';
+            showToast(toastMsg, type);
+        }
+
+        function markNodeSuccess(nodeId, iconClass) {
+            const node = document.getElementById(`node-${nodeId}`);
+            node.className = 'cicd-node success-node';
+            node.querySelector('i').style.color = 'var(--accent-green)';
+        }
+
+        // --- Secure Logout ---
+        function logoutAdmin() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('adminToken');
+            window.location.replace('admin-login.html');
+        }
     </script>
 </body>
 </html>

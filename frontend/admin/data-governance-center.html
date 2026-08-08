@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Governance - Admin</title>
+    
     <script>
-    if (localStorage.getItem('userRole') !== 'admin') {
-        document.documentElement.style.display = 'none';
-        window.location.replace('admin-login.html');
-    }
-</script>
+        if (localStorage.getItem('userRole') !== 'admin') {
+            document.documentElement.style.display = 'none';
+            window.location.replace('admin-login.html');
+        }
+    </script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -27,14 +29,15 @@
             --accent-green: #4ade80;
             --accent-blue: #38bdf8;
             --accent-danger: #ef4444;
+            --accent-yellow: #facc15;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; transition: all 0.3s ease;}
 
-        /* Sidebar Layout (Final Synchronized Version) */
+        /* Sidebar Layout */
         .sidebar {
             width: 280px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;
             position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
@@ -58,31 +61,45 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
-        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(20, 184, 166, 0.1); }
-        .stats-card i { font-size: 2rem; color: var(--accent-teal); margin-bottom: 1rem; }
-        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; cursor: default; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(20, 184, 166, 0.1); border-color: var(--accent-teal); }
+        .stats-card i { font-size: 2rem; color: var(--accent-teal); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.4));}
+        .stats-card h3 { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .stats-card h1 { font-size: 2.5rem; margin-top: 0.5rem; font-weight: 700; }
 
         /* Tables & Layout */
         .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
         .full-width { grid-column: span 2; }
         @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
         .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
-        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-teal); display: flex; align-items: center; gap: 8px;}
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-teal); display: flex; align-items: center; gap: 8px; font-weight: 600;}
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th, td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
         .badge-verified { background: rgba(74, 222, 128, 0.1); color: var(--accent-green); border: 1px solid rgba(74, 222, 128, 0.3); }
-        .badge-pending { background: rgba(250, 204, 21, 0.1); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3); }
+        .badge-pending { background: rgba(250, 204, 21, 0.1); color: var(--accent-yellow); border: 1px solid rgba(250, 204, 21, 0.3); }
 
         canvas { max-height: 280px; width: 100%; }
+
+        /* Action Buttons & Toasts */
+        .action-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; font-weight: 500; }
+        .action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .action-btn.teal:hover { border-color: var(--accent-teal); color: var(--accent-teal); }
+        .action-btn.blue:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-teal); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
+    <div id="toast-container"></div>
 
     <div class="sidebar glass" id="adminSidebar">
         <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -97,7 +114,7 @@
         
         <div class="nav-section" style="font-size: 0.75rem; color: #64748b; margin: 15px 0 5px 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Data Architecture</div>
         
-        <a href="data-governance-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+        <a href="data-governance-center.html" class="active" style="background: rgba(20, 184, 166, 0.15); color: #fff; border-left: 3px solid var(--accent-teal); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(20, 184, 166, 0.1);">
             <i class="fas fa-database"></i> Data Governance
         </a>
         
@@ -118,7 +135,7 @@
     <main class="main">
         <div class="header">
             <h1><i class="fas fa-folder-tree"></i> Data Governance & Access Control</h1>
-            <button class="glass" style="padding: 10px 20px; color: var(--accent-teal); border-radius: 8px; cursor:pointer; font-weight: 600;">
+            <button class="glass action-btn" onclick="syncCatalog(this)" style="padding: 10px 20px; color: var(--accent-teal); border-radius: 8px; cursor:pointer; font-weight: 600; border-color: var(--glass-border);">
                 <i class="fas fa-sync"></i> Sync Data Catalog
             </button>
         </div>
@@ -137,7 +154,7 @@
             <div class="stats-card glass">
                 <i class="fas fa-key"></i>
                 <h3>Access Requests (Pending)</h3>
-                <h1 style="color: #facc15;">5</h1>
+                <h1 style="color: var(--accent-yellow);">5</h1>
             </div>
             <div class="stats-card glass">
                 <i class="fas fa-file-shield"></i>
@@ -156,30 +173,35 @@
                         <th>Classification</th>
                         <th>Data Owner</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                     <tr>
                         <td><strong>User_Auth_Logs</strong></td>
-                        <td><span style="color: var(--accent-danger);">Highly Confidential (PII)</span></td>
+                        <td><span style="color: var(--accent-danger); font-weight: 500;">Highly Confidential (PII)</span></td>
                         <td>Security Team</td>
                         <td><span class="badge badge-verified">Governed</span></td>
+                        <td><button class="action-btn teal" onclick="enforcePolicy(this)">Enforce Policy</button></td>
                     </tr>
                     <tr>
                         <td><strong>Global_AQI_Archive</strong></td>
-                        <td>Public Data</td>
+                        <td><span style="color: var(--accent-green); font-weight: 500;">Public Data</span></td>
                         <td>Climate Research</td>
                         <td><span class="badge badge-verified">Governed</span></td>
+                        <td><button class="action-btn teal" onclick="enforcePolicy(this)">Manage</button></td>
                     </tr>
                     <tr>
                         <td><strong>Premium_Billing_Info</strong></td>
-                        <td><span style="color: var(--accent-danger);">Financial (PCI-DSS)</span></td>
+                        <td><span style="color: var(--accent-danger); font-weight: 500;">Financial (PCI-DSS)</span></td>
                         <td>Finance Dept</td>
                         <td><span class="badge badge-verified">Governed</span></td>
+                        <td><button class="action-btn teal" onclick="enforcePolicy(this)">Audit Access</button></td>
                     </tr>
                     <tr>
                         <td><strong>Temp_IoT_Sensors</strong></td>
-                        <td>Internal Use</td>
+                        <td><span style="color: var(--accent-yellow); font-weight: 500;">Internal Use</span></td>
                         <td>IoT DevOps</td>
                         <td><span class="badge badge-pending">Reviewing</span></td>
+                        <td><button class="action-btn blue" onclick="approveDataset(this)">Approve & Catalog</button></td>
                     </tr>
                 </table>
             </div>
@@ -194,7 +216,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            // Gatekeeper Check
             if (localStorage.getItem('userRole') !== 'admin') {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
                 setTimeout(() => window.location.href = 'admin-login.html', 1500);
@@ -204,6 +226,7 @@
             // Chart Configuration
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
 
             // RBAC Doughnut Chart
             const rbacCanvas = document.getElementById('rbacChart');
@@ -229,6 +252,101 @@
                 });
             }
         });
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-info-circle" style="color: var(--accent-blue);"></i>';
+            if (type === 'success') icon = '<i class="fas fa-check-circle" style="color: var(--accent-green);"></i>';
+            if (type === 'warn') icon = '<i class="fas fa-exclamation-triangle" style="color: var(--accent-yellow);"></i>';
+            
+            if (type === 'warn') toast.style.borderLeftColor = 'var(--accent-yellow)';
+            if (type === 'success') toast.style.borderLeftColor = 'var(--accent-green)';
+            if (type === 'teal') {
+                icon = '<i class="fas fa-database" style="color: var(--accent-teal);"></i>';
+                toast.style.borderLeftColor = 'var(--accent-teal)';
+            }
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- Action Handlers ---
+        function syncCatalog(btnElement) {
+            btnElement.disabled = true;
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Crawling Data Lakes...';
+            
+            showToast('Initiating deep scan of AWS Glue Data Catalog...', 'teal');
+            
+            setTimeout(() => {
+                showToast('Catalog synchronized successfully. 3 new tables found.', 'success');
+                btnElement.innerHTML = '<i class="fas fa-check"></i> Synced Successfully';
+                btnElement.style.color = 'var(--accent-green)';
+                btnElement.style.borderColor = 'var(--accent-green)';
+                
+                setTimeout(() => {
+                    btnElement.innerHTML = originalText;
+                    btnElement.disabled = false;
+                    btnElement.style.color = 'var(--accent-teal)';
+                    btnElement.style.borderColor = 'var(--glass-border)';
+                }, 2000);
+            }, 3000);
+        }
+
+        function enforcePolicy(btnElement) {
+            btnElement.disabled = true;
+            const originalText = btnElement.innerText;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Executing...';
+            
+            showToast(`Applying active data governance rules...`, 'info');
+            
+            setTimeout(() => {
+                btnElement.innerHTML = '<i class="fas fa-check"></i> Enforced';
+                btnElement.style.color = 'var(--accent-green)';
+                showToast('Policy applied successfully. Access logs updated.', 'success');
+                
+                setTimeout(() => {
+                    btnElement.innerHTML = originalText;
+                    btnElement.disabled = false;
+                    btnElement.style.color = 'var(--text-main)';
+                }, 2000);
+            }, 1500);
+        }
+
+        function approveDataset(btnElement) {
+            btnElement.disabled = true;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reviewing...';
+            showToast('Reviewing IoT sensor schemas & assigning ownership...', 'info');
+            
+            setTimeout(() => {
+                const row = btnElement.closest('tr');
+                const statusCell = row.cells[3];
+                statusCell.innerHTML = '<span class="badge badge-verified">Governed</span>';
+                
+                btnElement.innerHTML = 'Manage Policy';
+                btnElement.className = 'action-btn teal';
+                btnElement.setAttribute('onclick', 'enforcePolicy(this)');
+                btnElement.disabled = false;
+                
+                showToast('Dataset approved and added to official catalog.', 'success');
+            }, 2000);
+        }
+
+        // --- Logout Function Fixed ---
+        function logoutAdmin() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('adminToken');
+            window.location.replace('admin-login.html');
+        }
     </script>
 </body>
 </html>

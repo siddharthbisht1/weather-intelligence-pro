@@ -9,7 +9,7 @@
         document.documentElement.style.display = 'none';
         window.location.replace('admin-login.html');
     }
-</script>
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -30,11 +30,12 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden;}
 
         .glass {
             background: var(--glass-bg); backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border); border-radius: 16px;
+            transition: all 0.3s ease;
         }
 
         /* Sidebar Layout */
@@ -43,6 +44,9 @@
             position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
             border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 10;
         }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 10px; }
+
         .sidebar h1 { font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 2rem; text-align: center; }
         .sidebar a {
             color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
@@ -60,21 +64,24 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; }
-        .stats-card i { font-size: 2rem; color: var(--accent-purple); margin-bottom: 1rem; }
-        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; cursor: default; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(168, 85, 247, 0.1); border-color: var(--accent-purple);}
+        .stats-card i { font-size: 2rem; color: var(--accent-purple); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.4));}
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px;}
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; font-weight: 700; }
 
         /* Tables & Charts layout */
         .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
         @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } }
         
         .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
-        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-purple); display: flex; align-items: center; gap: 8px;}
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-purple); display: flex; align-items: center; gap: 8px; font-weight: 600;}
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th, td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;}
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
         .status-success { background: rgba(74, 222, 128, 0.1); color: var(--accent-green); border: 1px solid rgba(74, 222, 128, 0.3); }
         .status-fail { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
@@ -82,17 +89,30 @@
         /* Live Activity Feed */
         .feed-container { max-height: 400px; overflow-y: auto; padding-right: 10px; }
         .feed-container::-webkit-scrollbar { width: 4px; }
-        .feed-container::-webkit-scrollbar-thumb { background: var(--glass-border); }
-        .feed-item { display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .feed-container::-webkit-scrollbar-thumb { background: var(--accent-purple); }
+        .feed-item { display: flex; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s; padding: 10px; border-radius: 8px;}
+        .feed-item:hover { background: rgba(255,255,255,0.02); }
         .feed-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
         .feed-content h4 { font-size: 0.95rem; margin-bottom: 3px; font-weight: 500; }
         .feed-content p { font-size: 0.8rem; color: var(--text-muted); }
         .feed-time { font-size: 0.75rem; color: var(--accent-blue); margin-top: 5px; display: block; }
 
         canvas { max-height: 250px; width: 100%; }
+
+        /* Action Buttons & Toasts */
+        .action-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); transform: translateY(-2px); border-color: var(--accent-purple); color: var(--accent-purple);}
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-purple); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
 
     <!-- SECURE SIDEBAR -->
     <div class="sidebar glass" id="adminSidebar">
@@ -104,8 +124,8 @@
         <a href="master-dashboard.html"><i class="fas fa-home"></i> Global Dashboard</a>
         <a href="deployment-center.html"><i class="fas fa-rocket"></i> Deployment Center</a>
         
-        <!-- ✅ YAHAN USER TRACKING ACTIVE HAI -->
-        <a href="user-tracking-center.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
+        <!-- ✅ USER TRACKING ACTIVE -->
+        <a href="user-tracking-center.html" class="active" style="background: rgba(168, 85, 247, 0.15); color: #fff; border-left: 3px solid var(--accent-purple); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(168,85,247,0.1);">
             <i class="fas fa-users-viewfinder"></i> User Tracking
         </a>
         
@@ -131,7 +151,9 @@
     <main class="main">
         <div class="header">
             <h1><i class="fas fa-users-viewfinder"></i> User Tracking & Search Audit</h1>
-            <button class="glass" style="padding: 10px 20px; color: white; border-radius: 8px; cursor:pointer;"><i class="fas fa-download"></i> Export Logs</button>
+            <button class="glass action-btn" onclick="exportLogs(this)" style="color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-download"></i> Export Logs
+            </button>
         </div>
 
         <section class="stats-grid">
@@ -264,7 +286,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            // Gatekeeper Check
             if (localStorage.getItem('userRole') !== 'admin') {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
                 setTimeout(() => window.location.href = 'admin-login.html', 1500);
@@ -274,6 +296,7 @@
             // Set Chart Defaults
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
 
             // Render Search Trends Chart safely
             const searchCanvas = document.getElementById('searchChart');
@@ -294,11 +317,64 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true } }
+                        scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }
                     }
                 });
             }
         });
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-info-circle" style="color: var(--accent-purple);"></i>';
+            if (type === 'success') icon = '<i class="fas fa-check-circle" style="color: var(--accent-green);"></i>';
+            if (type === 'warn') icon = '<i class="fas fa-spinner fa-spin" style="color: var(--accent-purple);"></i>';
+            
+            if (type === 'success') toast.style.borderLeftColor = 'var(--accent-green)';
+            if (type === 'warn') toast.style.borderLeftColor = 'var(--accent-purple)';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // --- Interactive Action Handlers ---
+        function exportLogs(btnElement) {
+            const originalText = btnElement.innerHTML;
+            btnElement.disabled = true;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Compiling Logs...';
+            
+            showToast('Aggregating user audit logs...', 'warn');
+
+            setTimeout(() => {
+                btnElement.innerHTML = '<i class="fas fa-check"></i> Export Complete';
+                btnElement.style.borderColor = 'var(--accent-green)';
+                btnElement.style.color = 'var(--accent-green)';
+                
+                showToast('Audit_Logs_Today.csv downloaded successfully.', 'success');
+
+                setTimeout(() => {
+                    btnElement.innerHTML = originalText;
+                    btnElement.disabled = false;
+                    btnElement.style.borderColor = 'rgba(255,255,255,0.2)';
+                    btnElement.style.color = 'white';
+                }, 3000);
+            }, 2500);
+        }
+
+        // --- Secure Logout ---
+        function logoutAdmin() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('adminToken');
+            window.location.replace('admin-login.html');
+        }
     </script>
 </body>
 </html>

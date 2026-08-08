@@ -9,7 +9,7 @@
         document.documentElement.style.display = 'none';
         window.location.replace('admin-login.html');
     }
-</script>
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -35,6 +35,7 @@
         .glass {
             background: var(--glass-bg); backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border); border-radius: 16px;
+            transition: all 0.3s ease;
         }
 
         /* Sidebar Layout */
@@ -43,6 +44,9 @@
             position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
             border-right: 1px solid rgba(168, 85, 247, 0.2); overflow-y: auto; z-index: 10;
         }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 10px; }
+
         .sidebar h1 { font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 2rem; text-align: center; }
         .sidebar a {
             color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
@@ -50,7 +54,7 @@
             border-radius: 8px; transition: 0.3s;
         }
         .sidebar a:hover, .sidebar a.active {
-            background: rgba(168, 85, 247, 0.15); color: #fff; border-left: 3px solid var(--accent-purple);
+            background: rgba(168, 85, 247, 0.15); color: #fff; border-left: 3px solid var(--accent-blue);
         }
 
         /* Main Content */
@@ -60,47 +64,62 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; position: relative; overflow: hidden; }
+        .stats-card { padding: 1.5rem; text-align: center; position: relative; overflow: hidden; cursor: default;}
         .stats-card::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: radial-gradient(circle, rgba(56,189,248,0.1) 0%, transparent 60%);
             z-index: -1; animation: pulse 4s infinite;
         }
+        .stats-card:hover { border-color: var(--accent-blue); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.1); }
         @keyframes pulse { 0% { transform: scale(0.95); } 50% { transform: scale(1.05); } 100% { transform: scale(0.95); } }
         
-        .stats-card i { font-size: 2rem; color: var(--accent-blue); margin-bottom: 1rem; }
-        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; color: white; }
+        .stats-card i { font-size: 2rem; color: var(--accent-blue); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(56,189,248,0.4));}
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px;}
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; color: white; font-weight: 700; }
 
         /* Grid Layouts */
         .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } }
         
         .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
-        .section-card h2 { font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 8px;}
+        .section-card h2 { font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; font-weight: 600;}
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th, td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;}
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
         .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
-        .dot-green { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        .dot-green { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); animation: blink 2s infinite;}
         .dot-yellow { background: var(--accent-warning); box-shadow: 0 0 8px var(--accent-warning); }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.4;} 100% {opacity: 1;} }
 
         canvas { max-height: 280px; width: 100%; }
 
         /* Telemetry Feed */
-        .telemetry-feed { max-height: 280px; overflow-y: auto; padding-right: 10px; font-family: monospace; font-size: 0.85rem; }
+        .telemetry-feed { max-height: 280px; overflow-y: auto; padding-right: 10px; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; }
         .telemetry-feed::-webkit-scrollbar { width: 4px; }
         .telemetry-feed::-webkit-scrollbar-thumb { background: var(--accent-blue); }
         .log-entry { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
-        .log-time { color: var(--accent-purple); margin-right: 10px; }
+        .log-time { color: var(--accent-purple); margin-right: 10px; font-weight: bold;}
         .log-info { color: var(--accent-green); }
         .log-warn { color: var(--accent-warning); }
+        .log-blue { color: var(--accent-blue); }
 
+        /* Action Buttons & Toasts */
+        .btn-action { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .btn-action:hover:not(:disabled) { background: rgba(56, 189, 248, 0.1); border-color: var(--accent-blue); color: var(--accent-blue); transform: translateY(-2px);}
+        .btn-action:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-blue); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
 
     <!-- SECURE SIDEBAR -->
     <div class="sidebar glass" id="adminSidebar">
@@ -119,7 +138,7 @@
         
         <a href="data-quality-center.html"><i class="fas fa-heart-pulse"></i> Data Quality</a>
         
-        <!-- ✅ YAHAN SATELLITE COMMAND ACTIVE HAI -->
+        <!-- ✅ SATELLITE COMMAND ACTIVE -->
         <a href="satellite-command.html" class="active" style="background: rgba(56, 189, 248, 0.15); color: #fff; border-left: 3px solid var(--accent-blue); border-color: var(--glass-border); box-shadow: 0 0 15px rgba(56,189,248,0.1);">
             <i class="fas fa-satellite"></i> Satellite Command
         </a>
@@ -138,7 +157,7 @@
     <main class="main">
         <div class="header">
             <h1><i class="fas fa-satellite-dish"></i> Satellite & Telemetry Center</h1>
-            <button class="glass" style="padding: 10px 20px; color: var(--accent-blue); border-radius: 8px; cursor:pointer; font-weight: 600;">
+            <button class="btn-action" onclick="forceSync(this)">
                 <i class="fas fa-satellite"></i> Force API Sync
             </button>
         </div>
@@ -216,15 +235,15 @@
 
         <section class="content-grid">
             
-            <div class="section-card glass" style="background: rgba(0,0,0,0.6);">
+            <div class="section-card glass" style="background: rgba(0,0,0,0.6); box-shadow: inset 0 0 20px rgba(0,0,0,0.8);">
                 <h2><i class="fas fa-terminal"></i> Raw Telemetry Feed</h2>
                 <div class="telemetry-feed" id="telemetryFeed">
                     <div class="log-entry"><span class="log-time">[10:14:02 UTC]</span><span class="log-info">SYNC SUCCESS: GOES-16 Full Disk imagery downloaded (Band 13).</span></div>
-                    <div class="log-entry"><span class="log-time">[10:14:05 UTC]</span><span class="log-info">DATA PIPELINE: Parsing JSON metadata for Sentinel-5P NO2 layer.</span></div>
+                    <div class="log-entry"><span class="log-time">[10:14:05 UTC]</span><span class="log-blue">DATA PIPELINE: Parsing JSON metadata for Sentinel-5P NO2 layer.</span></div>
                     <div class="log-entry"><span class="log-time">[10:14:12 UTC]</span><span class="log-info">CACHE: AQI index updated for coordinates [28.6139, 77.2090] (Delhi).</span></div>
                     <div class="log-entry"><span class="log-time">[10:14:45 UTC]</span><span class="log-warn">WARNING: MODIS Terra handshake timeout. Retrying in 5s...</span></div>
                     <div class="log-entry"><span class="log-time">[10:14:50 UTC]</span><span class="log-info">CONNECTION RESTORED: MODIS Terra ping returned 142ms.</span></div>
-                    <div class="log-entry"><span class="log-time">[10:15:10 UTC]</span><span class="log-info">ML ENGINE: Feeding Landsat 8 moisture data into Scikit-learn drought model.</span></div>
+                    <div class="log-entry"><span class="log-time">[10:15:10 UTC]</span><span class="log-blue">ML ENGINE: Feeding Landsat 8 moisture data into Scikit-learn drought model.</span></div>
                 </div>
             </div>
 
@@ -239,7 +258,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            // Gatekeeper Check
             if (localStorage.getItem('userRole') !== 'admin') {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
                 setTimeout(() => window.location.href = 'admin-login.html', 1500);
@@ -249,6 +268,7 @@
             // Set Chart Defaults
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.borderColor = 'rgba(56, 189, 248, 0.1)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
 
             // 1. Coverage Radar Chart
             const radarCanvas = document.getElementById('coverageChart');
@@ -288,7 +308,8 @@
                             data: [45, 42, 60, 38, 41, 42],
                             borderColor: '#4ade80',
                             backgroundColor: 'rgba(74, 222, 128, 0.1)',
-                            borderWidth: 2, fill: true, tension: 0.4
+                            borderWidth: 2, fill: true, tension: 0.4,
+                            pointBackgroundColor: '#fff'
                         }]
                     },
                     options: {
@@ -304,24 +325,93 @@
             if (feed) {
                 setInterval(() => {
                     const now = new Date();
-                    const timeStr = `[${now.getUTCHours()}:${now.getUTCMinutes()}:${now.getUTCSeconds()} UTC]`;
+                    const timeStr = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}:${now.getUTCSeconds().toString().padStart(2, '0')} UTC]`;
                     const messages = [
-                        "DATA PIPELINE: Normalized AQI values for API caching.",
-                        "SYNC SUCCESS: Weather radar loop updated.",
-                        "ML ENGINE: Anomaly detection completed with 0 flags.",
-                        "API GATEWAY: 145 new client connections established."
+                        { text: "DATA PIPELINE: Normalized AQI values for API caching.", class: "log-blue" },
+                        { text: "SYNC SUCCESS: Weather radar loop updated.", class: "log-info" },
+                        { text: "ML ENGINE: Anomaly detection completed with 0 flags.", class: "log-blue" },
+                        { text: "API GATEWAY: 145 new client connections established.", class: "log-info" }
                     ];
                     const msg = messages[Math.floor(Math.random() * messages.length)];
                     
                     const newLog = document.createElement('div');
                     newLog.className = 'log-entry';
-                    newLog.innerHTML = `<span class="log-time">${timeStr}</span> <span class="log-info">${msg}</span>`;
+                    newLog.innerHTML = `<span class="log-time">${timeStr}</span> <span class="${msg.class}">${msg.text}</span>`;
                     
                     feed.appendChild(newLog);
-                    feed.scrollTop = feed.scrollHeight; // Auto-scroll to bottom
-                }, 6000); // Add a new log every 6 seconds
+                    if(feed.children.length > 30) feed.removeChild(feed.firstChild); // Keep DOM clean
+                    feed.scrollTop = feed.scrollHeight; // Auto-scroll
+                }, 6000); 
             }
         });
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-info-circle" style="color: var(--accent-blue);"></i>';
+            if (type === 'success') icon = '<i class="fas fa-check-circle" style="color: var(--accent-green);"></i>';
+            if (type === 'warn') icon = '<i class="fas fa-satellite-dish fa-pulse" style="color: var(--accent-blue);"></i>';
+            
+            if (type === 'success') toast.style.borderLeftColor = 'var(--accent-green)';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // --- Action Handlers ---
+        function forceSync(btn) {
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-satellite-dish fa-spin"></i> Aligning Vectors...';
+            
+            showToast('Establishing secure handshake with Sentinel-5P...', 'warn');
+
+            // Inject into telemetry
+            const feed = document.getElementById('telemetryFeed');
+            const now = new Date();
+            const timeStr = `[${now.getUTCHours().toString().padStart(2, '0')}:${now.getUTCMinutes().toString().padStart(2, '0')}:${now.getUTCSeconds().toString().padStart(2, '0')} UTC]`;
+            const syncLog = document.createElement('div');
+            syncLog.className = 'log-entry';
+            syncLog.innerHTML = `<span class="log-time">${timeStr}</span> <span class="log-warn">MANUAL OVERRIDE: Forcing API sync across all geospatial nodes...</span>`;
+            feed.appendChild(syncLog);
+            feed.scrollTop = feed.scrollHeight;
+
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Sync Complete';
+                btn.style.color = 'var(--accent-green)';
+                btn.style.borderColor = 'var(--accent-green)';
+                
+                showToast('Telemetry data synchronized across all 4 satellite nodes.', 'success');
+                
+                const successLog = document.createElement('div');
+                successLog.className = 'log-entry';
+                successLog.innerHTML = `<span class="log-time">${timeStr}</span> <span class="log-info">SYNC SUCCESS: Manual override completed. Latency stabilized.</span>`;
+                feed.appendChild(successLog);
+                feed.scrollTop = feed.scrollHeight;
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.style.color = 'var(--text-main)';
+                    btn.style.borderColor = 'var(--glass-border)';
+                }, 3000);
+            }, 3000);
+        }
+
+        // --- Secure Logout ---
+        function logoutAdmin() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('adminToken');
+            window.location.replace('admin-login.html');
+        }
     </script>
 </body>
 </html>

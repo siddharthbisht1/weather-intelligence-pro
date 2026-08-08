@@ -9,7 +9,7 @@
         document.documentElement.style.display = 'none';
         window.location.replace('admin-login.html');
     }
-</script>
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -35,6 +35,7 @@
         .glass {
             background: var(--glass-bg); backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border); border-radius: 16px;
+            transition: all 0.3s ease;
         }
 
         /* Sidebar Layout */
@@ -43,6 +44,9 @@
             position: fixed; height: 100vh; background: rgba(15, 23, 42, 0.8);
             border-right: 1px solid var(--glass-border); overflow-y: auto; z-index: 10;
         }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 10px; }
+
         .sidebar h1 { font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 2rem; text-align: center; }
         .sidebar a {
             color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
@@ -60,11 +64,11 @@
 
         /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; }
-        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(168, 85, 247, 0.1); }
-        .stats-card i { font-size: 2rem; color: var(--accent-purple); margin-bottom: 1rem; }
-        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
-        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .stats-card { padding: 1.5rem; text-align: center; transition: 0.3s; cursor: default; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(168, 85, 247, 0.1); border-color: var(--accent-blue); }
+        .stats-card i { font-size: 2rem; color: var(--accent-purple); margin-bottom: 1rem; filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.4));}
+        .stats-card h3 { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px;}
+        .stats-card h1 { font-size: 2.2rem; margin-top: 0.5rem; font-weight: 700; }
 
         /* Layout Grids */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -72,22 +76,34 @@
         @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
         
         .section-card { padding: 1.5rem; width: 100%; overflow-x: auto; }
-        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 8px;}
+        .section-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; font-weight: 600;}
         
         /* Tables */
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        th { color: var(--text-muted); font-weight: 500; }
+        th, td { padding: 15px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
         .format-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #0f172a; }
-        .pdf-badge { background: #ef4444; } /* Red for PDF */
-        .csv-badge { background: #4ade80; } /* Green for CSV */
-        .json-badge { background: #facc15; } /* Yellow for JSON */
+        .pdf-badge { background: #ef4444; color: #fff;}
+        .csv-badge { background: #4ade80; }
+        .json-badge { background: #facc15; }
 
         canvas { max-height: 280px; width: 100%; }
+
+        /* Action Buttons & Toasts */
+        .btn-action { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: 0.3s; font-size: 0.8rem; font-weight: 500; }
+        .btn-action:hover { background: rgba(56, 189, 248, 0.1); border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-left: 4px solid var(--accent-blue); padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: white; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     </style>
 </head>
 <body>
+
+    <div id="toast-container"></div>
 
     <div class="sidebar glass" id="adminSidebar">
         <div class="logo" style="font-size: 1.6rem; margin-bottom: 1.5rem; text-align: center; font-weight: 700; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -122,7 +138,7 @@
     <main class="main">
         <div class="header">
             <h1><i class="fas fa-file-invoice"></i> Data Reports & Export Engine</h1>
-            <button class="glass" style="padding: 10px 20px; color: var(--accent-green); border-radius: 8px; cursor:pointer; font-weight: 600;">
+            <button class="glass" id="masterDumpBtn" onclick="generateDump(this)" style="padding: 10px 20px; color: var(--accent-green); border-radius: 8px; cursor:pointer; font-weight: 600; border-color: var(--glass-border); transition: 0.3s;">
                 <i class="fas fa-file-arrow-down"></i> Generate Master Dump
             </button>
         </div>
@@ -174,38 +190,43 @@
                         <th>Generation Trigger</th>
                         <th>Status</th>
                         <th>Size</th>
+                        <th>Action</th>
                     </tr>
                     <tr>
                         <td>#RPT-8091</td>
                         <td>Delhi NCR, India</td>
                         <td>Severe AQI Alert</td>
                         <td>AI Anomaly Detection</td>
-                        <td style="color: var(--accent-green);">Completed</td>
+                        <td><span style="color: var(--accent-green); font-weight: 500;"><i class="fas fa-check-circle"></i> Completed</span></td>
                         <td>1.2 MB</td>
+                        <td><button class="btn-action"><i class="fas fa-download"></i></button></td>
                     </tr>
                     <tr>
                         <td>#RPT-8090</td>
                         <td>Mumbai, India</td>
                         <td>Weekly Climate Summary</td>
                         <td>Scheduled Cron Job</td>
-                        <td style="color: var(--accent-green);">Completed</td>
+                        <td><span style="color: var(--accent-green); font-weight: 500;"><i class="fas fa-check-circle"></i> Completed</span></td>
                         <td>4.5 MB</td>
+                        <td><button class="btn-action"><i class="fas fa-download"></i></button></td>
                     </tr>
                     <tr>
                         <td>#RPT-8089</td>
                         <td>New York, USA</td>
                         <td>Flash Flood Risk</td>
                         <td>User Request (Premium)</td>
-                        <td style="color: var(--accent-orange);">Generating...</td>
+                        <td><span style="color: var(--accent-orange); font-weight: 500;"><i class="fas fa-spinner fa-spin"></i> Generating...</span></td>
                         <td>--</td>
+                        <td><button class="btn-action" disabled style="opacity: 0.5;"><i class="fas fa-download"></i></button></td>
                     </tr>
                     <tr>
                         <td>#RPT-8088</td>
                         <td>Global Overview</td>
                         <td>CO2 Emission Heatmap</td>
                         <td>Admin Override</td>
-                        <td style="color: var(--accent-danger);">Failed (API Timeout)</td>
+                        <td><span style="color: var(--accent-danger); font-weight: 500;"><i class="fas fa-xmark-circle"></i> Failed (Timeout)</span></td>
                         <td>0 KB</td>
+                        <td><button class="btn-action"><i class="fas fa-rotate-right"></i></button></td>
                     </tr>
                 </table>
             </div>
@@ -257,7 +278,7 @@
 
    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // FIXED: Gatekeeper Check ab localStorage se role verify karega
+            // Gatekeeper Check
             if (localStorage.getItem('userRole') !== 'admin') {
                 document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%; font-family:sans-serif;'>SECURITY BREACH: Access Denied</h1>";
                 setTimeout(() => window.location.href = 'admin-login.html', 1500);
@@ -267,6 +288,7 @@
             // Global Chart Defaults
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
 
             // 1. City Comparison Chart (Horizontal Bar)
             const compCanvas = document.getElementById('comparisonChart');
@@ -286,7 +308,8 @@
                     options: {
                         indexAxis: 'y', // Makes the bar chart horizontal
                         responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }
+                        plugins: { legend: { display: false } },
+                        scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { display: false } } }
                     }
                 });
             }
@@ -314,6 +337,56 @@
                 });
             }
         });
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-info-circle" style="color: var(--accent-blue);"></i>';
+            if (type === 'success') {
+                icon = '<i class="fas fa-check-circle" style="color: var(--accent-green);"></i>';
+                toast.style.borderLeftColor = 'var(--accent-green)';
+            } else if (type === 'warn') {
+                icon = '<i class="fas fa-spinner fa-spin" style="color: var(--accent-blue);"></i>';
+            }
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // --- Interactive Button Handler ---
+        function generateDump(btn) {
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Compiling Data...';
+            showToast('Initiating Master Database Dump...', 'warn');
+
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Export Complete';
+                btn.style.color = 'var(--accent-green)';
+                showToast('Master Dump generated and secured (45.2 GB).', 'success');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.style.color = 'var(--accent-green)';
+                }, 3000);
+            }, 2500);
+        }
+
+        // --- Secure Logout ---
+        function logoutAdmin() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('adminToken');
+            window.location.replace('admin-login.html');
+        }
     </script>
 </body>
 </html>
