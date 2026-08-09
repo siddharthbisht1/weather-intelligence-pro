@@ -285,6 +285,7 @@
                     this.classList.toggle('fa-eye-slash');
                 });
             }
+            
             document.getElementById('userLoginForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -292,6 +293,7 @@
                 const pass = document.getElementById('password').value;
                 const btn = document.getElementById('submitBtn');
                 const errorBox = document.getElementById('errorBox');
+                
                 errorBox.style.display = 'none';
                 errorBox.innerText = '';
                 btn.innerHTML = 'Authenticating... <i class="fas fa-spinner fa-spin"></i>';
@@ -311,17 +313,23 @@
                     });
                     
                     const data = await response.json();
-                    console.log("Backend Response:", data);
                     
                     if(response.ok) {
+                        // 🚀 VIP FIX: Save both token and user role
                         localStorage.setItem('token', data.access_token);
-                        window.location.href = 'dashboard.html';
+                        localStorage.setItem('userRole', data.role || 'user');
+                        
+                        // 🚀 SMART ROUTING: Redirect admins to master dashboard, users to regular dashboard
+                        if (data.role === 'admin' || data.role === 'superadmin') {
+                            window.location.href = 'master-dashboard.html';
+                        } else {
+                            window.location.href = 'dashboard.html';
+                        }
                     } else {
                         // Smart Error Parsing
                         let errorMsg = "Invalid Credentials";
                         if (data.detail) {
                             if (Array.isArray(data.detail)) {
-                                // Agar kisi specific field mein error hai (jaise password missing)
                                 const fieldName = data.detail[0].loc[data.detail[0].loc.length - 1];
                                 errorMsg = `${fieldName}: ${data.detail[0].msg}`;
                             } else {
@@ -347,7 +355,6 @@
                     btn.style.pointerEvents = 'auto';
                 }
             });
-
         }); 
     </script>
 </body>
