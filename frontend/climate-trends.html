@@ -13,21 +13,50 @@
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
     <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/climate-trends.css">
 
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; }
+        /* =========================================
+           THEME VARIABLES (Dark / Light)
+           ========================================= */
+        :root {
+            --bg-color: #0B1120;
+            --text-main: #ffffff;
+            --text-muted: #94A3B8;
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover-bg: rgba(255, 255, 255, 0.05);
+            --sidebar-bg: #0B1120;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --card-hover-bg: rgba(0, 0, 0, 0.05);
+            --sidebar-bg: #ffffff;
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-main); 
+            overflow-x: hidden; 
+            margin: 0; 
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
         
         /* =========================================
            PREMIUM UNIFIED SIDEBAR STYLING
            ========================================= */
         aside#mySidebar {
             position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
-            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
-            padding-bottom: 50px; background: #0B1120 !important; border-right: 1px solid rgba(255,255,255,0.05);
+            z-index: 99999; transition: transform 0.3s ease-in-out, background-color 0.3s ease !important; overflow-y: auto;
+            padding-bottom: 50px; background: var(--sidebar-bg) !important; border-right: 1px solid var(--glass-border);
         }
         
-        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
+        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.1); }
         aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
 
         aside#mySidebar h1 { 
@@ -36,23 +65,23 @@
         }
 
         aside#mySidebar a, aside#mySidebar .auth-action-btn {
-            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
+            display: flex; align-items: center; padding: 12px 20px; color: var(--text-muted); text-decoration: none;
             font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
             background: transparent; border: none; cursor: pointer; text-align: left; width: calc(100% - 30px);
         }
         
         aside#mySidebar a i, aside#mySidebar .auth-action-btn i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
         
-        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
-        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: var(--text-main) !important; background: var(--card-hover-bg); }
+        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: var(--text-main) !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
 
-        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8; }
-        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+        aside#mySidebar a.active { color: var(--text-main) !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8; }
+        aside#mySidebar a.active i { color: var(--text-main) !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
 
         /* Sidebar Dropdown Styling */
         .sidebar-group-btn {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
+            padding: 15px 20px 5px 20px; color: var(--text-muted); background: transparent; border: none;
             width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
             font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
             font-family: 'Poppins', sans-serif;
@@ -61,10 +90,10 @@
         
         .sidebar-dropdown-container { 
             display: flex; flex-direction: column; padding-left: 10px; 
-            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
+            border-left: 1px solid var(--glass-border); margin-left: 20px;
         }
         .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
-        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
+        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: var(--text-muted) !important; width: auto !important; }
         .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
 
         /* Main Content Layout */
@@ -78,22 +107,28 @@
         }
 
         /* Glass Cards & Effects */
-        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; transition: background-color 0.3s ease, border-color 0.3s ease;}
         .stat-card, .section-card { transition: all 0.3s ease-in-out; cursor: pointer; padding: 25px; }
         .stat-card:hover, .section-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 0 15px rgba(56, 189, 248, 0.2) !important;
+            border: 1px solid rgba(56, 189, 248, 0.3) !important;
         }
 
         /* Reusable Components */
-        .list-item { padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #E2E8F0; border: 1px solid rgba(255,255,255,0.05); }
+        .list-item { padding: 15px; background: var(--card-hover-bg); border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-main); border: 1px solid var(--glass-border); }
         table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        th { padding: 12px; color: #94A3B8; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; }
-        .progress-bar-bg { background: rgba(255,255,255,0.1); height: 8px; border-radius: 10px; overflow: hidden; width: 100%; margin-top: 8px; }
+        th { padding: 12px; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); }
+        td { padding: 12px; border-bottom: 1px solid var(--glass-border); color: var(--text-main); }
+        .progress-bar-bg { background: var(--card-hover-bg); height: 8px; border-radius: 10px; overflow: hidden; width: 100%; margin-top: 8px; border: 1px solid var(--glass-border);}
         .progress-fill { height: 100%; border-radius: 10px; }
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+
+        .search-box { background: var(--glass-bg); border: 1px solid var(--glass-border); }
+        .action-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); }
+        .action-btn:hover { background: rgba(56, 189, 248, 0.2); }
+        #search-input { color: var(--text-main) !important; }
+        #search-input::placeholder { color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -106,6 +141,7 @@
         
         <!-- MAIN SIDEBAR ITEMS -->
         <a href="dashboard.html"><i class="fas fa-house"></i> Dashboard</a>
+        <a href="search-center.html"><i class="fas fa-search"></i> Search Center</a>
         <a href="forecast.html"><i class="fas fa-cloud-sun"></i> Forecast</a>
         <a href="aqi.html"><i class="fas fa-wind"></i> AQI</a>
         <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
@@ -150,7 +186,7 @@
             <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
         </div>
 
-        <!-- MORE DROPDOWN -->
+         <!-- MORE DROPDOWN -->
          <button class="sidebar-group-btn" onclick="toggleSidebarMenu(this)">
             <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
         </button>
@@ -175,16 +211,17 @@
         <!-- UNIFIED TOP NAVIGATION -->
         <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
-                <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
+                <button onclick="brahmastraToggle()" style="color: var(--text-main); border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
                     <i class="fas fa-bars"></i>
                 </button>
-                <i class="fas fa-search" style="color: #94A3B8;"></i>
-                <input id="search-input" type="text" placeholder="Search climate data..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <i class="fas fa-search" style="color: var(--text-muted);"></i>
+                <input id="search-input" type="text" placeholder="Search climate data..." style="background: transparent; border: none; outline: none; width: 250px;">
                 <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
             </div>
             <div class="top-actions" style="display: flex; gap: 15px;">
-                <button class="action-btn glass theme-toggle" id="themeToggle" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-moon"></i></button>
-                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
+                <!-- 🚀 Theme Toggle Button Added Here -->
+                <button class="action-btn glass theme-toggle" id="themeToggle" onclick="toggleTheme()" style="width: 45px; height: 45px; border-radius: 50%; border: none; cursor:pointer;"><i class="fas fa-sun" id="themeIcon"></i></button>
+                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
                 <div class="profile-pic glass" style="border-radius: 50%; overflow: hidden; width: 45px; height: 45px;">
                     <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=150&h=150&fit=crop" alt="User Profile" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
@@ -196,33 +233,33 @@
 
         <header class="glass section-card" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h1 style="font-size: 32px; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px;">
+                <h1 style="font-size: 32px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
                     <i class="fa-solid fa-earth-americas" style="color: #4ADE80;"></i> Climate Analytics
                 </h1>
-                <p style="color: #94A3B8; margin-top: 5px; margin-bottom: 0;">Temperature • Rainfall • AQI • Sustainability</p>
+                <p style="color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Temperature • Rainfall • AQI • Sustainability</p>
             </div>
             <div style="text-align: right;">
                 <h2 style="font-size: 24px; color: #38BDF8; font-weight: 700; margin: 0;">7 Years</h2>
-                <p style="color: #94A3B8; font-size: 12px; margin: 0;">Historical Data Analyzed</p>
+                <p style="color: var(--text-muted); font-size: 12px; margin: 0;">Historical Data Analyzed</p>
             </div>
         </header>
 
         <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
             <div class="glass stat-card" style="text-align: center;">
                 <i class="fa-solid fa-temperature-high" style="font-size: 28px; color: #F87171; margin-bottom: 10px;"></i>
-                <h2 id="avg-temp" style="font-size: 28px; font-weight: 700; margin: 0;">28°C</h2><p style="color: #94A3B8; font-size: 13px; margin: 0;">Avg Temperature</p>
+                <h2 id="avg-temp" style="font-size: 28px; font-weight: 700; margin: 0; color: var(--text-main);">28°C</h2><p style="color: var(--text-muted); font-size: 13px; margin: 0;">Avg Temperature</p>
             </div>
             <div class="glass stat-card" style="text-align: center;">
                 <i class="fa-solid fa-cloud-rain" style="font-size: 28px; color: #38BDF8; margin-bottom: 10px;"></i>
-                <h2 id="avg-rain" style="font-size: 28px; font-weight: 700; margin: 0;">148 mm</h2><p style="color: #94A3B8; font-size: 13px; margin: 0;">Avg Rainfall</p>
+                <h2 id="avg-rain" style="font-size: 28px; font-weight: 700; margin: 0; color: var(--text-main);">148 mm</h2><p style="color: var(--text-muted); font-size: 13px; margin: 0;">Avg Rainfall</p>
             </div>
             <div class="glass stat-card" style="text-align: center;">
                 <i class="fa-solid fa-wind" style="font-size: 28px; color: #A855F7; margin-bottom: 10px;"></i>
-                <h2 id="avg-aqi" style="font-size: 28px; font-weight: 700; margin: 0;">81</h2><p style="color: #94A3B8; font-size: 13px; margin: 0;">Average AQI</p>
+                <h2 id="avg-aqi" style="font-size: 28px; font-weight: 700; margin: 0; color: var(--text-main);">81</h2><p style="color: var(--text-muted); font-size: 13px; margin: 0;">Average AQI</p>
             </div>
             <div class="glass stat-card" style="text-align: center;">
                 <i class="fa-solid fa-droplet" style="font-size: 28px; color: #4ADE80; margin-bottom: 10px;"></i>
-                <h2 id="avg-water" style="font-size: 28px; font-weight: 700; margin: 0;">95%</h2><p style="color: #94A3B8; font-size: 13px; margin: 0;">Water Quality</p>
+                <h2 id="avg-water" style="font-size: 28px; font-weight: 700; margin: 0; color: var(--text-main);">95%</h2><p style="color: var(--text-muted); font-size: 13px; margin: 0;">Water Quality</p>
             </div>
         </section>
     
@@ -233,33 +270,33 @@
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                     <div class="glass section-card">
-                        <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-temperature-arrow-up" style="color:#F87171;"></i> Temperature Trend</h2>
+                        <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-temperature-arrow-up" style="color:#F87171;"></i> Temperature Trend</h2>
                         <div style="height: 220px;"><canvas id="temperatureTrendChart"></canvas></div>
                     </div>
                     <div class="glass section-card">
-                        <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-cloud-showers-water" style="color:#38BDF8;"></i> Rainfall Analytics</h2>
+                        <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-cloud-showers-water" style="color:#38BDF8;"></i> Rainfall Analytics</h2>
                         <div style="height: 220px;"><canvas id="rainfallChart"></canvas></div>
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                     <div class="glass section-card">
-                        <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-smog" style="color:#A855F7;"></i> AQI History</h2>
+                        <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-smog" style="color:#A855F7;"></i> AQI History</h2>
                         <div style="height: 220px;"><canvas id="aqiTrendChart"></canvas></div>
                     </div>
                     <div class="glass section-card">
-                        <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-leaf" style="color:#4ADE80;"></i> Carbon Footprint Analytics</h2>
+                        <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-leaf" style="color:#4ADE80;"></i> Carbon Footprint Analytics</h2>
                         <div style="height: 220px;"><canvas id="carbonChart"></canvas></div>
                     </div>
                 </div>
 
                 <div class="glass section-card">
-                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-chart-line" style="color:#FACC15;"></i> Future Climate Forecast</h2>
+                    <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-chart-line" style="color:#FACC15;"></i> Future Climate Forecast</h2>
                     <div style="height: 250px;"><canvas id="futureChart"></canvas></div>
                 </div>
 
                 <div class="glass section-card" style="overflow-x: auto;">
-                    <h2 style="color: white; margin-bottom: 20px;"><i class="fa-solid fa-trophy" style="color: #FACC15;"></i> Top Sustainable Cities</h2>
+                    <h2 style="color: var(--text-main); margin-bottom: 20px;"><i class="fa-solid fa-trophy" style="color: #FACC15;"></i> Top Sustainable Cities</h2>
                     <table style="min-width: 500px;">
                         <tr><th>City</th><th>Temperature</th><th>AQI</th><th>Water Quality</th><th>Score</th></tr>
                         <tr><td>Dehradun</td><td>26°C</td><td>72</td><td>96%</td><td style="color:#4ADE80; font-weight:bold;">94</td></tr>
@@ -274,14 +311,14 @@
             <div style="display: flex; flex-direction: column; gap: 30px;">
                 
                 <div class="glass section-card">
-                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-triangle-exclamation" style="color:#F87171;"></i> Environmental Risk</h2>
+                    <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-triangle-exclamation" style="color:#F87171;"></i> Environmental Risk</h2>
                     <div class="list-item"><span>🔥 Heatwaves</span> <span class="badge" style="background:rgba(248,113,113,0.2); color:#F87171;">High</span></div>
                     <div class="list-item"><span>🌊 Flooding</span> <span class="badge" style="background:rgba(250,204,21,0.2); color:#FACC15;">Moderate</span></div>
                     <div class="list-item"><span>🌫 Air Pollution</span> <span class="badge" style="background:rgba(74,222,128,0.2); color:#4ADE80;">Low</span></div>
                 </div>
 
                 <div class="glass section-card">
-                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-heart-pulse" style="color:#4ADE80;"></i> Environmental Health Score</h2>
+                    <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-heart-pulse" style="color:#4ADE80;"></i> Environmental Health Score</h2>
                     <div style="margin-bottom: 15px;">
                         <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Air Quality</span><span style="color:#4ADE80;">88%</span></div>
                         <div class="progress-bar-bg"><div class="progress-fill" style="width: 88%; background: #4ADE80;"></div></div>
@@ -297,7 +334,7 @@
                 </div>
 
                 <div class="glass section-card">
-                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-robot" style="color:#A855F7;"></i> AI Climate Insights</h2>
+                    <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-robot" style="color:#A855F7;"></i> AI Climate Insights</h2>
                     <div class="list-item"><span style="line-height: 1.4;"><i class="fa-solid fa-arrow-trend-up" style="color:#F87171; margin-right:8px;"></i> Temperature has increased by 1.8°C since 2018.</span></div>
                     <div class="list-item"><span style="line-height: 1.4;"><i class="fa-solid fa-cloud-showers-heavy" style="color:#38BDF8; margin-right:8px;"></i> Rainfall is expected to increase by 18%.</span></div>
                     <div class="list-item"><span style="line-height: 1.4;"><i class="fa-solid fa-wind" style="color:#4ADE80; margin-right:8px;"></i> AQI levels show gradual improvement.</span></div>
@@ -305,33 +342,33 @@
                 </div>
 
                 <div class="glass section-card">
-                    <h2 style="color: white; font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-timeline" style="color:#94A3B8;"></i> Climate Timeline</h2>
-                    <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 15px; margin-left: 10px;">
+                    <h2 style="color: var(--text-main); font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-timeline" style="color:#94A3B8;"></i> Climate Timeline</h2>
+                    <div style="border-left: 2px solid var(--glass-border); padding-left: 15px; margin-left: 10px;">
                         <div style="margin-bottom: 15px; position: relative;">
                             <div style="position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 10px #4ADE80;"></div>
-                            <h3 style="font-size: 13px; color: white; margin: 0;">2019</h3><p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Air quality improvements recorded.</p>
+                            <h3 style="font-size: 13px; color: var(--text-main); margin: 0;">2019</h3><p style="font-size: 11px; color: var(--text-muted); margin: 2px 0 0 0;">Air quality improvements recorded.</p>
                         </div>
                         <div style="margin-bottom: 15px; position: relative;">
                             <div style="position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #38BDF8; box-shadow: 0 0 10px #38BDF8;"></div>
-                            <h3 style="font-size: 13px; color: white; margin: 0;">2021</h3><p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Rainfall increased by 12%.</p>
+                            <h3 style="font-size: 13px; color: var(--text-main); margin: 0;">2021</h3><p style="font-size: 11px; color: var(--text-muted); margin: 2px 0 0 0;">Rainfall increased by 12%.</p>
                         </div>
                         <div style="margin-bottom: 15px; position: relative;">
                             <div style="position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #FACC15; box-shadow: 0 0 10px #FACC15;"></div>
-                            <h3 style="font-size: 13px; color: white; margin: 0;">2023</h3><p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Heatwaves became more frequent.</p>
+                            <h3 style="font-size: 13px; color: var(--text-main); margin: 0;">2023</h3><p style="font-size: 11px; color: var(--text-muted); margin: 2px 0 0 0;">Heatwaves became more frequent.</p>
                         </div>
                         <div style="position: relative;">
                             <div style="position: absolute; left: -21px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #F87171; box-shadow: 0 0 10px #F87171;"></div>
-                            <h3 style="font-size: 13px; color: white; margin: 0;">2025</h3><p style="font-size: 11px; color: #94A3B8; margin: 2px 0 0 0;">Global warming impact intensified.</p>
+                            <h3 style="font-size: 13px; color: var(--text-main); margin: 0;">2025</h3><p style="font-size: 11px; color: var(--text-muted); margin: 2px 0 0 0;">Global warming impact intensified.</p>
                         </div>
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="glass stat-card" style="padding: 15px; text-align: center;">
-                        <h2 style="font-size: 20px; font-weight: 700; color: #4ADE80; margin: 0;">94%</h2><p style="color: #94A3B8; font-size: 11px; margin: 0;">Prediction Accuracy</p>
+                        <h2 style="font-size: 20px; font-weight: 700; color: #4ADE80; margin: 0;">94%</h2><p style="color: var(--text-muted); font-size: 11px; margin: 0;">Prediction Accuracy</p>
                     </div>
                     <div class="glass stat-card" style="padding: 15px; text-align: center;">
-                        <h2 style="font-size: 20px; font-weight: 700; color: #F87171; margin: 0;">1.8°C</h2><p style="color: #94A3B8; font-size: 11px; margin: 0;">Temperature Rise</p>
+                        <h2 style="font-size: 20px; font-weight: 700; color: #F87171; margin: 0;">1.8°C</h2><p style="color: var(--text-muted); font-size: 11px; margin: 0;">Temperature Rise</p>
                     </div>
                 </div>
             </div>
@@ -340,7 +377,7 @@
         <footer class="glass" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px; margin-top: 40px;">
             <div>
                 <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
-                <p style="color: #94A3B8; margin: 0; font-size: 14px;">Climate Trends Center</p>
+                <p style="color: var(--text-muted); margin: 0; font-size: 14px;">Climate Trends Center</p>
             </div>
             <div style="color: #4ADE80; font-weight: 600; font-size: 14px;"><i class="fa-solid fa-earth-americas"></i> 7 Years of Analytics Active</div>
         </footer>
@@ -351,7 +388,69 @@
 
     <script>
         // ==========================================
-        // 1. PREMIUM SIDEBAR LOGIC (As it was)
+        // 2. GLOBAL CHART VARIABLES (Zaroori hai update ke liye)
+        // ==========================================
+        let tempChart, rainChart, aqiHistoryChart, carbChart, futChart;
+        let charts = [];
+
+        // ==========================================
+        // THEME TOGGLE LOGIC
+        // ==========================================
+        const themeIcon = document.getElementById("themeIcon");
+        const body = document.body;
+
+        // Apply saved theme on load
+        if (localStorage.getItem("theme") === "light") {
+            body.setAttribute("data-theme", "light");
+            themeIcon.classList.replace("fa-sun", "fa-moon");
+        }
+
+        function toggleTheme() {
+            if (body.getAttribute("data-theme") === "light") {
+                body.removeAttribute("data-theme");
+                localStorage.setItem("theme", "dark");
+                themeIcon.classList.replace("fa-moon", "fa-sun");
+            } else {
+                body.setAttribute("data-theme", "light");
+                localStorage.setItem("theme", "light");
+                themeIcon.classList.replace("fa-sun", "fa-moon");
+            }
+            updateChartColors();
+        }
+
+        function updateChartColors() {
+            const isLight = document.body.getAttribute("data-theme") === "light";
+            const textColor = isLight ? '#475569' : '#E2E8F0';
+            const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+
+            charts.forEach(chart => {
+                if(chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+                    chart.options.plugins.legend.labels.color = textColor;
+                }
+                if(chart.options.scales) {
+                    if(chart.options.scales.x && chart.options.scales.x.ticks) {
+                        chart.options.scales.x.ticks.color = textColor;
+                        chart.options.scales.x.grid.color = gridColor;
+                    }
+                    if(chart.options.scales.y && chart.options.scales.y.ticks) {
+                        chart.options.scales.y.ticks.color = textColor;
+                        chart.options.scales.y.grid.color = gridColor;
+                    }
+                }
+                chart.update();
+            });
+
+            // Update particles color based on theme
+            if (window.pJSDom && window.pJSDom.length > 0) {
+                const pJS = window.pJSDom[0].pJS;
+                pJS.particles.color.value = isLight ? "#0f172a" : "#ffffff";
+                pJS.particles.line_linked.color = isLight ? "#0f172a" : "#ffffff";
+                pJS.fn.particlesRefresh();
+            }
+        }
+
+        // ==========================================
+        // 1. PREMIUM SIDEBAR LOGIC
         // ==========================================
         function brahmastraToggle() {
             var sidebar = document.getElementById("mySidebar");
@@ -380,29 +479,45 @@
         }
 
         // ==========================================
-        // 2. GLOBAL CHART VARIABLES (Zaroori hai update ke liye)
-        // ==========================================
-        let tempChart, rainChart, aqiHistoryChart, carbChart, futChart;
-
-        // ==========================================
         // 3. INITIALIZATION & SEARCH LOGIC
         // ==========================================
         document.addEventListener("DOMContentLoaded", () => {
+            const isLight = localStorage.getItem("theme") === "light";
+            const pColor = isLight ? "#0f172a" : "#ffffff";
+
             // Particles setup
             if (typeof particlesJS !== "undefined") {
-                particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: "#4ADE80" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
+                particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: pColor }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, line_linked: { enable: true, distance: 150, color: pColor, opacity: 0.2, width: 1 }, move: { enable: true, speed: 1.5 } } });
             }
 
+            const textColor = isLight ? '#475569' : '#E2E8F0';
+            const gridColor = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+
             // Common ChartJS Options
-            const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } } };
+            const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: textColor, font: {family: 'Poppins'} } }, y: { grid: { color: gridColor }, ticks: { color: textColor, font: {family: 'Poppins'} } } } };
             const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
 
             // Initialize Charts and assign to global variables
-            if(document.getElementById('temperatureTrendChart')) tempChart = new Chart(document.getElementById('temperatureTrendChart').getContext('2d'), { type: 'line', data: { labels: years, datasets: [{ data: [26.2, 26.5, 26.9, 27.2, 27.5, 27.8, 28.0], borderColor: '#F87171', backgroundColor: 'rgba(248,113,113,0.1)', fill: true, tension: 0.4 }] }, options: commonOptions });
-            if(document.getElementById('rainfallChart')) rainChart = new Chart(document.getElementById('rainfallChart').getContext('2d'), { type: 'bar', data: { labels: years, datasets: [{ data: [110, 115, 125, 120, 135, 142, 148], backgroundColor: '#38BDF8', borderRadius: 4 }] }, options: commonOptions });
-            if(document.getElementById('aqiTrendChart')) aqiHistoryChart = new Chart(document.getElementById('aqiTrendChart').getContext('2d'), { type: 'line', data: { labels: years, datasets: [{ data: [95, 92, 88, 85, 83, 82, 81], borderColor: '#A855F7', tension: 0.4 }] }, options: commonOptions });
-            if(document.getElementById('carbonChart')) carbChart = new Chart(document.getElementById('carbonChart').getContext('2d'), { type: 'bar', data: { labels: years, datasets: [{ data: [4.5, 4.2, 4.0, 3.8, 3.6, 3.4, 3.2], backgroundColor: '#4ADE80', borderRadius: 4 }] }, options: commonOptions });
-            if(document.getElementById('futureChart')) futChart = new Chart(document.getElementById('futureChart').getContext('2d'), { type: 'line', data: { labels: ['2026', '2027', '2028', '2029', '2030'], datasets: [{ data: [28.2, 28.5, 28.7, 29.0, 29.3], borderColor: '#FACC15', borderDash: [5, 5], fill: false, tension: 0.4 }] }, options: commonOptions });
+            if(document.getElementById('temperatureTrendChart')) {
+                tempChart = new Chart(document.getElementById('temperatureTrendChart').getContext('2d'), { type: 'line', data: { labels: years, datasets: [{ data: [26.2, 26.5, 26.9, 27.2, 27.5, 27.8, 28.0], borderColor: '#F87171', backgroundColor: 'rgba(248,113,113,0.1)', fill: true, tension: 0.4 }] }, options: JSON.parse(JSON.stringify(commonOptions)) });
+                charts.push(tempChart);
+            }
+            if(document.getElementById('rainfallChart')) {
+                rainChart = new Chart(document.getElementById('rainfallChart').getContext('2d'), { type: 'bar', data: { labels: years, datasets: [{ data: [110, 115, 125, 120, 135, 142, 148], backgroundColor: '#38BDF8', borderRadius: 4 }] }, options: JSON.parse(JSON.stringify(commonOptions)) });
+                charts.push(rainChart);
+            }
+            if(document.getElementById('aqiTrendChart')) {
+                aqiHistoryChart = new Chart(document.getElementById('aqiTrendChart').getContext('2d'), { type: 'line', data: { labels: years, datasets: [{ data: [95, 92, 88, 85, 83, 82, 81], borderColor: '#A855F7', tension: 0.4 }] }, options: JSON.parse(JSON.stringify(commonOptions)) });
+                charts.push(aqiHistoryChart);
+            }
+            if(document.getElementById('carbonChart')) {
+                carbChart = new Chart(document.getElementById('carbonChart').getContext('2d'), { type: 'bar', data: { labels: years, datasets: [{ data: [4.5, 4.2, 4.0, 3.8, 3.6, 3.4, 3.2], backgroundColor: '#4ADE80', borderRadius: 4 }] }, options: JSON.parse(JSON.stringify(commonOptions)) });
+                charts.push(carbChart);
+            }
+            if(document.getElementById('futureChart')) {
+                futChart = new Chart(document.getElementById('futureChart').getContext('2d'), { type: 'line', data: { labels: ['2026', '2027', '2028', '2029', '2030'], datasets: [{ data: [28.2, 28.5, 28.7, 29.0, 29.3], borderColor: '#FACC15', borderDash: [5, 5], fill: false, tension: 0.4 }] }, options: JSON.parse(JSON.stringify(commonOptions)) });
+                charts.push(futChart);
+            }
 
             // ==========================================
             // 4. THE SEARCH BUTTON LOGIC (Making it Alive)
@@ -410,7 +525,6 @@
             const searchBtn = document.getElementById('search-button');
             const searchInput = document.getElementById('search-input');
 
-            // Ek common function banate hain search ke liye
             async function triggerSearch() {
                 const city = searchInput.value.trim();
                 if (!city) {
@@ -424,22 +538,18 @@
                 try {
                     const token = localStorage.getItem('token'); 
                     
-                    console.log(`Bhai backend se ${city} ka data mangwa raha hoon...`); // Console mein check karne ke liye
-                    
                     const response = await fetch(`https://weather-intelligence-pro.onrender.com/analytics/climate-data/${city}`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
 
                     if (response.ok) {
                         const data = await response.json();
-                        console.log("Data mil gaya:", data); // F12 console mein data dikhega
                         const getAvg = (arr) => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
                         
                         if(data.temp_trend) {
                             document.getElementById('avg-temp').innerText = getAvg(data.temp_trend) + "°C";
                             document.getElementById('avg-rain').innerText = getAvg(data.rain_trend) + " mm";
                             document.getElementById('avg-aqi').innerText = getAvg(data.aqi_trend);
-                            // Water quality humare DB mein nahi hai, toh usey thoda randomly smart dikhate hain (80% se 98% ke beech)
                             document.getElementById('avg-water').innerText = Math.floor(Math.random() * (98 - 80 + 1) + 80) + "%";
                         }
                         // 🔄 CHARTS UPDATE KARO
