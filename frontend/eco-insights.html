@@ -16,8 +16,54 @@
     <link rel="stylesheet" href="css/eco-insights.css">
 
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; }
+        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; transition: background 0.3s ease, color 0.3s ease; }
         
+        /* =========================================
+           LIGHT THEME OVERRIDES
+           ========================================= */
+        body.light-theme {
+            background: #F1F5F9 !important;
+            color: #0F172A !important;
+        }
+        body.light-theme aside#mySidebar {
+            background: #FFFFFF !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+        }
+        body.light-theme aside#mySidebar a, 
+        body.light-theme aside#mySidebar .auth-action-btn {
+            color: #475569 !important;
+        }
+        body.light-theme aside#mySidebar a:hover, 
+        body.light-theme aside#mySidebar .auth-action-btn:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+            color: #0284C7 !important;
+        }
+        body.light-theme .glass {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+        }
+        body.light-theme header h1, 
+        body.light-theme .section-card h2, 
+        body.light-theme .focus-card h2,
+        body.light-theme .stat-card h3 {
+            color: #0F172A !important;
+        }
+        body.light-theme .summary-text {
+            color: #334155 !important;
+        }
+        body.light-theme .insight-item {
+            background: rgba(0, 0, 0, 0.03) !important;
+            border: 1px solid rgba(0, 0, 0, 0.05) !important;
+            color: #1E293B !important;
+        }
+        body.light-theme #search-input {
+            color: #0F172A !important;
+        }
+        body.light-theme #search-input::placeholder {
+            color: #64748B !important;
+        }
+
         /* =========================================
            PREMIUM UNIFIED SIDEBAR STYLING
            ========================================= */
@@ -137,7 +183,7 @@
         <a href="water.html"><i class="fas fa-droplet"></i> Water Quality</a>
         <a href="prediction.html"><i class="fas fa-brain"></i> AI Prediction</a>
         <a href="maps-dashboard.html"><i class="fas fa-map-location-dot"></i> Maps</a>
-        <a href="satellite-dashboard.html" ><i class="fa-solid fa-satellite"></i> Satellite Data</a>
+        <a href="satellite-dashboard.html"><i class="fa-solid fa-satellite"></i> Satellite Data</a>
         <a href="analytics-dashboard.html"><i class="fas fa-chart-pie"></i> Analytics</a>
         <a href="reports-dashboard.html"><i class="fas fa-file-invoice"></i> Reports</a>
         <a href="history.html"><i class="fas fa-clock-rotate-left"></i> History</a>
@@ -203,7 +249,7 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <i class="fas fa-search" style="color: #94A3B8;"></i>
-                <input id="search-input" type="text" placeholder="Search Insights..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <input id="search-input" type="text" placeholder="Search Insights..." style="background: transparent; border: none; outline: none; width: 250px;">
                 <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
             </div>
             <div class="top-actions" style="display: flex; gap: 15px;">
@@ -219,7 +265,7 @@
 
         <header class="glass" style="margin-bottom: 30px; padding: 30px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h1 style="font-size: 32px; font-weight: 700; color: white; margin: 0;">Eco Insights</h1>
+                <h1 style="font-size: 32px; font-weight: 700; margin: 0;">Eco Insights</h1>
                 <p style="color: #4ADE80; margin-top: 5px; margin-bottom: 0;">AI Powered Environmental Recommendations</p>
             </div>
             <i class="fas fa-leaf" style="font-size: 48px; color: #4ADE80; text-shadow: 0 0 20px rgba(74, 222, 128, 0.4);"></i>
@@ -228,19 +274,19 @@
         <section class="stats-grid">
             <div class="glass stat-card">
                 <div class="stat-icon green"><i class="fas fa-heart"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">94%</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Health Score</p></div>
+                <div><h3 style="font-size: 28px; font-weight: 700; margin: 0;">94%</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Health Score</p></div>
             </div>
             <div class="glass stat-card">
                 <div class="stat-icon blue"><i class="fas fa-temperature-high"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">26°C</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Comfort Index</p></div>
+                <div><h3 style="font-size: 28px; font-weight: 700; margin: 0;">26°C</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Comfort Index</p></div>
             </div>
             <div class="glass stat-card">
                 <div class="stat-icon purple"><i class="fas fa-wind"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">72</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">AQI Level</p></div>
+                <div><h3 style="font-size: 28px; font-weight: 700; margin: 0;">72</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">AQI Level</p></div>
             </div>
             <div class="glass stat-card">
                 <div class="stat-icon yellow"><i class="fas fa-droplet"></i></div>
-                <div><h3 style="font-size: 28px; font-weight: 700; color: white; margin: 0;">96%</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Water Safety</p></div>
+                <div><h3 style="font-size: 28px; font-weight: 700; margin: 0;">96%</h3><p style="color: #94A3B8; margin: 0; font-size: 13px;">Water Safety</p></div>
             </div>
         </section>
 
@@ -380,19 +426,80 @@
         let wellnessChartInstance, ecoChartInstance;
 
         // ==========================================
-        // 3. INITIALIZATION & DYNAMIC SEARCH LOGIC
+        // 3. INITIALIZATION & DYNAMIC LOGIC
         // ==========================================
         document.addEventListener("DOMContentLoaded", () => {
-            // Particles setup
-            if (typeof particlesJS !== "undefined") {
-                particlesJS("particles-js", { particles: { number: { value: 50 }, color: { value: "#4ADE80" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
+            
+            // --- A. THEME TOGGLE FUNCTIONALITY ---
+            const themeToggleBtn = document.getElementById('themeToggle');
+            if (themeToggleBtn) {
+                // Read saved theme preference
+                const savedTheme = localStorage.getItem('wip_theme');
+                if (savedTheme === 'light') {
+                    document.body.classList.add('light-theme');
+                    themeToggleBtn.innerHTML = '<i class="fas fa-sun" style="color: #FACC15;"></i>';
+                }
+
+                themeToggleBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('light-theme');
+                    const isLight = document.body.classList.contains('light-theme');
+                    
+                    themeToggleBtn.innerHTML = isLight 
+                        ? '<i class="fas fa-sun" style="color: #FACC15;"></i>' 
+                        : '<i class="fas fa-moon"></i>';
+
+                    localStorage.setItem('wip_theme', isLight ? 'light' : 'dark');
+                });
             }
 
-            // Common ChartJS Options
-            const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } } };
+            // --- B. USER AUTH STATE CHECK ---
+            const token = localStorage.getItem('token');
+            const userProfile = document.getElementById('user-profile');
+            const authButtons = document.getElementById('auth-buttons');
+            const logoutBtn = document.getElementById('logout-button');
+
+            if (token) {
+                if (userProfile) userProfile.style.display = 'block';
+                if (authButtons) authButtons.style.display = 'none';
+            } else {
+                if (userProfile) userProfile.style.display = 'none';
+                if (authButtons) authButtons.style.display = 'block';
+            }
+
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('token');
+                    window.location.reload();
+                });
+            }
+
+            // --- C. PARTICLES.JS SETUP ---
+            if (typeof particlesJS !== "undefined") {
+                particlesJS("particles-js", { 
+                    particles: { 
+                        number: { value: 50 }, 
+                        color: { value: "#4ADE80" }, 
+                        shape: { type: "circle" }, 
+                        opacity: { value: 0.3 }, 
+                        size: { value: 3 }, 
+                        move: { enable: true, speed: 1.5 } 
+                    } 
+                });
+            }
+
+            // --- D. COMMON CHART OPTIONS ---
+            const commonOptions = { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    x: { grid: { display: false }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } }, 
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: {family: 'Poppins'} } } 
+                } 
+            };
 
             // Initialize Wellness Chart
-            if(document.getElementById('wellnessChart')) {
+            if (document.getElementById('wellnessChart')) {
                 wellnessChartInstance = new Chart(document.getElementById('wellnessChart').getContext('2d'), { 
                     type: 'line', 
                     data: { 
@@ -404,7 +511,7 @@
             }
 
             // Initialize Environmental Eco Chart
-            if(document.getElementById('ecoChart')) {
+            if (document.getElementById('ecoChart')) {
                 ecoChartInstance = new Chart(document.getElementById('ecoChart').getContext('2d'), { 
                     type: 'bar', 
                     data: { 
@@ -418,7 +525,6 @@
             // ==========================================
             // 4. SEARCH FUNCTIONALITY
             // ==========================================
-            // Yahan variables define kiye hain taaki error na aaye!
             const searchBtn = document.getElementById('search-button');
             const searchInput = document.getElementById('search-input');
 
@@ -432,8 +538,6 @@
                 searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
                 try {
-                    // LocalStorage se token nikal kar headers mein bhej rahe hain
-                    const token = localStorage.getItem('token');
                     const response = await fetch(`https://weather-intelligence-pro.onrender.com/ai/eco-insights/${city}`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
@@ -443,42 +547,42 @@
                         
                         // Update KPI Stats (Top 4 Boxes)
                         const statBoxes = document.querySelectorAll('.stats-grid .stat-card h3');
-                        if (statBoxes.length >= 4) {
-                            statBoxes[0].innerText = data.kpi.health_score + "%";
-                            statBoxes[1].innerText = data.kpi.comfort_index + "°C";
-                            statBoxes[2].innerText = data.kpi.aqi;
-                            statBoxes[3].innerText = data.kpi.water_safety + "%";
+                        if (statBoxes.length >= 4 && data.kpi) {
+                            statBoxes[0].innerText = (data.kpi.health_score || "94") + "%";
+                            statBoxes[1].innerText = (data.kpi.comfort_index || "26") + "°C";
+                            statBoxes[2].innerText = data.kpi.aqi || "72";
+                            statBoxes[3].innerText = (data.kpi.water_safety || "96") + "%";
                         }
 
                         // Update Focus Cards (Right Side)
                         const focusCards = document.querySelectorAll('.focus-card h1');
-                        if (focusCards.length >= 4) {
-                            focusCards[0].innerText = data.focus.activity + "%";
-                            focusCards[1].innerHTML = `${data.focus.hydration}L <span style="font-size: 20px; color: #94A3B8;">/ 3.5L</span>`;
+                        if (focusCards.length >= 4 && data.focus) {
+                            focusCards[0].innerText = (data.focus.activity || "89") + "%";
+                            focusCards[1].innerHTML = `${data.focus.hydration || "2.3"}L <span style="font-size: 20px; color: #94A3B8;">/ 3.5L</span>`;
                             
                             // AQI Risk Logic
+                            let aqiVal = data.kpi ? data.kpi.aqi : 72;
                             let aqiRisk = "Low"; let aqiColor = "text-green";
-                            if(data.kpi.aqi > 150) { aqiRisk = "High"; aqiColor = "text-red"; }
-                            else if(data.kpi.aqi > 80) { aqiRisk = "Moderate"; aqiColor = "text-orange"; }
+                            if(aqiVal > 150) { aqiRisk = "High"; aqiColor = "text-red"; }
+                            else if(aqiVal > 80) { aqiRisk = "Moderate"; aqiColor = "text-orange"; }
                             
                             focusCards[2].innerText = aqiRisk;
-                            focusCards[2].className = aqiColor; // Update color based on risk
+                            focusCards[2].className = aqiColor;
                             
-                            focusCards[3].innerText = data.focus.sleep + " Hours";
+                            focusCards[3].innerText = (data.focus.sleep || "8") + " Hours";
                         }
 
                         // Update Charts
-                        if (wellnessChartInstance && data.charts.wellness) { 
+                        if (wellnessChartInstance && data.charts && data.charts.wellness) { 
                             wellnessChartInstance.data.datasets[0].data = data.charts.wellness; 
                             wellnessChartInstance.update(); 
                         }
-                        if (ecoChartInstance && data.charts.eco_score) { 
+                        if (ecoChartInstance && data.charts && data.charts.eco_score) { 
                             ecoChartInstance.data.datasets[0].data = data.charts.eco_score; 
                             ecoChartInstance.update(); 
                         }
                         
                     } else {
-                        // Agar 401 aaye toh console mein error print hogi
                         console.error("HTTP Error:", response.status);
                         if (response.status === 401) {
                             alert("Session expire ho gaya hai ya login nahi hai. Please login again.");
@@ -492,12 +596,10 @@
                 } finally {
                     searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
                 }
-            } // Bracket theek ho gaya!
+            }
 
-            // Click Event
+            // Event Listeners
             if (searchBtn) searchBtn.addEventListener('click', triggerSearch);
-
-            // Enter Key Event
             if (searchInput) {
                 searchInput.addEventListener('keypress', function (e) {
                     if (e.key === 'Enter') {
