@@ -21,9 +21,9 @@
         /* =========================================
            BASE & UTILITIES
            ========================================= */
-        body { background: #0B1120; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        body { background: #0B1120; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
 
-        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; transition: background 0.3s, border 0.3s; }
 
         .section-title { font-size: 24px; font-weight: 600; margin: 30px 0 20px 0; display: flex; align-items: center; gap: 15px; color: white; }
 
@@ -32,7 +32,7 @@
            ========================================= */
         aside#mySidebar {
             position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
-            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
+            z-index: 99999; transition: transform 0.3s ease-in-out, background 0.3s !important; overflow-y: auto;
             padding-bottom: 50px; background: #0B1120 !important; border-right: 1px solid rgba(255,255,255,0.05);
         }
         aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
@@ -83,7 +83,7 @@
         .search-box { display: flex; align-items: center; padding: 10px 20px; width: 100%; max-width: 500px; border-radius: 30px; gap: 10px;}
         .search-box input { flex: 1; background: transparent; border: none; outline: none; color: white; font-size: 14px; font-family: 'Poppins'; }
         .top-actions { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
-        .action-btn { width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer; }
+        .action-btn { width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer; display: flex; justify-content: center; align-items: center;}
         .profile-pic { width: 45px !important; height: 45px !important; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; justify-content:center; align-items:center;}
         .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -149,7 +149,7 @@
            ========================================= */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #0B1120;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100000; transition: background 0.3s;
         }
         #loader h1 { font-size: 30px; margin-top: 20px; color: white; font-weight: 700;}
         #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; }
@@ -170,6 +170,53 @@
         
         /* Footer */
         .footer { margin-top: 40px; padding: 30px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* =========================================
+           LIGHT THEME STYLES (NEW)
+           ========================================= */
+        body.light-theme {
+            background: #F8FAFC; 
+            color: #1E293B;
+        }
+        body.light-theme .glass {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1E293B;
+        }
+        body.light-theme .section-title,
+        body.light-theme h1, body.light-theme h2, body.light-theme h3,
+        body.light-theme .condition-card h2, body.light-theme .astronomy-card h2,
+        body.light-theme .chart-card h2 {
+            color: #0F172A !important;
+        }
+        body.light-theme .forecast-row span { color: #1E293B; }
+        body.light-theme .forecast-row { background: rgba(0, 0, 0, 0.05); }
+        body.light-theme .forecast-row:hover { background: rgba(0, 0, 0, 0.1); }
+        body.light-theme aside#mySidebar {
+            background: #FFFFFF !important;
+            border-right: 1px solid rgba(0,0,0,0.1);
+        }
+        body.light-theme aside#mySidebar a, body.light-theme .sidebar-group-btn {
+            color: #475569;
+        }
+        body.light-theme aside#mySidebar a:hover, body.light-theme .sidebar-group-btn:hover {
+            background: rgba(0,0,0,0.05);
+            color: #0F172A !important;
+        }
+        body.light-theme aside#mySidebar a.active {
+            background: rgba(56, 189, 248, 0.15) !important;
+            color: #0F172A !important;
+        }
+        body.light-theme .search-box input { color: #1E293B; }
+        body.light-theme .search-box input::placeholder { color: #64748B; }
+        body.light-theme .action-btn i, body.light-theme .search-box i, body.light-theme .search-box button i { color: #1E293B; }
+        body.light-theme .conditions-grid div { background: rgba(0,0,0,0.05) !important; border: 1px solid rgba(0,0,0,0.05) !important;}
+        body.light-theme .hour-card h3 { color: #1E293B; }
+        body.light-theme .health-card li { color: #334155; }
+        body.light-theme .astronomy-card span { color: #334155 !important; }
+        body.light-theme .notification-item, body.light-theme .alert-item { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0,0,0,0.05); color: #1E293B; }
+        body.light-theme #loader { background: #F8FAFC; }
+        body.light-theme #loader h1 { color: #0F172A; }
     </style>
 </head>
 <body>
@@ -258,7 +305,7 @@
                 <!-- Input Box -->
                 <input type="text" id="search-input" placeholder="Search city..." autocomplete="off">
                 
-                <!-- Search Button (type="button" rakha hai) -->
+                <!-- Search Button -->
                 <button type="button" id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer; padding: 5px;">
                     <i class="fas fa-arrow-right"></i>
                 </button>
@@ -460,6 +507,32 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             // ==========================================
+            // THEME TOGGLE LOGIC
+            // ==========================================
+            const themeBtn = document.getElementById('themeToggle');
+            const themeIcon = themeBtn.querySelector('i');
+            
+            // Check Local Storage for saved theme
+            if(localStorage.getItem('weatherTheme') === 'light') {
+                document.body.classList.add('light-theme');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            }
+
+            themeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('light-theme');
+                
+                if(document.body.classList.contains('light-theme')) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                    localStorage.setItem('weatherTheme', 'light');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                    localStorage.setItem('weatherTheme', 'dark');
+                }
+            });
+
+            // ==========================================
             // UI INITIALIZATIONS
             // ==========================================
             if (typeof particlesJS !== "undefined") {
@@ -511,7 +584,7 @@
                 rainChartInstance = new Chart(document.getElementById('rainChart').getContext('2d'), { 
                     type: 'doughnut', 
                     data: { labels: ["Rain", "No Rain"], datasets: [{ data: [35, 65], backgroundColor: ['#38BDF8', 'rgba(255,255,255,0.1)'], borderWidth: 0 }] }, 
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: {color: 'white'} } } } 
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: {color: '#94A3B8'} } } } 
                 });
             }
 
@@ -607,6 +680,25 @@
                         conditionValues[3].innerHTML = `${temp - 5}°C <span style="font-size: 12px; color: #4ADE80;">(Comfortable)</span>`; 
                     }
 
+                    // ==========================================
+                    // FIXED FORECAST RENDERER
+                    // ==========================================
+                    const forecastContainer = document.querySelector('.forecast-list');
+                    if (forecastContainer && data.daily_forecast) {
+                        forecastContainer.innerHTML = ''; 
+                        
+                        data.daily_forecast.forEach(day => {
+                            forecastContainer.innerHTML += `
+                                <div class="forecast-row">
+                                    <span>${day.day_name}</span>
+                                    <i class="fas ${day.icon_class}"></i>
+                                    <span>${day.condition}</span>
+                                    <span>${day.temp_max}° / ${day.temp_min}°</span>
+                                </div>
+                            `;
+                        });
+                    }
+
                 } catch (error) {
                     console.error("Fetch Error:", error);
                     alert("System Offline. Check Backend Uvicorn!");
@@ -623,25 +715,6 @@
                 });
             }
         });
-
-        const forecastContainer = document.querySelector('.forecast-list');
-
-        // Maan lo backend se 'data.daily_forecast' array aa raha hai
-        if (forecastContainer && data.daily_forecast) {
-            forecastContainer.innerHTML = ''; // Purana nakli data delete karo
-            
-            // Naya data loop karke daalo
-            data.daily_forecast.forEach(day => {
-                forecastContainer.innerHTML += `
-                    <div class="forecast-row">
-                        <span>${day.day_name}</span>
-                        <i class="fas ${day.icon_class}"></i>
-                        <span>${day.condition}</span>
-                        <span>${day.temp_max}° / ${day.temp_min}°</span>
-                    </div>
-                `;
-            });
-        }
     </script>
 </body>
 </html>
