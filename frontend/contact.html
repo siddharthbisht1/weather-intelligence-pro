@@ -14,17 +14,49 @@
 
     <style>
         /* =========================================
+           THEME VARIABLES (Dark / Light)
+           ========================================= */
+        :root {
+            --bg-color: #0B1120;
+            --text-main: #ffffff;
+            --text-muted: #94A3B8;
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover-bg: rgba(255, 255, 255, 0.05);
+            --sidebar-bg: #0B1120;
+            --input-bg: rgba(0,0,0,0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --card-hover-bg: rgba(0, 0, 0, 0.05);
+            --sidebar-bg: #ffffff;
+            --input-bg: rgba(0,0,0,0.03);
+        }
+
+        /* =========================================
            PREMIUM UNIFIED SIDEBAR STYLING
            ========================================= */
-        body { font-family: 'Poppins', sans-serif; background: #0B1120; color: white; overflow-x: hidden; margin: 0; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-main); 
+            overflow-x: hidden; 
+            margin: 0; 
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
         
         aside#mySidebar {
             position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
-            z-index: 99999; transition: transform 0.3s ease-in-out !important; overflow-y: auto;
-            padding-bottom: 50px; background: #0B1120 !important; border-right: 1px solid rgba(255,255,255,0.05);
+            z-index: 99999; transition: transform 0.3s ease-in-out, background-color 0.3s ease !important; overflow-y: auto;
+            padding-bottom: 50px; background: var(--sidebar-bg) !important; border-right: 1px solid var(--glass-border);
         }
         
-        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.2); }
+        aside#mySidebar::-webkit-scrollbar { width: 6px; background: rgba(0,0,0,0.1); }
         aside#mySidebar::-webkit-scrollbar-thumb { background: #38BDF8; border-radius: 10px; }
 
         aside#mySidebar h1 { 
@@ -33,23 +65,23 @@
         }
 
         aside#mySidebar a, aside#mySidebar .auth-action-btn {
-            display: flex; align-items: center; padding: 12px 20px; color: #94A3B8; text-decoration: none;
+            display: flex; align-items: center; padding: 12px 20px; color: var(--text-muted); text-decoration: none;
             font-weight: 500; font-size: 14px; transition: all 0.3s ease; margin: 5px 15px; border-radius: 12px;
             background: transparent; border: none; cursor: pointer; text-align: left; width: calc(100% - 30px);
         }
         
         aside#mySidebar a i, aside#mySidebar .auth-action-btn i { width: 30px; font-size: 16px; color: #38BDF8 !important; transition: all 0.3s ease; }
         
-        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: white !important; background: rgba(255, 255, 255, 0.05); }
-        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
+        aside#mySidebar a:hover, aside#mySidebar .auth-action-btn:hover { color: var(--text-main) !important; background: var(--card-hover-bg); }
+        aside#mySidebar a:hover i, aside#mySidebar .auth-action-btn:hover i { color: var(--text-main) !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
 
-        aside#mySidebar a.active { color: white !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
-        aside#mySidebar a.active i { color: white !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+        aside#mySidebar a.active { color: var(--text-main) !important; background: rgba(56, 189, 248, 0.15) !important; font-weight: 600; border-left: 4px solid #38BDF8;}
+        aside#mySidebar a.active i { color: var(--text-main) !important; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
 
         /* Sidebar Dropdown Styling */
         .sidebar-group-btn {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 15px 20px 5px 20px; color: #64748B; background: transparent; border: none;
+            padding: 15px 20px 5px 20px; color: var(--text-muted); background: transparent; border: none;
             width: 100%; text-align: left; cursor: pointer; transition: all 0.3s ease;
             font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
             font-family: 'Poppins', sans-serif;
@@ -58,10 +90,10 @@
         
         .sidebar-dropdown-container { 
             display: none; flex-direction: column; padding-left: 10px; 
-            border-left: 1px solid rgba(255,255,255,0.05); margin-left: 20px;
+            border-left: 1px solid var(--glass-border); margin-left: 20px;
         }
         .sidebar-dropdown-container a { margin: 2px 10px; padding: 10px 15px; font-size: 13px; }
-        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: #64748B !important; width: auto !important; }
+        .caret-icon { transition: transform 0.3s ease; font-size: 12px !important; color: var(--text-muted) !important; width: auto !important; }
         .sidebar-group-btn.active .caret-icon { transform: rotate(180deg); color: #38BDF8 !important; }
 
         /* Main Content Layout */
@@ -77,13 +109,17 @@
         /* =========================================
            CONTACT PAGE SPECIFIC STYLES
            ========================================= */
-        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; }
+        .glass { 
+            background: var(--glass-bg); backdrop-filter: blur(15px); 
+            border: 1px solid var(--glass-border); border-radius: 24px; 
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
         
         .hover-card { transition: all 0.3s ease-in-out; }
         .hover-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 0 15px rgba(56, 189, 248, 0.1) !important;
+            border: 1px solid rgba(56, 189, 248, 0.3) !important;
         }
 
         .hero-contact { display: flex; justify-content: space-between; align-items: center; padding: 40px; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;}
@@ -94,23 +130,27 @@
         /* Form Styles */
         .contact-form-container { padding: 40px; }
         .form-group { margin-bottom: 25px; }
-        .form-group label { display: block; color: #94A3B8; margin-bottom: 10px; font-size: 14px; font-weight: 500; }
+        .form-group label { display: block; color: var(--text-muted); margin-bottom: 10px; font-size: 14px; font-weight: 500; }
         .form-control { 
-            width: 100%; padding: 15px 20px; background: rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; 
-            color: white; font-size: 15px; font-family: 'Poppins', sans-serif;
+            width: 100%; padding: 15px 20px; background: var(--input-bg); 
+            border: 1px solid var(--glass-border); border-radius: 12px; 
+            color: var(--text-main); font-size: 15px; font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
         }
-        .form-control:focus { outline: none; border-color: #38BDF8; background: rgba(56, 189, 248, 0.05); box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
+        .form-control::placeholder { color: var(--text-muted); opacity: 0.7; }
+        .form-control:focus { outline: none; border-color: #38BDF8; background: rgba(56, 189, 248, 0.05); box-shadow: 0 0 10px rgba(56, 189, 248, 0.1); }
         textarea.form-control { resize: vertical; min-height: 150px; }
         
+        select option { background: var(--bg-color); color: var(--text-main); }
+
         .submit-btn {
             background: linear-gradient(135deg, #38BDF8, #2563EB); color: white;
             border: none; padding: 15px 30px; border-radius: 12px; font-size: 16px; font-weight: 600;
             cursor: pointer; transition: all 0.3s ease; width: 100%;
             display: flex; justify-content: center; align-items: center; gap: 10px;
         }
-        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); }
+        .submit-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
         /* Info Cards Styles */
         .info-cards-container { display: flex; flex-direction: column; gap: 20px; }
@@ -120,22 +160,36 @@
             display: flex; justify-content: center; align-items: center; 
             font-size: 24px; flex-shrink: 0;
         }
-        .info-content h3 { font-size: 18px; color: white; margin-bottom: 5px; font-weight: 600; }
-        .info-content p { font-size: 14px; color: #94A3B8; margin: 0; line-height: 1.6; }
+        .info-content h3 { font-size: 18px; color: var(--text-main); margin-bottom: 5px; font-weight: 600; transition: color 0.3s ease;}
+        .info-content p { font-size: 14px; color: var(--text-muted); margin: 0; line-height: 1.6; transition: color 0.3s ease;}
 
         .social-links { display: flex; gap: 15px; margin-top: 20px; }
         .social-btn {
-            width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1); color: white; display: flex; 
+            width: 45px; height: 45px; border-radius: 50%; background: var(--card-hover-bg);
+            border: 1px solid var(--glass-border); color: var(--text-main); display: flex; 
             justify-content: center; align-items: center; font-size: 18px; transition: all 0.3s ease; text-decoration: none;
         }
-        .social-btn:hover { background: #38BDF8; border-color: #38BDF8; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4); }
+        .social-btn:hover { background: #38BDF8; border-color: #38BDF8; color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4); }
+
+        /* Navigation */
+        .search-box { background: var(--glass-bg); border: 1px solid var(--glass-border); }
+        .action-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); }
+        .action-btn:hover { background: rgba(56, 189, 248, 0.2); }
+        #search-input { color: var(--text-main) !important; }
+        #search-input::placeholder { color: var(--text-muted); }
+
+        /* Toast Notifications */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-left: 4px solid #38BDF8; padding: 15px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); color: var(--text-main); display: flex; align-items: center; gap: 12px; font-size: 0.9rem; animation: slideIn 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
     </style>
 </head>
 <body>
 
     <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+    <div id="toast-container"></div>
 
     <aside id="mySidebar">
         <h1>WIP</h1>
@@ -186,10 +240,9 @@
             <a href="observability-center.html"><i class="fa-solid fa-chart-line"></i> Observability Center</a>
         </div>
 
-        <button class="sidebar-group-btn active" onclick="toggleSidebarMenu(this)">
-            <span>More</span> <i class="fas fa-chevron-down caret-icon"></i>
+         <button class="sidebar-group-btn active" onclick="toggleSidebarMenu(this)">
+            <span>More</span> <i class="fas fa-chevron-down caret-icon" style="color: #38BDF8; transform: rotate(180deg);"></i>
         </button>
-        <!-- Open by default for this page -->
         <div class="sidebar-dropdown-container" style="display: flex;">
             <a href="export-center.html"><i class="fa-solid fa-file-export"></i> Export Center</a>
             <a href="help-center.html"><i class="fa-solid fa-circle-info"></i> Help Center</a>
@@ -210,29 +263,27 @@
 
         <nav class="top-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div class="search-box glass" style="gap: 15px; display: flex; align-items: center; border-radius: 30px; padding: 10px 20px;">
-                <button onclick="brahmastraToggle()" style="color: white; border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
+                <button onclick="brahmastraToggle()" style="color: var(--text-main); border: none; background: transparent; font-size: 20px; cursor: pointer; padding: 5px;">
                     <i class="fas fa-bars"></i>
                 </button>
-                <i class="fas fa-search" style="color: #94A3B8;"></i>
-                <input id="search-input" type="text" placeholder="Search resources..." style="background: transparent; border: none; color: white; outline: none; width: 250px;">
+                <i class="fas fa-search" style="color: var(--text-muted);"></i>
+                <input id="search-input" type="text" placeholder="Search resources..." style="background: transparent; border: none; outline: none; width: 250px;">
                 <button id="search-button" style="color: #38BDF8; background: transparent; border: none; cursor: pointer;"><i class="fas fa-arrow-right"></i></button>
             </div>
             <div class="top-actions" style="display: flex; gap: 15px;">
-                <button class="action-btn glass theme-toggle" id="themeToggle" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-moon"></i></button>
-                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; color: white; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
+                <!-- 🚀 Theme Toggle Button Added -->
+                <button class="action-btn glass theme-toggle" id="themeToggle" onclick="toggleTheme()" style="width: 45px; height: 45px; border-radius: 50%; border: none; cursor:pointer;"><i class="fas fa-sun" id="themeIcon"></i></button>
+                <button class="action-btn glass notification-btn" style="width: 45px; height: 45px; border-radius: 50%; border: none; cursor:pointer;"><i class="fas fa-bell"></i></button>
                 <div class="profile-pic glass" style="border-radius: 50%; overflow: hidden; width: 45px; height: 45px;">
                     <img src="https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=150&h=150&fit=crop" alt="User Profile" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
         </nav>
 
-        <!-- Where the global API Data Will Appear -->
-        <div id="weather-results" style="margin-bottom: 25px; text-align: left;"></div>
-
         <section class="hero-contact glass tilt hover-card">
             <div>
-                <h1 style="font-size: 40px; font-weight: 700; margin: 0; line-height: 1.2; color: white;">Get in Touch</h1>
-                <p style="font-size: 16px; color: #94A3B8; margin-top: 5px;">We're here to help with your environmental intelligence needs.</p>
+                <h1 style="font-size: 40px; font-weight: 700; margin: 0; line-height: 1.2; color: var(--text-main);">Get in Touch</h1>
+                <p style="font-size: 16px; color: var(--text-muted); margin-top: 5px;">We're here to help with your environmental intelligence needs.</p>
             </div>
             <div>
                 <i class="fa-solid fa-paper-plane" style="font-size: 60px; color: #38BDF8;"></i>
@@ -242,26 +293,26 @@
         <section class="contact-layout">
             <!-- Contact Form -->
             <div class="glass contact-form-container hover-card">
-                <h2 style="font-size: 24px; color: white; margin-bottom: 25px; font-weight: 600;">Send us a Message</h2>
-                <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Message sent! Our team will get back to you shortly.');">
+                <h2 style="font-size: 24px; color: var(--text-main); margin-bottom: 25px; font-weight: 600;">Send us a Message</h2>
+                <form id="contactForm">
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+                        <input type="text" id="name" class="form-control" placeholder="Jane Doe" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" class="form-control" placeholder="john@company.com" required>
+                        <input type="email" id="email" class="form-control" placeholder="jane@example.com" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="subject">Subject</label>
                         <select id="subject" class="form-control" required style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394A3B8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 1rem top 50%; background-size: 0.65rem auto;">
                             <option value="" disabled selected>Select a topic...</option>
-                            <option value="support" style="background: #0B1120;">Technical Support</option>
-                            <option value="sales" style="background: #0B1120;">Enterprise Sales</option>
-                            <option value="api" style="background: #0B1120;">API Access & Documentation</option>
-                            <option value="other" style="background: #0B1120;">Other Inquiries</option>
+                            <option value="support">Technical Support</option>
+                            <option value="sales">Enterprise Sales</option>
+                            <option value="api">API Access & Documentation</option>
+                            <option value="other">Other Inquiries</option>
                         </select>
                     </div>
 
@@ -270,7 +321,7 @@
                         <textarea id="message" class="form-control" placeholder="How can we help you?" required></textarea>
                     </div>
 
-                    <button type="submit" class="submit-btn">
+                    <button type="submit" id="submitBtn" class="submit-btn">
                         <span>Send Message</span> <i class="fas fa-arrow-right"></i>
                     </button>
                 </form>
@@ -326,7 +377,7 @@
         <footer class="glass footer" style="display: flex; justify-content: space-between; align-items: center; padding: 30px; border-radius: 20px;">
             <div>
                 <h2 style="font-size: 20px; font-weight: 700; color: #38BDF8; margin-bottom: 5px;">Weather Intelligence Pro</h2>
-                <p style="color: #94A3B8; margin: 0; font-size: 14px;">Air Quality Intelligence Platform</p>
+                <p style="color: var(--text-muted); margin: 0; font-size: 14px;">Air Quality Intelligence Platform</p>
             </div>
             <div style="color: #4ADE80; font-weight: 600; font-size: 14px;">
                 © 2026 Weather Intelligence Pro
@@ -338,7 +389,44 @@
     <script src="js/api.js"></script>
 
     <script>
-        // Premium Sidebar Toggle Logic
+        // ==========================================
+        // THEME TOGGLE LOGIC
+        // ==========================================
+        const themeIcon = document.getElementById("themeIcon");
+        const body = document.body;
+
+        // Apply saved theme on load
+        if (localStorage.getItem("theme") === "light") {
+            body.setAttribute("data-theme", "light");
+            themeIcon.classList.replace("fa-sun", "fa-moon");
+        }
+
+        function toggleTheme() {
+            if (body.getAttribute("data-theme") === "light") {
+                body.removeAttribute("data-theme");
+                localStorage.setItem("theme", "dark");
+                themeIcon.classList.replace("fa-moon", "fa-sun");
+            } else {
+                body.setAttribute("data-theme", "light");
+                localStorage.setItem("theme", "light");
+                themeIcon.classList.replace("fa-sun", "fa-moon");
+            }
+            updateParticles();
+        }
+
+        function updateParticles() {
+            const isLight = document.body.getAttribute("data-theme") === "light";
+            if (window.pJSDom && window.pJSDom.length > 0) {
+                const pJS = window.pJSDom[0].pJS;
+                pJS.particles.color.value = isLight ? "#0f172a" : "#38BDF8";
+                pJS.particles.line_linked.color = isLight ? "#0f172a" : "#38BDF8";
+                pJS.fn.particlesRefresh();
+            }
+        }
+
+        // ==========================================
+        // SIDEBAR TOGGLE LOGIC
+        // ==========================================
         function brahmastraToggle() {
             var sidebar = document.getElementById("mySidebar");
             var main = document.getElementById("myMainContent");
@@ -355,17 +443,56 @@
             }
         }
 
-        // Sidebar Dropdown Toggle Logic
         function toggleSidebarMenu(btn) {
             btn.classList.toggle("active");
             var dropdownContent = btn.nextElementSibling;
             dropdownContent.style.display = (dropdownContent.style.display === "flex") ? "none" : "flex";
         }
 
+        // ==========================================
+        // TOAST NOTIFICATIONS & FORM LOGIC
+        // ==========================================
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '<i class="fas fa-check-circle" style="color: #4ADE80;"></i>';
+            toast.style.borderLeftColor = '#4ADE80';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            // Simulate network request
+            setTimeout(() => {
+                showToast("Message sent! Our team will contact you shortly.");
+                this.reset();
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }, 1500);
+        });
+
         // Initialize Particles
         document.addEventListener("DOMContentLoaded", () => {
+            const isLight = localStorage.getItem("theme") === "light";
+            const pColor = isLight ? "#0f172a" : "#38BDF8";
+            
             if (typeof particlesJS !== "undefined") {
-                particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: .4 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
+                particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: pColor }, shape: { type: "circle" }, opacity: { value: .4 }, size: { value: 3 }, line_linked: { enable: true, distance: 150, color: pColor, opacity: 0.2, width: 1 }, move: { enable: true, speed: 1.5 } } });
             }
         });
     </script>
