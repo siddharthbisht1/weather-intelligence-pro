@@ -363,42 +363,36 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Particles Setup
             if (typeof particlesJS !== "undefined") {
                 particlesJS("particles-js", { particles: { number: { value: 50 }, color: { value: "#38BDF8" }, shape: { type: "circle" }, opacity: { value: 0.3 }, size: { value: 3 }, move: { enable: true, speed: 1.5 } } });
             }
 
             console.log("Initializing Dynamic Environmental Maps...");
 
-            // Global Map Instances
             let mapInstances = { main: null, wind: null, aqi: null, rain: null, radar: null };
             let layerGroups = { main: null, wind: null, aqi: null, rain: null };
-            
-            // Base Tile Layer reference for Main Map so we can swap it
             let mainBaseTile = null;
 
             function initMap(elementId, coords, zoomLevel, popupText, isMain = false) {
                 const container = document.getElementById(elementId);
                 if (container && typeof L !== 'undefined') {
                     const mapInstance = L.map(elementId).setView(coords, zoomLevel);
-                    
-                    // Default Dark Tile
-                    const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+
+                    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19,
-                        attribution: '&copy; OpenStreetMap &copy; CARTO'
+                        attribution: '&copy; OpenStreetMap contributors'
                     }).addTo(mapInstance);
-                    
+
                     if (isMain) mainBaseTile = tileLayer;
 
                     const layerGroup = L.layerGroup().addTo(mapInstance);
-                    if(popupText) L.marker(coords).addTo(layerGroup).bindPopup(popupText).openPopup();
-                    
+                    if (popupText) L.marker(coords).addTo(layerGroup).bindPopup(popupText).openPopup();
+
                     return { map: mapInstance, layer: layerGroup };
                 }
                 return { map: null, layer: null };
             }
 
-            // 1. Initial Setup
             const defaultCoords = [30.3165, 78.0322];
             let m1 = initMap("mainMap", defaultCoords, 7, '<b>Dehradun</b><br>Primary Location', true);
             mapInstances.main = m1.map; layerGroups.main = m1.layer;
@@ -412,19 +406,15 @@
             initMap("mumbaiMap", [19.0760, 72.8777], 10, '<b>Mumbai</b>');
             initMap("bengaluruMap", [12.9716, 77.5946], 10, '<b>Bengaluru</b>');
 
-            // ========================================================
-            // 🚀 FIX 1: PROPER MAP LAYER SWITCHING URLs
-            // ========================================================
             const tileOptions = {
-                'Weather Radar': 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', 
-                // 🚀 Naya AQI Heatmap Jaisa Tile (OpenStreetMap HOT layer jo red/heat tint deta hai)
-                'AQI Heatmap': 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', 
-                'Water Quality': 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', 
-                'Satellite View': 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' 
+                'Weather Radar': 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                'AQI Heatmap': 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+                'Water Quality': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'Satellite View': 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
             };
 
             const layerCards = document.querySelectorAll('.layer-card');
-            
+
             layerCards.forEach(card => {
                 card.addEventListener('click', () => {
                     layerCards.forEach(c => {
@@ -438,56 +428,48 @@
                     const layerName = card.querySelector('h3').innerText;
 
                     if (mapInstances.main && mainBaseTile && tileOptions[layerName]) {
-                        mapInstances.main.removeLayer(mainBaseTile); 
+                        mapInstances.main.removeLayer(mainBaseTile);
                         mainBaseTile = L.tileLayer(tileOptions[layerName], {
                             maxZoom: 19,
                             attribution: '&copy; Weather Intelligence Pro'
-                        }).addTo(mapInstances.main); 
-                        
+                        }).addTo(mapInstances.main);
+
                         document.getElementById('mainMap').scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 });
             });
 
-            // ========================================================
-            // 🚀 FIX 2: ROUTE PLANNER FUNCTIONALITY
-            // ========================================================
             const routeBtn = document.querySelector('.route-btn');
             const routeInputs = document.querySelectorAll('.route-input');
-            
+
             if (routeBtn && routeInputs.length === 2) {
                 routeBtn.addEventListener('click', () => {
                     const source = routeInputs[0].value.trim();
                     const destination = routeInputs[1].value.trim();
-                    
+
                     if (!source || !destination) {
-                        alert('Bhai, Route nikalne ke liye Source aur Destination dono daalne padenge!');
+                        alert('Route nikalne ke liye Source aur Destination dono daalne padenge.');
                         return;
                     }
 
-                    // Button loading animation
                     const originalText = routeBtn.innerText;
                     routeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Finding Route...';
-                    
+
                     setTimeout(() => {
-                        // Naye tab mein Google Maps kholega source se destination tak
                         const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(source)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
                         window.open(googleMapsUrl, '_blank');
-                        
-                        // Button wapas normal
                         routeBtn.innerHTML = originalText;
                     }, 800);
                 });
             }
 
-            // API INTEGRATION: Fetch map data dynamically
             async function fetchEnvironmentalData(city) {
                 const searchBtn = document.getElementById('search-button');
-                searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                if (searchBtn) searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
                 try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch(`https://weather-intelligence-pro.onrender.com/maps/data/${city}`, {
+                    const response = await fetch(`https://weather-intelligence-pro.onrender.com/maps/data/${encodeURIComponent(city)}`, {
                         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                     });
 
@@ -495,21 +477,25 @@
                         const data = await response.json();
                         const coords = [data.coordinates.lat, data.coordinates.lng];
 
-                        document.querySelector('.glass.hover-card h1').innerText = `${data.city}, India`;
-                        document.querySelectorAll('.glass.hover-card p')[0].innerText = `Latitude: ${data.coordinates.lat.toFixed(4)}`;
-                        document.querySelectorAll('.glass.hover-card p')[1].innerText = `Longitude: ${data.coordinates.lng.toFixed(4)}`;
+                        const cityHeading = document.querySelector('.glass.hover-card h1');
+                        const coordParagraphs = document.querySelectorAll('.glass.hover-card p');
+                        if (cityHeading) cityHeading.innerText = `${data.city}, India`;
+                        if (coordParagraphs[0]) coordParagraphs[0].innerText = `Latitude: ${data.coordinates.lat.toFixed(4)}`;
+                        if (coordParagraphs[1]) coordParagraphs[1].innerText = `Longitude: ${data.coordinates.lng.toFixed(4)}`;
 
                         const insightsContainer = document.querySelector('.glass.hover-card p[style*="line-height: 1.8"]');
-                        insightsContainer.innerHTML = data.insights.map(i => `• ${i}<br>`).join('');
+                        if (insightsContainer && Array.isArray(data.insights)) {
+                            insightsContainer.innerHTML = data.insights.map(i => `• ${i}<br>`).join('');
+                        }
 
                         function updateMapLayer(mapName, zoom, popup, hotspots, color) {
-                            if(mapInstances[mapName] && layerGroups[mapName]) {
+                            if (mapInstances[mapName] && layerGroups[mapName]) {
                                 mapInstances[mapName].flyTo(coords, zoom, { animate: true, duration: 1.5 });
                                 layerGroups[mapName].clearLayers();
-                                
-                                if(popup) L.marker(coords).addTo(layerGroups[mapName]).bindPopup(`<b>${data.city}</b><br>${popup}`).openPopup();
 
-                                if(hotspots) {
+                                if (popup) L.marker(coords).addTo(layerGroups[mapName]).bindPopup(`<b>${data.city}</b><br>${popup}`).openPopup();
+
+                                if (hotspots) {
                                     hotspots.forEach(spot => {
                                         L.circleMarker([spot.lat, spot.lng], { radius: 12, color: color, fillOpacity: 0.5 }).addTo(layerGroups[mapName]);
                                     });
@@ -518,29 +504,34 @@
                         }
 
                         updateMapLayer('main', 8, 'Active Monitored Zone', null, null);
-                        updateMapLayer('wind', 7, null, data.hotspots.wind, '#FACC15');
-                        updateMapLayer('aqi', 7, null, data.hotspots.aqi, '#F87171');
-                        updateMapLayer('rain', 7, null, data.hotspots.rain, '#38BDF8');
-                        if(mapInstances.radar) mapInstances.radar.flyTo(coords, 6, {animate: true});
-
+                        updateMapLayer('wind', 7, null, data.hotspots?.wind, '#FACC15');
+                        updateMapLayer('aqi', 7, null, data.hotspots?.aqi, '#F87171');
+                        updateMapLayer('rain', 7, null, data.hotspots?.rain, '#38BDF8');
+                        if (mapInstances.radar) mapInstances.radar.flyTo(coords, 6, { animate: true });
+                    } else if (response.status === 401) {
+                        alert("Session expired. Please login again.");
                     } else {
-                        if(response.status === 401) alert("Session expired. Please login again.");
-                        else alert("City mapping data not found!");
+                        console.warn("City mapping data not found for:", city);
                     }
                 } catch (e) {
                     console.error("Map Fetch Error:", e);
-                    alert("Network Error. Check if backend is running.");
                 } finally {
-                    searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+                    if (searchBtn) searchBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
                 }
             }
 
             const searchBtn = document.getElementById('search-button');
             const searchInput = document.getElementById('search-input');
-            
-            searchBtn.addEventListener('click', () => { if(searchInput.value) fetchEnvironmentalData(searchInput.value.trim()); });
-            searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter' && searchInput.value) fetchEnvironmentalData(searchInput.value.trim()); });
-            
+
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => {
+                    if (searchInput.value.trim()) fetchEnvironmentalData(searchInput.value.trim());
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && searchInput.value.trim()) fetchEnvironmentalData(searchInput.value.trim());
+                });
+            }
+
             fetchEnvironmentalData('Dehradun');
         });
     </script>
